@@ -1,0 +1,12 @@
+{
+  "name": "htmx-single-index-html-page",
+  "version": "1.0.0",
+  "description": "The simplest htmx page",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Igor",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
