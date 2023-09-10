@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --txt-color-primary: #e4e4e7;
+  --bg-color-primary: #1e1b4b;
+  --bg-color-secondary1: #312e81;
+  --bg-color-secondary2: #3730a3;
+  --scrollbar-color: var(--bg-color-secondary1);
+  --scrollbar-hover-color: #4338ca;
+  /* ==scroll firefox== */
+  /* "auto" or "thin" */
+  scrollbar-width: auto;
+  /* scroll thumb and track */
+  scrollbar-color: var(--scrollbar-color) var(--bg-color-primary);
+  /* ==scroll firefox== */
+}
+
+/* ==chrome,safari scroll== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover-color);
+}
+/* ==chrome,safari scroll== */
+
+/* Semantics for combining classes! */
+@layer components {
+  .error-message {
+    @apply text-red-700 text-sm transition-transform origin-left duration-150 ease-in-out;
+  }
+
+  .error-message.inactive {
+    @apply h-0 scale-0 m-0 p-0;
+  }
+
+  .error-message.active {
+    @apply scale-100;
+  }
+}
+
+.disabled {
+  opacity: 0.5;
+}
+
+.load-indicator {
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0;
+  transition: visibility 250ms, opacity 500ms ease-in;
+}
+
+.htmx-request .load-indicator {
+  padding: inherit;
+  height: auto;
+  visibility: visible;
+  opacity: 1
+}
+
+.htmx-request.load-indicator {
+  padding: inherit;
+  height: auto;
+  visibility: visible;
+  opacity: 1
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  /* border: 1px solid inherit; */
+  -webkit-text-fill-color: var(--txt-color-primary);
+  -webkit-box-shadow: 0 0 0px 0px;
+  transition: background-color 5000s ease-in-out 0s;
+}
