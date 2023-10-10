@@ -118,7 +118,7 @@ export function inputWithHiddenError(props: {
 
     return `<input name="${props.name}" placeholder="${props.placeholder}" type="${props.type ?? 'text'}" 
         class="${inputClasess}"
-        hx-trigger="keyup changed delay:500ms"
+        hx-trigger="input delay:500ms"
         hx-target="${HX_ERROR_MESSAGE_TARGET}"
         hx-swap="outerHTML"
         hx-post="${props.validateEndpoint}">
