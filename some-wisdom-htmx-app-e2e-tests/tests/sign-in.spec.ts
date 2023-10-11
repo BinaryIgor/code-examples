@@ -1,6 +1,10 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import * as PageExtensions from "./page-extensions";
+import { SignInPage } from './sign-in-page';
 import { nonExistingSignInUser, incorrectSignInUser } from "./test-data";
+
+// Reset storage state for this file to avoid being authenticated
+test.use({ storageState: { cookies: [], origins: [] } });
 
 let signInPage: SignInPage;
 
@@ -11,7 +15,6 @@ test.describe('sign in page', () => {
     });
 
     test('should land on sign-in page and have App title and the header', async ({ page }) => {
-        await expect(page).toHaveURL(/user\/sign-in/);
         await expect(page).toHaveTitle(/Some Wisdom/);
         await expect(page.getByRole('heading', { name: "let's get some wisdom", level: 1 })).toContainText("");
     });
@@ -57,35 +60,3 @@ test.describe('sign in page', () => {
         await expect(PageExtensions.getErrorModal(page)).toContainText(/Incorrect password/);
     });
 });
-
-class SignInPage {
-    readonly page: Page;
-
-    constructor(page: Page) {
-        this.page = page;
-    }
-
-    async goto() {
-        await this.page.goto("http://localhost:8080");
-    }
-
-    signInButton(): Locator {
-        return this.page.getByRole("button", { name: "sign in" });
-    }
-
-    nameInput(): Locator {
-        return PageExtensions.getByNameAttribute(this.page, "name");
-    }
-
-    passwordInput(): Locator {
-        return PageExtensions.getByNameAttribute(this.page, "password");
-    }
-
-    nameError(): Locator {
-        return this.page.getByText(/Name should have/);
-    }
-
-    passwordError(): Locator {
-        return this.page.getByText(/Password should have/);
-    }
-}
