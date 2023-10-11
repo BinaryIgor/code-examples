@@ -9,7 +9,7 @@ export class SignInPage {
     }
 
     async goto() {
-        await this.page.goto("http://localhost:8080");
+        await this.page.goto(PageExtensions.ROOT_URL);
     }
 
     signInButton(): Locator {
