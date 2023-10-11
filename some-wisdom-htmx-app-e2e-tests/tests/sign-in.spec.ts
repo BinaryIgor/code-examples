@@ -10,7 +10,8 @@ test.describe('sign in page', () => {
         await signInPage.goto();
     });
 
-    test('should have App title and the header', async ({ page }) => {
+    test('should land on sign-in page and have App title and the header', async ({ page }) => {
+        await expect(page).toHaveURL(/user\/sign-in/);
         await expect(page).toHaveTitle(/Some Wisdom/);
         await expect(page.getByRole('heading', { name: "let's get some wisdom", level: 1 })).toContainText("");
     });
