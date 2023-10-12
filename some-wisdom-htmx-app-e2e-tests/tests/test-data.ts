@@ -14,4 +14,11 @@ export const authors = [
     "Marcus Aurelius"
 ];
 
+export const phrasesMatchingAuthors = {
+    'f': [authors[0], authors[2]],
+    "AYN": [authors[3]],
+    "Aur": [authors[4]],
+    "NonExisting": []
+};
+
 export const nonExistingAuthorPrefix = "A";

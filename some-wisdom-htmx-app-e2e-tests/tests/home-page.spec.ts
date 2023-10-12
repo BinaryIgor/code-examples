@@ -1,6 +1,6 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import * as PageExtensions from "./page-extensions";
-import { nonExistingSignInUser, incorrectSignInUser, authors, nonExistingAuthorPrefix } from "./test-data";
+import { nonExistingSignInUser, incorrectSignInUser, authors, phrasesMatchingAuthors } from "./test-data";
 import { signInUser } from './test-data';
 
 let homePage: HomePage;
@@ -13,15 +13,21 @@ test.describe('home page', () => {
 
     test('should show home page for signed-in user', async ({ page }) => {
         await expect(page.getByText(`${signInUser.name}`)).toBeVisible();
-        page.getByText(/What authors/);
+        await expect(page.getByText(/What authors/)).toBeVisible();
     });
 
-    test('should allow to search authors', async ({ page }) => {
-        await homePage.expectNoSearchResults();
+    test('should allow to search authors by a phrase', async () => {
+        await expect(homePage.searchResults()).toBeHidden();
+        await expect(homePage.searchResultsIndicator()).toBeHidden();
 
-        await homePage.searchAuthorsInput().fill(nonExistingAuthorPrefix);
+        for (const [phrase, mathes] of Object.entries(phrasesMatchingAuthors)) {
+            await homePage.searchAuthorsInput().fill("");
+            await homePage.searchAuthorsInput().pressSequentially(phrase);
 
-        await homePage.expectNoSearchResults();
+            await expect(homePage.searchResultsIndicator()).toBeVisible();
+
+            await homePage.expectSearchResults(mathes);
+        }
     });
 });
 
@@ -42,10 +48,29 @@ class HomePage {
     }
 
     searchResults(): Locator {
-        return this.page.locator("#search-results");
+        return this.page.getByTestId("search-results");
     }
 
-    async expectNoSearchResults() {
-        await expect(this.searchResults()).toHaveCount(1);
+    searchResultsItem(): Locator {
+        return this.page.getByTestId("search-results-item");
+    }
+
+    noSearchResults(): Locator {
+        return this.page.getByTestId("no-search-results");
+    }
+
+    searchResultsIndicator(): Locator {
+        return this.page.locator("#search-results-indicator").filter({ hasText: "Searching..." });
+    }
+
+    async expectSearchResults(authors: string[]) {
+        if (authors.length == 0) {
+            await expect(this.noSearchResults()).toContainText('There are no authors');
+            return;
+        }
+
+        await expect(this.searchResults()).toBeVisible();
+        await expect(this.searchResultsItem()).toHaveCount(authors.length);
+        await expect(this.searchResultsItem()).toContainText(authors);
     }
 }

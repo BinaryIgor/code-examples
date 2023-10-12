@@ -62,10 +62,10 @@ export function authorsSearchResult(result: AuthorWithRandomQuote[], authorEndpo
     if (resultList) {
         results = resultList;
     } else {
-        results = `<div class="px-4">${Translations.defaultLocale.homePage.noAuthors}</div>`;
+        results = `<div class="px-4" ${Views.testIdAttribute("no-search-results")}>${Translations.defaultLocale.homePage.noAuthors}</div>`;
     }
 
-    return `<div class="space-y-4">${results}</div>`
+    return `<div ${Views.testIdAttribute("search-results")} class="space-y-4">${results}</div>`
 }
 
 function authorsSearchResultElement(author: AuthorWithRandomQuote, authorEndpoint: string): string {
@@ -76,7 +76,8 @@ function authorsSearchResultElement(author: AuthorWithRandomQuote, authorEndpoin
 
     return `<div class="rounded-lg shadow-md p-4 cursor-pointer border-2 
         ${Views.PROPS.borderColorSecondary2} ${Views.PROPS.shadowColorSecondary2}"
-    hx-target="#${Views.ROOT_ID}" hx-get="${authorEndpoint}" hx-push-url="true">
+    hx-target="#${Views.ROOT_ID}" hx-get="${authorEndpoint}" hx-push-url="true"
+        ${Views.testIdAttribute("search-results-item")}>
         <div class="text-xl">${author.name}</div>
         <div class="${Views.PROPS.txtColorSecondary1} italic mt-2">"${quotePreview}"</div>
     </div>`

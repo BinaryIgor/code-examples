@@ -1,4 +1,3 @@
-import exp from "constants";
 import { getAssetsSrc } from "../app-config";
 import { ErrorCode, OptionalErrorCode } from "./errors";
 import { Translations } from "./translations";
@@ -20,7 +19,6 @@ export const TRIGGERS = {
     resetScroll: "reset-scroll"
 };
 
-const GET_CURRENT_USER_ENDPOINT = "/user";
 const SIGN_IN_ENDPOINT = "/user/sign-in";
 const SIGN_OUT_ENDPOINT = "/user/sign-out";
 const PROFILE_ENDPOINT = "/user/profile";
@@ -147,7 +145,7 @@ export function errorsComponent(errors: ErrorCode[]): string {
 }
 
 function translatedError(error: ErrorCode): string {
-    const errorsTranslations = Translations.defaultLocale.errors as any;  
+    const errorsTranslations = Translations.defaultLocale.errors as any;
     return errorsTranslations[error] ?? error;
 }
 
@@ -200,7 +198,7 @@ export function errorModal(): string {
 export function navigationComponent(currentUser: string | null, withExternalSwap: boolean): string {
     let navigationClasses = `z-10 sticky flex justify-between top-0 w-full py-4 px-2 border-b-4  
         ${PROPS.borderColorSecondary2} ${PROPS.bgColorPrimary} ${PROPS.txtColorSecondary2}`;
-    
+
     if (!currentUser) {
         navigationClasses += ` ${HIDDEN_CLASS}`;
     }
@@ -278,4 +276,8 @@ export function resetFormTrigger(label: string, ...additionalTriggers: any): str
 export function additionalTrigersOfKeys(...keys: string[]): any {
     const jsonBody = [...keys].map(k => `"${k}": true`).join(",\n");
     return JSON.parse(`{ ${jsonBody} }`);
+}
+
+export function testIdAttribute(value: string): string {
+    return `data-testid="${value}"`;
 }
