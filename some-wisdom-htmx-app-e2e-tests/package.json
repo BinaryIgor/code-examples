@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build:run-app": "cd ../some-wisdom-htmx-app; npm run build:run-for-e2e-tests"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
