@@ -1,5 +1,5 @@
 import { Page, Locator } from '@playwright/test';
-import * as PageExtensions from "./page-extensions";
+import * as PageExtensions from "./utils/page-extensions";
 
 export class SignInPage {
     readonly page: Page;

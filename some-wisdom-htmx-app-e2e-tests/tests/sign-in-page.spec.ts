@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import * as PageExtensions from "./page-extensions";
+import * as PageExtensions from "./utils/page-extensions";
 import { SignInPage } from './sign-in-page';
-import { nonExistingSignInUser, incorrectSignInUser } from "./test-data";
+import { nonExistingSignInUser, incorrectSignInUser } from "./utils/test-data";
 
 // Reset storage state for this file to avoid being authenticated
 test.use({ storageState: { cookies: [], origins: [] } });

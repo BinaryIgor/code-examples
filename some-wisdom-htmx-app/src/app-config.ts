@@ -33,7 +33,8 @@ export const getAppConfig = () => {
             refreshInterval: envVariableOrDefault("SESSION_REFRESH_INTERVAL", 60 * 1000),
         },
         db: {
-            path: envVariableOrDefault("DB_PATH", path.join(__dirname, "..", "assets", "db"))
+            path: envVariableOrDefault("DB_PATH", path.join(__dirname, "..", "assets", "db")),
+            e2eTestsPath: path.join(__dirname, "..", "assets", "e2e-tests-db")
         },
         assets: {
             path: assetsPath,

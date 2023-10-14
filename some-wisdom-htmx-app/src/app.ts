@@ -31,18 +31,18 @@ const userModule = UserModule.build(authSessions, sessionCookies, authorsModule.
 const quotesModule = QuotesModule.build(quoteNotesDbPath,
     authorsModule.client.quoteOfId, userModule.client.usersOfIds);
 
+const dbPath = appConfig.profile == 'e2e-tests' ? appConfig.db.e2eTestsPath : appConfig.db.path;
 
-if (appConfig.profile == "e2e-tests") {
-    console.log(`e2e-tests profile, loading data from ${appConfig.db.path} path...`);
+console.log("App profile:", appConfig.profile);
+console.log(`Loading data from ${dbPath} path...`);
 
-    staticFileContentOfPath(path.join(appConfig.db.path, "authors.json"))
-        .then(db => FilesDb.importAuthors(db, authorsModule.client))
-        .catch(e => console.log("Failed to load authors db!", e));
+staticFileContentOfPath(path.join(dbPath, "authors.json"))
+    .then(db => FilesDb.importAuthors(db, authorsModule.client))
+    .catch(e => console.log("Failed to load authors db!", e));
 
-    staticFileContentOfPath(path.join(appConfig.db.path, "users.json"))
-        .then(db => FilesDb.importUsers(db, userModule.client))
-        .catch(e => console.log("Failed to load users db!", e));
-}
+staticFileContentOfPath(path.join(dbPath, "users.json"))
+    .then(db => FilesDb.importUsers(db, userModule.client))
+    .catch(e => console.log("Failed to load users db!", e));
 
 const app = express();
 

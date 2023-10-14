@@ -1,7 +1,7 @@
 import { test, expect, Page, Locator } from '@playwright/test';
-import * as PageExtensions from "./page-extensions";
-import { phrasesMatchingAuthors } from "./test-data";
-import { signInUser } from './test-data';
+import * as PageExtensions from "./utils/page-extensions";
+import { phrasesMatchingAuthors } from "./utils/test-data";
+import { signInUser } from './utils/test-data';
 
 let homePage: HomePage;
 
