@@ -1,5 +1,5 @@
 {
-  "name": "some-wisdom",
+  "name": "some-wisdom-app",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -7,10 +7,11 @@
     "test": "mocha -r ts-node/register 'test/**/*.test.ts'",
     "test:file": "mocha --require ts-node/register test/**/$file.test.ts --exit",
     "build": "bash build_app.bash",
-    "build-and-run": "bash build_app.bash && bash run_app.bash",
+    "build:run": "bash build_app.bash && bash run_app.bash",
+    "build:run-for-e2e-tests": "export PROFILE=e2e-tests; bash build_app.bash && bash run_app.bash",
     "serve": "bash serve_app.bash",
     "build-docker": "docker build . -t some-wisdom-app",
-    "build-and-run-docker": "bash build_and_run_docker_app.bash"
+    "build:run-docker": "bash build_and_run_docker_app.bash"
   },
   "author": "Igor Roztropiński",
   "license": "ISC",

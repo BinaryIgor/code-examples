@@ -25,9 +25,9 @@ npm run build
 ```
 Build and run:
 ```
-npm run build-and-run
+npm run build:run
 ```
 Build and run in Docker:
 ```
-npm run build-and-run-docker
+npm run build:run-docker
 ```
