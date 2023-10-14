@@ -25,10 +25,10 @@ export class SignInPage {
     }
 
     nameError(): Locator {
-        return this.page.getByText(/Name should have/);
+        return this.page.getByText('Name should have');
     }
 
     passwordError(): Locator {
-        return this.page.getByText(/Password should have/);
+        return this.page.getByText('Password should have');
     }
 }

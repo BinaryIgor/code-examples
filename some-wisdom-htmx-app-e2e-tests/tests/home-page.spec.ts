@@ -1,11 +1,11 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 import * as PageExtensions from "./page-extensions";
-import { nonExistingSignInUser, incorrectSignInUser, authors, phrasesMatchingAuthors } from "./test-data";
+import { phrasesMatchingAuthors } from "./test-data";
 import { signInUser } from './test-data';
 
 let homePage: HomePage;
 
-test.describe('home page', () => {
+test.describe('Home page', () => {
     test.beforeEach(async ({ page }) => {
         homePage = new HomePage(page);
         await homePage.goto();

@@ -8,7 +8,7 @@ test.use({ storageState: { cookies: [], origins: [] } });
 
 let signInPage: SignInPage;
 
-test.describe('sign in page', () => {
+test.describe('Sign-in page', () => {
     test.beforeEach(async ({ page }) => {
         signInPage = new SignInPage(page);
         await signInPage.goto();
