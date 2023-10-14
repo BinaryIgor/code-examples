@@ -9,7 +9,7 @@ export class SignInPage {
     }
 
     async goto() {
-        await this.page.goto(PageExtensions.ROOT_URL);
+        await this.page.goto("/");
     }
 
     signInButton(): Locator {

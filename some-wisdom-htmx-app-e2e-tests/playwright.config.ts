@@ -8,6 +8,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 
 const AUTH_FILE = "playwright/.auth/user.json";
+const APP_URL = "http://localhost:8080";
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -31,6 +32,7 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    baseURL: APP_URL
   },
 
   /* Configure projects for major browsers */
@@ -91,8 +93,8 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run build:run-app',
-    url: 'http://127.0.0.1:8080',
+    url: APP_URL,
     timeout: 10_000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true
   }
 });
