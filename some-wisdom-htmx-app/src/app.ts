@@ -31,13 +31,18 @@ const userModule = UserModule.build(authSessions, sessionCookies, authorsModule.
 const quotesModule = QuotesModule.build(quoteNotesDbPath,
     authorsModule.client.quoteOfId, userModule.client.usersOfIds);
 
-staticFileContentOfPath(path.join(appConfig.db.path, "authors.json"))
-    .then(db => FilesDb.importAuthors(db, authorsModule.client))
-    .catch(e => console.log("Failed to load authors db!", e));
 
-staticFileContentOfPath(path.join(appConfig.db.path, "users.json"))
-    .then(db => FilesDb.importUsers(db, userModule.client))
-    .catch(e => console.log("Failed to load users db!", e));
+if (appConfig.profile == "e2e-tests") {
+    console.log(`e2e-tests profile, loading data from ${appConfig.db.path} path...`);
+
+    staticFileContentOfPath(path.join(appConfig.db.path, "authors.json"))
+        .then(db => FilesDb.importAuthors(db, authorsModule.client))
+        .catch(e => console.log("Failed to load authors db!", e));
+
+    staticFileContentOfPath(path.join(appConfig.db.path, "users.json"))
+        .then(db => FilesDb.importUsers(db, userModule.client))
+        .catch(e => console.log("Failed to load users db!", e));
+}
 
 const app = express();
 

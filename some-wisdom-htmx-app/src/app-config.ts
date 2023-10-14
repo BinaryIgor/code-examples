@@ -22,6 +22,7 @@ export const getAssetsSrc = () => ({
 export const getAppConfig = () => {
     const assetsPath = envVariableOrDefault("ASSETS_PATH", path.join(__dirname, "..", "assets"));
     return {
+        profile: envVariableOrDefault("PROFILE", "default"),
         server: {
             port: envVariableOrDefault("SERVER_PORT", 8080)
         },
