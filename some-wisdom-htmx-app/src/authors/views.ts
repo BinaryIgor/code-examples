@@ -35,7 +35,7 @@ export function homePage(
             <input id="${searchAuthorsInputId}" 
                 class="${Views.INPUT_LIKE_CLASSES} w-full" name="${AUTHORS_SEARCH_INPUT}" 
                 placeholder="${homePageTranslations.searchPlaceholder}"
-                hx-trigger="keyup changed delay:500ms" 
+                hx-trigger="input changed delay:500ms" 
                 hx-post="${searchAuthorsEndpoint}" 
                 hx-target="#${searchResultsId}"
                 hx-indicator="#search-results-indicator">

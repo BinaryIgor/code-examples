@@ -5,5 +5,5 @@ export function getByNameAttribute(page: Page, name: string): Locator {
 }
 
 export function getErrorModal(page: Page): Locator {
-    return page.locator('#error-modal-content').filter({hasText: /Something went wrong/});
+    return page.locator('#error-modal-content').filter({hasText: 'Something went wrong'});
 }

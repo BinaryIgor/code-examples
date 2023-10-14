@@ -34,7 +34,7 @@ export const getAppConfig = () => {
         },
         db: {
             path: envVariableOrDefault("DB_PATH", path.join(__dirname, "..", "assets", "db")),
-            e2eTestsPath: path.join(__dirname, "..", "assets", "e2e-tests-db")
+            e2eTestsPath: envVariableOrDefault("E2E_TESTS_DB_PATH", path.join(__dirname, "..", "assets", "e2e-tests-db"))
         },
         assets: {
             path: assetsPath,

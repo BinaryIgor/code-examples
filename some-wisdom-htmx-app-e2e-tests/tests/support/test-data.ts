@@ -3,9 +3,8 @@ export class SignInUser {
 }
 
 export const signInUser = new SignInUser("Igor", "password1");
-
 export const incorrectSignInUser = new SignInUser("Igor", "password34");
-export const nonExistingSignInUser = new SignInUser("User", "password34");
+export const nonexistentSignInUser = new SignInUser("User", "password34");
 
 export const authors = [
     "Friedrich Nietzsche",
@@ -19,5 +18,5 @@ export const phrasesMatchingAuthors = {
     "jordan peterson": [authors[1]],
     "AYN": [authors[3]],
     "Aur": [authors[4]],
-    "NonExisting": []
+    "Nonexistent": []
 };

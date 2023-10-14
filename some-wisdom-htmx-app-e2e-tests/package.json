@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:run-app": "cd ../some-wisdom-htmx-app; npm run build:run-for-e2e-tests"
+    "build:run-app": "cd ../some-wisdom-htmx-app; npm run build:run-docker-for-e2e-tests"
   },
   "keywords": [],
-  "author": "",
+  "author": "Igor",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.38.1",

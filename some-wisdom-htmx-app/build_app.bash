@@ -15,6 +15,7 @@ npx tailwindcss -i ./assets/style.css -o "./dist/assets/style-${assets_hash}.css
 echo "Moving assets.."
 
 cp -r assets/db dist/assets/db
+cp -r assets/e2e-tests-db dist/assets/e2e-tests-db
 cp -r assets/index.js "dist/assets/index-${assets_hash}.js"
 
 echo "$assets_hash" > dist/assets_hash.txt

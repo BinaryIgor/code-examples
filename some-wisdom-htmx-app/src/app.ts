@@ -142,11 +142,11 @@ app.listen(appConfig.server.port, () => {
 
 //TODO: graceful shutdown
 process.on('SIGTERM', () => {
-    console.log("Received SIGTERM signal, exiting...")
+    console.log("Received SIGTERM signal, exiting...");
     process.exit();
 });
 
 process.on('SIGINT', () => {
-    console.log("Received SIGINT signal, exiting...")
+    console.log("Received SIGINT signal, exiting...");
     process.exit();
 });

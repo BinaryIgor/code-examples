@@ -1,12 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-
 const AUTH_FILE = "playwright/.auth/user.json";
 const APP_URL = "http://localhost:8080";
 
@@ -17,8 +10,6 @@ export default defineConfig({
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
@@ -94,7 +85,12 @@ export default defineConfig({
   webServer: {
     command: 'npm run build:run-app',
     url: APP_URL,
-    timeout: 10_000,
+    // We build docker here so it can take a while (a few minutes)
+    timeout: 300_000,
+    stdout: 'ignore',
+    stderr: 'pipe',
+    // Unfortunately Playwright is sending only SIGKILL signal to the container: https://github.com/microsoft/playwright/issues/18209
+    // Beacuse of that, we need to stop it manually after tests
     reuseExistingServer: true
   }
 });

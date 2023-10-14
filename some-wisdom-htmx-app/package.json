@@ -11,7 +11,8 @@
     "build:run-for-e2e-tests": "export PROFILE=e2e-tests; bash build_app.bash && bash run_app.bash",
     "serve": "bash serve_app.bash",
     "build-docker": "docker build . -t some-wisdom-app",
-    "build:run-docker": "bash build_and_run_docker_app.bash"
+    "build:run-docker": "bash build_and_run_docker_app.bash",
+    "build:run-docker-for-e2e-tests": "export PROFILE=e2e-tests; bash build_and_run_docker_app.bash"
   },
   "author": "Igor Roztropiński",
   "license": "ISC",

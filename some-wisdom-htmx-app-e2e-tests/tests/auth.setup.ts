@@ -1,6 +1,6 @@
 import { test as setup } from '@playwright/test';
 import { SignInPage } from './sign-in-page';
-import { signInUser } from "./utils/test-data";
+import { signInUser } from "./support/test-data";
 
 const AUTH_FILE = "playwright/.auth/user.json";
 
@@ -11,11 +11,9 @@ setup('authenticate', async ({ page }) => {
 
     await page.waitForURL(/user\/sign-in/);
 
-    await signInPage.nameInput().fill(signInUser.name);
-    await signInPage.passwordInput().fill(signInUser.password);
-    await signInPage.signInButton().click();
+    await signInPage.signIn(signInUser);
 
-    await page.getByText("Some Wisdom App").waitFor();
+    await page.waitForURL("/");
 
     await page.context().storageState({ path: AUTH_FILE });
 });
