@@ -8,13 +8,13 @@ npm ci
 (will install needed browsers)
 npx playwright install
 ```
-If it doesn't work, you may need to run:
+If it doesn't work, you may need to run (reference: https://playwright.dev/docs/ci):
 ```
 npx playwright install --with-deps
 ```
 ...to install additional dependencies.
 
-To run all tests in a headless mode, simply execute:
+To run all tests in a headless mode (default), simply execute:
 ```
 npx playwright test
 ```
@@ -26,7 +26,7 @@ npx playwright test home-page (file name/prefix)
 ```
 Run a test with a specific title:
 ```
-npx playwright test -g "should land on sign in page and see app title and header"
+npx playwright test -g "should find and navigate to an author page"
 ```
 
 Run only on one, specific browser:
@@ -34,11 +34,11 @@ Run only on one, specific browser:
 npx playwright test sign-in-page --project chromium
 ```
 
-Run tests interactively in UI:
+Run tests interactively in the UI:
 ```
 npx playwright test --ui
 ```
-Run tests in a single browser, in the headed mode to see how Playwright interacts with our app:
+Run tests on a single browser, in the headed mode, to see how Playwright interacts with our app, with 1 worker (not in parallel):
 ```
 npx playwright test home-page --headed --workers=1 --project chromium
 ```
