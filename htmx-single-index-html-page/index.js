@@ -4,7 +4,14 @@ const bodyParser = require("body-parser");
 const APP_PORT = 8080;
 const HTMX_SCRIPT = '<script src="https://unpkg.com/htmx.org@1.9.5" integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"></script>';
 
-const items = [
+const TEST_PROFILE = process.env.TEST_PROFILE ? true : false;
+const IMPORT_ITEMS_ENDPOINT = "/_import/items";
+
+if (TEST_PROFILE) {
+    console.log(`Starting app with the test profile to allow data import on ${IMPORT_ITEMS_ENDPOINT} endpoint`);
+}
+
+let items = [
     {
         name: "First item",
         value: 1
@@ -40,6 +47,16 @@ app.post("/add-item", (req, res) => {
         returnHtmlPage(res, "<p>Item name and value are required!", 400);
     }
 });
+
+if (TEST_PROFILE) {
+    app.use(bodyParser.json());
+
+    app.post(IMPORT_ITEMS_ENDPOINT, (req, res) => {
+        items = req.body;
+        console.log("Items imported, new items: ", items);
+        res.sendStatus(201);
+    });
+}
 
 function returnIndexHtmlPage(res) {
     returnHtmlPage(res, `
@@ -89,10 +106,10 @@ function returnHtmlPage(res, page, status = 200) {
 function itemsComponent() {
     return `
         <ul>
-            ${items.map(i => `<li>${i.name}: ${i.value}</li>`).join("\n")}
+            ${items.map(i => `<li data-testid="item">${i.name}: ${i.value}</li>`).join("\n")}
         </ul>`;
 }
 
 app.listen(APP_PORT, () => {
-    console.log("App has started!");
+    console.log(`App has started on port ${APP_PORT}!`);
 });

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "The simplest htmx page",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "run-with-test-profile": "export TEST_PROFILE=true; node ."
+  },
   "author": "Igor",
   "license": "ISC",
   "dependencies": {
