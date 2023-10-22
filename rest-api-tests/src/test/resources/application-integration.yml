@@ -1,0 +1,11 @@
+spring:
+  sql:
+    init:
+      mode: always
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core: TRACE
