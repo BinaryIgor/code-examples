@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.domain;
+package com.binaryigor.restapitests.domain;
 
 import java.util.Optional;
 import java.util.UUID;

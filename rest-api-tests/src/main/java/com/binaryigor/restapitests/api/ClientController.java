@@ -1,7 +1,7 @@
-package com.binaryigor.apitests.api;
+package com.binaryigor.restapitests.api;
 
-import com.binaryigor.apitests.domain.Client;
-import com.binaryigor.apitests.domain.ClientService;
+import com.binaryigor.restapitests.domain.Client;
+import com.binaryigor.restapitests.domain.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

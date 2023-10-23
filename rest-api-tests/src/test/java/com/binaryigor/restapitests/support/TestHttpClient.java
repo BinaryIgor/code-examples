@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.support;
+package com.binaryigor.restapitests.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

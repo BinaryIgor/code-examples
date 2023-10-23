@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.support;
+package com.binaryigor.restapitests.support;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

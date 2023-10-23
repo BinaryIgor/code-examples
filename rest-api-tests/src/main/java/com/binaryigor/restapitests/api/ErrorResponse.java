@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.api;
+package com.binaryigor.restapitests.api;
 
 public record ErrorResponse(String error, String message) {
 

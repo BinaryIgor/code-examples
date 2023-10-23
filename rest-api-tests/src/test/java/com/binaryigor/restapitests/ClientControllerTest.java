@@ -1,14 +1,14 @@
-package com.binaryigor.apitests;
+package com.binaryigor.restapitests;
 
-import com.binaryigor.apitests.api.CreateClientResponse;
-import com.binaryigor.apitests.api.CreateOrUpdateClientRequest;
-import com.binaryigor.apitests.domain.Client;
-import com.binaryigor.apitests.domain.ClientNotFoundException;
-import com.binaryigor.apitests.domain.ClientStatus;
-import com.binaryigor.apitests.domain.ClientValidationException;
-import com.binaryigor.apitests.support.IntegrationTest;
-import com.binaryigor.apitests.support.TestHttpResponse;
-import com.binaryigor.apitests.support.TestObjects;
+import com.binaryigor.restapitests.api.CreateClientResponse;
+import com.binaryigor.restapitests.api.CreateOrUpdateClientRequest;
+import com.binaryigor.restapitests.domain.Client;
+import com.binaryigor.restapitests.domain.ClientNotFoundException;
+import com.binaryigor.restapitests.domain.ClientStatus;
+import com.binaryigor.restapitests.domain.ClientValidationException;
+import com.binaryigor.restapitests.support.IntegrationTest;
+import com.binaryigor.restapitests.support.TestHttpResponse;
+import com.binaryigor.restapitests.support.TestObjects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

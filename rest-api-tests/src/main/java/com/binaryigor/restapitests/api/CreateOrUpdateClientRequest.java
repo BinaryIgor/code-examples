@@ -1,7 +1,7 @@
-package com.binaryigor.apitests.api;
+package com.binaryigor.restapitests.api;
 
-import com.binaryigor.apitests.domain.Client;
-import com.binaryigor.apitests.domain.ClientStatus;
+import com.binaryigor.restapitests.domain.Client;
+import com.binaryigor.restapitests.domain.ClientStatus;
 
 import java.util.UUID;
 

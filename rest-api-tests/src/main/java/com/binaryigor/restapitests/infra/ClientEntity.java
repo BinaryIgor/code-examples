@@ -1,7 +1,7 @@
-package com.binaryigor.apitests.infra;
+package com.binaryigor.restapitests.infra;
 
-import com.binaryigor.apitests.domain.Client;
-import com.binaryigor.apitests.domain.ClientStatus;
+import com.binaryigor.restapitests.domain.Client;
+import com.binaryigor.restapitests.domain.ClientStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 

@@ -9,10 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.binaryigor</groupId>
-    <artifactId>api-tests</artifactId>
+    <artifactId>rest-api-tests</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>api-tests</name>
-    <description>Demo project for Spring Boot</description>
+    <name>rest-api-tests</name>
     <properties>
         <java.version>21</java.version>
         <postresql.driver.version>42.6.0</postresql.driver.version>

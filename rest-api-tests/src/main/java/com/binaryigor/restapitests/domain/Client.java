@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.domain;
+package com.binaryigor.restapitests.domain;
 
 import java.util.UUID;
 import java.util.regex.Pattern;

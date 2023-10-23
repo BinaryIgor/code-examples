@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.domain;
+package com.binaryigor.restapitests.domain;
 
 public class FieldValidator {
 

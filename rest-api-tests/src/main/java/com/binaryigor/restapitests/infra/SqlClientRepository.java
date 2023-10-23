@@ -1,8 +1,8 @@
-package com.binaryigor.apitests.infra;
+package com.binaryigor.restapitests.infra;
 
-import com.binaryigor.apitests.domain.Client;
-import com.binaryigor.apitests.domain.ClientRepository;
-import com.binaryigor.apitests.domain.ClientValidationException;
+import com.binaryigor.restapitests.domain.Client;
+import com.binaryigor.restapitests.domain.ClientRepository;
+import com.binaryigor.restapitests.domain.ClientValidationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;

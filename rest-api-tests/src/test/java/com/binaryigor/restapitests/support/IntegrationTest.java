@@ -1,6 +1,6 @@
-package com.binaryigor.apitests.support;
+package com.binaryigor.restapitests.support;
 
-import com.binaryigor.apitests.api.ErrorResponse;
+import com.binaryigor.restapitests.api.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;

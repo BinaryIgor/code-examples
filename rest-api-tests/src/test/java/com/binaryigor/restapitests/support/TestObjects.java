@@ -1,8 +1,8 @@
-package com.binaryigor.apitests.support;
+package com.binaryigor.restapitests.support;
 
-import com.binaryigor.apitests.api.CreateOrUpdateClientRequest;
-import com.binaryigor.apitests.domain.Client;
-import com.binaryigor.apitests.domain.ClientStatus;
+import com.binaryigor.restapitests.api.CreateOrUpdateClientRequest;
+import com.binaryigor.restapitests.domain.Client;
+import com.binaryigor.restapitests.domain.ClientStatus;
 
 import java.security.SecureRandom;
 import java.util.Arrays;

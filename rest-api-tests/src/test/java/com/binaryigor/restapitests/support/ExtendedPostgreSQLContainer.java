@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.support;
+package com.binaryigor.restapitests.support;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 

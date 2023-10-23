@@ -1,4 +1,4 @@
-package com.binaryigor.apitests.domain;
+package com.binaryigor.restapitests.domain;
 
 import org.springframework.stereotype.Service;
 

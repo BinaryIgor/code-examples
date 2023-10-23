@@ -1,7 +1,7 @@
-package com.binaryigor.apitests.api;
+package com.binaryigor.restapitests.api;
 
-import com.binaryigor.apitests.domain.ClientNotFoundException;
-import com.binaryigor.apitests.domain.ClientValidationException;
+import com.binaryigor.restapitests.domain.ClientNotFoundException;
+import com.binaryigor.restapitests.domain.ClientValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
