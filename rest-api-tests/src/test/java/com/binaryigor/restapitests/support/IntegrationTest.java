@@ -3,7 +3,7 @@ package com.binaryigor.restapitests.support;
 import com.binaryigor.restapitests.api.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -11,27 +11,42 @@ import org.springframework.boot.web.servlet.context.ServletWebServerInitializedE
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 @ActiveProfiles(value = "integration")
-@ExtendWith(ClearTestDbExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = IntegrationTest.TestConfig.class)
 public abstract class IntegrationTest {
 
-    protected static final ExtendedPostgreSQLContainer POSTGRESQL_CONTAINER = ExtendedPostgreSQLContainer.instance();
+    protected static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:15");
+
+    static {
+        POSTGRESQL_CONTAINER.start();
+
+        System.setProperty("DB_URL", POSTGRESQL_CONTAINER.getJdbcUrl());
+        System.setProperty("DB_USERNAME", POSTGRESQL_CONTAINER.getUsername());
+        System.setProperty("DB_PASSWORD", POSTGRESQL_CONTAINER.getPassword());
+    }
 
     @Autowired
-    protected TestHttpClient httpClient;
+    protected TestHttpClient testHttpClient;
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    void afterEach() {
+        jdbcTemplate.execute("TRUNCATE client");
+    }
 
     protected void assertResponseStatus(TestHttpResponse response, HttpStatus expectedStatus) {
         Assertions.assertThat(response.statusCode()).isEqualTo(expectedStatus.value());
     }
 
     protected <T> void assertResponseBody(TestHttpResponse response,
-                                          T expectedBody,
-                                          Class<T> bodyClazz) {
-        Assertions.assertThat(response.bodyAsJson(bodyClazz))
+                                          T expectedBody) {
+        Assertions.assertThat(response.bodyAsJson(expectedBody.getClass()))
                 .isEqualTo(expectedBody);
     }
 

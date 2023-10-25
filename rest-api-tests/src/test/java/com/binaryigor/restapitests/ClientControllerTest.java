@@ -2,7 +2,7 @@ package com.binaryigor.restapitests;
 
 import com.binaryigor.restapitests.api.CreateClientResponse;
 import com.binaryigor.restapitests.api.CreateOrUpdateClientRequest;
-import com.binaryigor.restapitests.domain.Client;
+import com.binaryigor.restapitests.api.ErrorResponse;
 import com.binaryigor.restapitests.domain.ClientNotFoundException;
 import com.binaryigor.restapitests.domain.ClientStatus;
 import com.binaryigor.restapitests.domain.ClientValidationException;
@@ -18,20 +18,18 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-class ClientControllerTest extends IntegrationTest {
-
-    private static final String ENDPOINTS_PREFIX = "/clients";
+public class ClientControllerTest extends IntegrationTest {
 
     @ParameterizedTest
-    @MethodSource("invalidCreateOrUpdateClientRequests")
-    void shouldNotAllowToAddInvalidClient(CreateOrUpdateClientRequest request) {
+    @MethodSource("invalidCreateOrUpdateRequests")
+    void shouldNotAllowToCreateInvalidClient(CreateOrUpdateClientRequest request) {
         var response = createClient(request);
         assertErrorResponse(response, HttpStatus.BAD_REQUEST, ClientValidationException.class);
     }
 
     @Test
-    void shouldAddAndReturnNewClient() {
-        var createClientRequest = TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST1;
+    void shouldAddAndGetClient() {
+        var createClientRequest = TestObjects.createOrUpdateClientRequest1();
 
         var createClientResponse = createClient(createClientRequest);
 
@@ -41,115 +39,119 @@ class ClientControllerTest extends IntegrationTest {
 
         var getClientResponse = getClient(clientId);
 
-        var expectedCreatedClient = createClientRequest.toClient(clientId);
+        var expectedClient = createClientRequest.toClient(clientId);
 
         assertResponseStatus(getClientResponse, HttpStatus.OK);
-        assertResponseBody(getClientResponse, expectedCreatedClient, Client.class);
+        assertResponseBody(getClientResponse, expectedClient);
     }
 
     @Test
-    void shouldNotReturnNonexistentClient() {
-        var response = getClient(UUID.randomUUID());
-
-        assertErrorResponse(response, HttpStatus.NOT_FOUND, ClientNotFoundException.class);
-    }
-
-    @Test
-    void shouldNotAllowToUpdateNonexistentClient() {
+    void shouldNotGetNonexistentClient() {
         var nonexistentClientId = UUID.randomUUID();
-        var updateRequest = TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST1;
 
-        var updateResponse = updateClient(nonexistentClientId, updateRequest);
+        var response = getClient(nonexistentClientId);
 
-        assertErrorResponse(updateResponse, HttpStatus.NOT_FOUND, ClientNotFoundException.class);
+        assertResponseStatus(response, HttpStatus.NOT_FOUND);
+        assertResponseBody(response,
+                ErrorResponse.fromException(new ClientNotFoundException(nonexistentClientId)));
+    }
+
+    @Test
+    void shouldNotUpdateNonexistentClient() {
+        var nonexistentClientId = UUID.randomUUID();
+
+        var response = updateClient(nonexistentClientId, TestObjects.createOrUpdateClientRequest1());
+
+        assertResponseStatus(response, HttpStatus.NOT_FOUND);
+        assertResponseBody(response,
+                ErrorResponse.fromException(new ClientNotFoundException(nonexistentClientId)));
     }
 
     @ParameterizedTest
-    @MethodSource("invalidCreateOrUpdateClientRequests")
-    void shouldNotAllowToUpdateClientGivenInvalidRequest(CreateOrUpdateClientRequest updateRequest) {
-        var createRequest = TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST1;
+    @MethodSource("invalidCreateOrUpdateRequests")
+    void shouldNotAllowToUpdateInvalidClient(CreateOrUpdateClientRequest updateRequest) {
+        var clientId = createClientReturningId(TestObjects.createOrUpdateClientRequest1());
 
-        var clientId = createClientReturningId(createRequest);
+        var response = updateClient(clientId, updateRequest);
 
-        var updateClientResponse = updateClient(clientId, updateRequest);
-
-        assertErrorResponse(updateClientResponse, HttpStatus.BAD_REQUEST, ClientValidationException.class);
+        assertErrorResponse(response, HttpStatus.BAD_REQUEST, ClientValidationException.class);
     }
 
     @Test
-    void shouldNotAllowToUpdateClientWithAlreadyTakenEmail() {
-        var client1Id = createClientReturningId(TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST1);
-        var client2Id = createClientReturningId(TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST2);
+    void shouldUpdateClient() {
+        var createClientRequest = TestObjects.createOrUpdateClientRequest1();
+        var updateClientRequest = TestObjects.createOrUpdateClientRequest2();
 
-        var updateResponse = updateClient(client2Id, TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST1);
+        var clientId = createClientReturningId(createClientRequest);
 
-        assertErrorResponse(updateResponse, HttpStatus.BAD_REQUEST, ClientValidationException.class);
+        var expectedClientAfterUpdate = updateClientRequest.toClient(clientId);
+
+        var updateResponse = updateClient(clientId, updateClientRequest);
+
+        assertResponseStatus(updateResponse, HttpStatus.OK);
+
+        assertResponseBody(getClient(clientId), expectedClientAfterUpdate);
     }
 
     @Test
-    void shouldAllowToUpdateClient() {
-        var client1Id = createClientReturningId(TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST1);
-        var client2Id = createClientReturningId(TestObjects.CREATE_OR_UPDATE_CLIENT_REQUEST2);
+    void shouldNotAllowToUpdateClientWithTakenEmail() {
+        var createClientRequest1 = TestObjects.createOrUpdateClientRequest1();
+        var createClientRequest2 = TestObjects.createOrUpdateClientRequest2();
 
-        var client1UpdateRequest = new CreateOrUpdateClientRequest(
-                "another-name1",
-                "another-email1@email.com",
-                ClientStatus.TO_CONTACT);
-        var client2UpdateRequest = new CreateOrUpdateClientRequest(
-                "another-name2",
-                "another-email2@email.com",
-                ClientStatus.OFFER_ACCEPTED);
+        var client1Id = createClientReturningId(createClientRequest1);
+        var client2Id = createClientReturningId(createClientRequest2);
 
-        var client1UpdateResponse = updateClient(client1Id, client1UpdateRequest);
-        var client2UpdateResponse = updateClient(client2Id, client2UpdateRequest);
+        var updateClient2RequestToClient1Email = createClientRequest1;
 
-        assertResponseStatus(client1UpdateResponse, HttpStatus.OK);
-        assertResponseBody(getClient(client1Id), client1UpdateRequest.toClient(client1Id), Client.class);
+        var updateClient2Response = updateClient(client2Id, updateClient2RequestToClient1Email);
 
-        assertResponseStatus(client2UpdateResponse, HttpStatus.OK);
-        assertResponseBody(getClient(client2Id), client2UpdateRequest.toClient(client2Id), Client.class);
+        assertErrorResponse(updateClient2Response, HttpStatus.BAD_REQUEST, ClientValidationException.class);
     }
+
 
     private TestHttpResponse createClient(CreateOrUpdateClientRequest request) {
-        return httpClient.request()
-                .path(ENDPOINTS_PREFIX)
+        return testHttpClient.request()
+                .path("clients")
                 .POST()
                 .body(request)
                 .execute();
     }
 
     private UUID createClientReturningId(CreateOrUpdateClientRequest request) {
-        return createClient(request).bodyAsJson(CreateClientResponse.class).id();
+        return createClient(request)
+                .bodyAsJson(CreateClientResponse.class)
+                .id();
     }
 
     private TestHttpResponse getClient(UUID id) {
-        return httpClient.request()
-                .path(ENDPOINTS_PREFIX + "/" + id)
+        return testHttpClient.request()
+                .path("clients/" + id)
                 .GET()
                 .execute();
     }
 
     private TestHttpResponse updateClient(UUID id, CreateOrUpdateClientRequest request) {
-        return httpClient.request()
-                .path(ENDPOINTS_PREFIX + "/" + id)
+        return testHttpClient.request()
+                .path("clients/" + id)
                 .PUT()
                 .body(request)
                 .execute();
     }
 
-    static Stream<CreateOrUpdateClientRequest> invalidCreateOrUpdateClientRequests() {
-        var invalidNameCases = TestObjects.invalidNames().stream()
-                .map(n -> new CreateOrUpdateClientRequest(n, "some-email@gmail.com", ClientStatus.FIRST_CONTACT));
+    static Stream<CreateOrUpdateClientRequest> invalidCreateOrUpdateRequests() {
+        var invalidNameRequests = TestObjects.invalidClientNames()
+                .map(invalidName -> new CreateOrUpdateClientRequest(invalidName, "client@email.com",
+                        ClientStatus.FIRST_CONTACT));
 
-        var invalidEmailCases = TestObjects.invalidEmails().stream()
-                .map(e -> new CreateOrUpdateClientRequest("some name", e, ClientStatus.OFFER_ACCEPTED));
+        var invalidEmailRequests = TestObjects.invalidClientEmails()
+                .map(invalidEmail -> new CreateOrUpdateClientRequest("some-client", invalidEmail,
+                        ClientStatus.TO_CONTACT));
 
-        var otherInvalidCases = Stream.of(
-                new CreateOrUpdateClientRequest("name", "email@email.com", null),
-                new CreateOrUpdateClientRequest(" ", null, null));
+        var otherInvalidRequests = Stream.of(
+                new CreateOrUpdateClientRequest(null, null, null),
+                new CreateOrUpdateClientRequest("valid-name", "valid-email@email.com", null));
 
-        return Stream.of(invalidNameCases, invalidEmailCases, otherInvalidCases)
+        return Stream.of(invalidNameRequests, invalidEmailRequests, otherInvalidRequests)
                 .flatMap(Function.identity());
     }
-
 }
