@@ -2,7 +2,7 @@
 
 Simple rest api written in Java 21 and Spring Boot 3 to present how easy it is to write integration/e2e tests of REST
 API
-using modern tools (like [TestContainers](https://testcontainers.com/)).
+using modern tools (like [Testcontainers](https://testcontainers.com/)).
 
 ## API
 
