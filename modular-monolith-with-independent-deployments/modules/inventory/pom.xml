@@ -9,9 +9,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>modular-monolith-with-independent-deployments-budget</artifactId>
+    <artifactId>modular-monolith-with-independent-deployments-inventory</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>budget</name>
+    <name>inventory</name>
 
     <dependencies>
         <dependency>

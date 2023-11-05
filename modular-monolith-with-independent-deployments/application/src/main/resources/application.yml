@@ -1,0 +1,8 @@
+spring:
+  application: modular-monolith
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

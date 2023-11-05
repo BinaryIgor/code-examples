@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.binaryigor</groupId>
+    <artifactId>modular-monolith-with-independent-deployments-spring-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Modular monolith with independent deployments parent</name>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--tests dependencies-->
+        <junit.version>5.9.0</junit.version>
+        <assertj.version>3.23.1</assertj.version>
+        <jacoco.version>0.8.7</jacoco.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
+        <wiremock.version>2.27.2</wiremock.version>
+
+        <!--dependencies-->
+        <spring.boot.version>3.1.5</spring.boot.version>
+        <spring.openapi.version>2.0.2</spring.openapi.version>
+        <postresql.driver.version>42.5.1</postresql.driver.version>
+        <hikari.version>3.4.2</hikari.version>
+        <jooq.version>3.14.7</jooq.version>
+        <slf4j.version>2.0.6</slf4j.version>
+        <jackson.version>2.14.0</jackson.version>
+        <resilience4j.version>2.0.2</resilience4j.version>
+        <java.jwt.version>4.0.0</java.jwt.version>
+        <caffeine.version>3.1.2</caffeine.version>
+        <amqp.client.version>5.13.1</amqp.client.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${spring.openapi.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
