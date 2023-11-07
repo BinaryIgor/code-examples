@@ -55,4 +55,12 @@
         </dependencies>
     </dependencyManagement>
 
+
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Internal Repo</name>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </repository>
+    </distributionManagement>
 </project>

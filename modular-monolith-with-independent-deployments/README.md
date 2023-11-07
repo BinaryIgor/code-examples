@@ -10,6 +10,16 @@ Modules:
 * budget
 
 
+Source of truth for modular monolith modules
+* separate repo:
+    * where to deploy?
+* locally:
+    * git pull
+    * git checkout branch a, install module 1
+    * git checkout branch b, install module 2
+    * git checkout branch c, install module 3
+
+
 ## Some resources
 * https://microservices.io/post/architecture/2023/08/20/how-modular-can-your-monolith-go-part-2.html
 * https://medium.com/design-microservices-architecture-with-patterns/microservices-killer-modular-monolithic-architecture-ac83814f6862

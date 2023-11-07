@@ -40,6 +40,14 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>internal.repo</id>
+            <name>Internal Repo</name>
+            <url>http://localhost:8081/repository/maven-snapshots/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
