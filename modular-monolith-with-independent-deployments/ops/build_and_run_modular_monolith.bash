@@ -1,9 +1,9 @@
 #!/bin/bash
 
-cd ..
+bash build_modular_monolith.bash
 
-docker build --network=host . -t modular-monolith-with-independent-deployments
+cd ../application/target
 
-docker rm modular-monolith-with-independent-deployments
+sudo chown 755 modular-app.jar
 
-exec docker run modular-monolith-with-independent-deployments
+exec java -jar modular-app.jar

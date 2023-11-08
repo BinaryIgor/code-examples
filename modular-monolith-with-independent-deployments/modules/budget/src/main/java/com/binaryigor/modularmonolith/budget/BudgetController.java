@@ -15,7 +15,7 @@ public class BudgetController {
     }
 
     @GetMapping("{id}")
-    Budget get(@PathVariable UUID id) {
+    Budget get(@PathVariable(name = "id") UUID id) {
         return new Budget(id, BigDecimal.TEN, 1);
     }
 }

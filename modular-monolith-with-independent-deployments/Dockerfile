@@ -1,15 +1,14 @@
 FROM maven:3-eclipse-temurin-21-alpine AS build
 
-COPY /commons/spring-parent /build/spring-parent
-COPY /application /build/application
-
-COPY build_settings.xml /usr/share/maven/ref/settings.xml
-
+COPY /commons/spring-parent/pom.xml /build/spring-parent/pom.xml
 WORKDIR /build/spring-parent
 RUN mvn clean install
 
+COPY build_settings.xml /usr/share/maven/ref/settings.xml
+COPY /application/ /build/application/
+
 WORKDIR /build/application
-RUN ls -l
+
 RUN mvn clean install
 
 # FROM eclipse-temurin:21 AS run

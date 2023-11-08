@@ -11,7 +11,7 @@ public class InventoryController {
 
     @PutMapping
     void save(Inventory inventory) {
-        System.out.println("Saving inventory..." + inventory);
+        System.out.println("Saving inventory from new version 2..." + inventory);
     }
 
     @GetMapping("{id}")
