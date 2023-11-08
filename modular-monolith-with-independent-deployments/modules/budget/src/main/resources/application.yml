@@ -1,2 +1,4 @@
 spring:
   application: budget
+  profiles:
+    active: budget

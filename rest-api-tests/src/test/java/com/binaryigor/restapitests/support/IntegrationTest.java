@@ -24,7 +24,6 @@ public abstract class IntegrationTest {
 
     static {
         POSTGRESQL_CONTAINER.start();
-
         System.setProperty("DB_URL", POSTGRESQL_CONTAINER.getJdbcUrl());
         System.setProperty("DB_USERNAME", POSTGRESQL_CONTAINER.getUsername());
         System.setProperty("DB_PASSWORD", POSTGRESQL_CONTAINER.getPassword());

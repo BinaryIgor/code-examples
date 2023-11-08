@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    campaign:
+      url: "${CAMPAIGN_DB_URL}"
+      username: "${CAMPAIGN_DB_USERNAME}"
+      password: "${CAMPAIGN_DB_PASSWORD}"

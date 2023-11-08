@@ -17,25 +17,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.surefire.plugin.version>3.0.0</maven.surefire.plugin.version>
 
-        <!--tests dependencies-->
-        <junit.version>5.9.0</junit.version>
-        <assertj.version>3.23.1</assertj.version>
-        <jacoco.version>0.8.7</jacoco.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
-        <wiremock.version>2.27.2</wiremock.version>
-
-        <!--dependencies-->
         <spring.boot.version>3.1.5</spring.boot.version>
         <spring.openapi.version>2.0.2</spring.openapi.version>
-        <postresql.driver.version>42.5.1</postresql.driver.version>
-        <hikari.version>3.4.2</hikari.version>
-        <jooq.version>3.14.7</jooq.version>
-        <slf4j.version>2.0.6</slf4j.version>
-        <jackson.version>2.14.0</jackson.version>
-        <resilience4j.version>2.0.2</resilience4j.version>
-        <java.jwt.version>4.0.0</java.jwt.version>
-        <caffeine.version>3.1.2</caffeine.version>
-        <amqp.client.version>5.13.1</amqp.client.version>
+        <postresql.driver.version>42.6.0</postresql.driver.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
     <dependencyManagement>
@@ -52,6 +37,19 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${spring.openapi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postresql.driver.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

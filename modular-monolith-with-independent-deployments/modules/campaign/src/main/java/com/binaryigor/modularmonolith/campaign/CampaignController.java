@@ -2,27 +2,25 @@ package com.binaryigor.modularmonolith.campaign;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Clock;
-import java.time.LocalDate;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/campaigns")
 public class CampaignController {
 
-    private final Clock clock;
+    private final CampaignService campaignService;
 
-    public CampaignController(Clock clock) {
-        this.clock = clock;
+    public CampaignController(CampaignService campaignService) {
+        this.campaignService = campaignService;
     }
 
     @PutMapping
     void save(Campaign campaign) {
-        System.out.println("Saving %s campaign on %s".formatted(clock.instant(), campaign));
+        campaignService.save(campaign);
     }
 
     @GetMapping("{id}")
     Campaign get(@PathVariable(name = "id") UUID id) {
-        return new Campaign(id, "some name", LocalDate.now(), null);
+        return campaignService.findById(id);
     }
 }

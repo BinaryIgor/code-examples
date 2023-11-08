@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    budget:
+      url: "${BUDGET_DB_URL}"
+      username: "${BUDGET_DB_USERNAME}"
+      password: "${BUDGET_DB_PASSWORD}"

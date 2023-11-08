@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    inventory:
+      url: "${INVENTORY_DB_URL}"
+      username: "${INVENTORY_DB_USERNAME}"
+      password: "${INVENTORY_DB_PASSWORD}"
