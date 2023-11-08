@@ -15,7 +15,7 @@ public class InventoryController {
     }
 
     @GetMapping("{id}")
-    Inventory get(@PathVariable UUID id) {
+    Inventory get(@PathVariable(name = "id") UUID id) {
         return new Inventory(id, List.of("01", "02", "03"), 1);
     }
 
