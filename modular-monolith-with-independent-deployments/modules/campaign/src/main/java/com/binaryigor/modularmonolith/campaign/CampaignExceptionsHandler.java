@@ -1,5 +1,6 @@
 package com.binaryigor.modularmonolith.campaign;
 
+import com.binaryigor.modularmonolith.contracts.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,8 +10,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CampaignExceptionsHandler {
 
     @ExceptionHandler
-    ResponseEntity<String> handleCampaignNotFoundException(CampaignNotFoundException exception) {
+    ResponseEntity<ErrorResponse> handleCampaignNotFoundException(CampaignNotFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(exception.getMessage());
+                .body(ErrorResponse.fromException(exception));
+    }
+
+    @ExceptionHandler
+    ResponseEntity<ErrorResponse> handleCampaignValidationException(CampaignValidationException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.fromException(exception));
     }
 }

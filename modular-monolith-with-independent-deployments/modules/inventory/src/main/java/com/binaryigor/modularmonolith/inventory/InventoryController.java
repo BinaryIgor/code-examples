@@ -15,7 +15,7 @@ public class InventoryController {
     }
 
     @PutMapping
-    void save(Inventory inventory) {
+    void save(@RequestBody Inventory inventory) {
         repository.save(inventory);
     }
 

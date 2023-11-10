@@ -1,9 +1,14 @@
 package com.binaryigor.modularmonolith.budget;
 
+import com.binaryigor.modularmonolith.contracts.ErrorResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -26,22 +31,36 @@ public class BudgetControllerTest {
     }
 
     @Autowired
-    BudgetController controller;
+    TestRestTemplate restTemplate;
 
     @Test
     void shouldCreateAndReturnBudget() {
         var id = UUID.randomUUID();
 
-        Assertions.assertThatThrownBy(() -> controller.get(id))
-                .isInstanceOf(BudgetNotFoundException.class)
-                .hasMessageContaining(id.toString());
+        Assertions.assertThat(getBudget(id, ErrorResponse.class))
+                .matches(r -> r.getStatusCode().equals(HttpStatus.NOT_FOUND)
+                        && r.getBody().equals(ErrorResponse.fromException(new BudgetNotFoundException(id))));
 
         var budget = new Budget(id, new BigDecimal("10.55"),
                 Instant.now().truncatedTo(ChronoUnit.MILLIS));
 
-        controller.save(budget);
+        Assertions.assertThat(saveBudget(budget))
+                .matches(r -> r.getStatusCode().is2xxSuccessful());
 
-        Assertions.assertThat(controller.get(id)).isEqualTo(budget);
+        Assertions.assertThat(getBudget(id))
+                .matches(r -> r.getStatusCode().is2xxSuccessful()
+                        && r.getBody().equals(budget));
     }
 
+    private <T> ResponseEntity<T> getBudget(UUID id, Class<T> response) {
+        return restTemplate.getForEntity("/budgets/" + id, response);
+    }
+
+    private ResponseEntity<Budget> getBudget(UUID id) {
+        return getBudget(id, Budget.class);
+    }
+
+    private ResponseEntity<Void> saveBudget(Budget budget) {
+        return restTemplate.exchange(RequestEntity.put("/budgets").body(budget), Void.class);
+    }
 }

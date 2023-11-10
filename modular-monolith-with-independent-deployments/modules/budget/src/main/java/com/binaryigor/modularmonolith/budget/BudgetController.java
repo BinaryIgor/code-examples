@@ -15,7 +15,7 @@ public class BudgetController {
     }
 
     @PutMapping
-    void save(Budget budget) {
+    void save(@RequestBody Budget budget) {
         budgetRepository.save(budget);
     }
 

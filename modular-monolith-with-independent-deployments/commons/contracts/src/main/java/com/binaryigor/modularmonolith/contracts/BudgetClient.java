@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface BudgetClient {
 
-    boolean doesBudgetExist(UUID id);
+    boolean budgetExists(UUID id);
 }

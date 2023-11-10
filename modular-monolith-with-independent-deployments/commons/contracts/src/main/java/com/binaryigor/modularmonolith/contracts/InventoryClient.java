@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface InventoryClient {
 
-    boolean doesInventoryExist(UUID id);
+    boolean inventoryExists(UUID id);
 }

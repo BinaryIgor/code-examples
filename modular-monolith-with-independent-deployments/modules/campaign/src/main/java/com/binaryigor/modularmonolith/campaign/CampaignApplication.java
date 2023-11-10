@@ -1,10 +1,13 @@
 package com.binaryigor.modularmonolith.campaign;
 
+import com.binaryigor.modularmonolith.contracts.BudgetClient;
+import com.binaryigor.modularmonolith.contracts.InventoryClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
@@ -51,5 +54,17 @@ public class CampaignApplication {
         dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
 
         return dataSourceInitializer;
+    }
+
+    @Profile("local")
+    @Bean
+    public BudgetClient budgetClient() {
+        return id -> true;
+    }
+
+    @Profile("local")
+    @Bean
+    public InventoryClient inventoryClient() {
+        return id -> true;
     }
 }

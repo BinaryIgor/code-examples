@@ -15,7 +15,7 @@ public class CampaignController {
     }
 
     @PutMapping
-    void save(Campaign campaign) {
+    void save(@RequestBody Campaign campaign) {
         campaignService.save(campaign);
     }
 

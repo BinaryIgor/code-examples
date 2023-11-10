@@ -4,6 +4,8 @@ cd ../
 
 cd commons/spring-parent
 mvn clean install
+cd ../contracts
+mvn clean install
 
 cd ../../
 
