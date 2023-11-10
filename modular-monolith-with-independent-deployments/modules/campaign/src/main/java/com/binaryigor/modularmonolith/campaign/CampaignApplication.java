@@ -14,17 +14,11 @@ import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
-import java.time.Clock;
 
 @SpringBootApplication
 public class CampaignApplication {
     public static void main(String[] args) {
         SpringApplication.run(CampaignApplication.class, args);
-    }
-
-    @Bean
-    public Clock campaignClock() {
-        return Clock.systemUTC();
     }
 
     @Bean

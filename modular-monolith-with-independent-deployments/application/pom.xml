@@ -16,12 +16,12 @@
     <dependencies>
         <dependency>
             <groupId>com.binaryigor</groupId>
-            <artifactId>modular-monolith-with-independent-deployments-campaign</artifactId>
+            <artifactId>modular-monolith-with-independent-deployments-budget</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.binaryigor</groupId>
-            <artifactId>modular-monolith-with-independent-deployments-budget</artifactId>
+            <artifactId>modular-monolith-with-independent-deployments-campaign</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -42,25 +42,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>test</scope>
         </dependency>
-
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>internal.repo</id>
-            <name>Internal Repo</name>
-            <url>http://localhost:8081/repository/maven-snapshots/</url>
-        </repository>
-    </repositories>
-
     <build>
-        <finalName>modular-app</finalName>
+        <finalName>modular-monolith-app</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -71,6 +63,7 @@
                             <goal>unpack</goal>
                         </goals>
                         <configuration>
+                            <!-- we need this to have all application-{app-name}.yml config files available by the application module that aggregates them all -->
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>com.binaryigor</groupId>

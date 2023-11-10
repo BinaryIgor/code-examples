@@ -1,0 +1,3 @@
+FROM eclipse-temurin:21-alpine
+
+ENTRYPOINT exec java -jar /app/target/modular-monolith-app.jar
