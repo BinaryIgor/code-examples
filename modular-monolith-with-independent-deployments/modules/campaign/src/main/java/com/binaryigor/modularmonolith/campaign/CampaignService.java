@@ -1,7 +1,12 @@
 package com.binaryigor.modularmonolith.campaign;
 
 import com.binaryigor.modularmonolith.contracts.BudgetClient;
+import com.binaryigor.modularmonolith.contracts.BudgetSavedEvent;
 import com.binaryigor.modularmonolith.contracts.InventoryClient;
+import com.binaryigor.modularmonolith.contracts.InventorySavedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -9,6 +14,7 @@ import java.util.UUID;
 @Service
 public class CampaignService {
 
+    private static final Logger log = LoggerFactory.getLogger(CampaignService.class);
     private final CampaignRepository campaignRepository;
     private final BudgetClient budgetClient;
     private final InventoryClient inventoryClient;
@@ -36,5 +42,15 @@ public class CampaignService {
     public Campaign findById(UUID id) {
         return campaignRepository.findById(id)
                 .orElseThrow(() -> new CampaignNotFoundException(id));
+    }
+
+    @EventListener
+    public void onBudgetSaved(BudgetSavedEvent event) {
+        log.info("Budget has been saved: {}", event);
+    }
+
+    @EventListener
+    public void onInventorySaved(InventorySavedEvent event) {
+        log.info("Inventory has been saved: {}", event);
     }
 }
