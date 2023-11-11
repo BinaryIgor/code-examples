@@ -12,6 +12,6 @@
 
     <artifactId>modular-monolith-with-independent-deployments-contracts</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Modular monolith with independent deployments contracts</name>
+    <name>Modular monolith with independent deployments modules contracts and common models</name>
 
 </project>

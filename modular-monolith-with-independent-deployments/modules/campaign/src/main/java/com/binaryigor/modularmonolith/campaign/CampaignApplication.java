@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 
 @SpringBootApplication
 public class CampaignApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(CampaignApplication.class, args);
     }
@@ -37,6 +38,11 @@ public class CampaignApplication {
     @Bean
     public JdbcTemplate campaignJdbcTemplate(DataSource campaignDataSource) {
         return new JdbcTemplate(campaignDataSource);
+    }
+
+    @Bean
+    public CampaignRepository campaignRepository(JdbcTemplate campaignJdbcTemplate) {
+        return new SqlCampaignRepository(campaignJdbcTemplate);
     }
 
     @Bean

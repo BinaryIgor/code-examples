@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    campaign:
+      url: jdbc:postgresql://localhost:5555/campaign
+      username: campaign_module
+      password: campaign_module

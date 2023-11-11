@@ -38,6 +38,11 @@ public class BudgetApplication {
     }
 
     @Bean
+    public BudgetRepository budgetRepository(JdbcTemplate budgetJdbcTemplate) {
+        return new SqlBudgetRepository(budgetJdbcTemplate);
+    }
+
+    @Bean
     public DataSourceInitializer budgetDataSourceInitializer(DataSource budgetDataSource) {
         var resourceDatabasePopulator = new ResourceDatabasePopulator(new ClassPathResource("/budget_schema.sql"));
 

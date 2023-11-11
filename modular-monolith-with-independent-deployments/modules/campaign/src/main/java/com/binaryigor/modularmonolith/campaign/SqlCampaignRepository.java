@@ -1,7 +1,6 @@
 package com.binaryigor.modularmonolith.campaign;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -10,18 +9,17 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public class SqlCampaignRepository implements CampaignRepository {
 
-    private final JdbcTemplate campaignJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public SqlCampaignRepository(JdbcTemplate campaignJdbcTemplate) {
-        this.campaignJdbcTemplate = campaignJdbcTemplate;
+    public SqlCampaignRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void save(Campaign campaign) {
-        campaignJdbcTemplate.update("""
+        jdbcTemplate.update("""
                         INSERT INTO campaign (id, name, budget_id, inventory_id, start_date, end_date)
                         VALUES (?, ?, ?, ?, ?, ?)
                         ON CONFLICT (id)
@@ -32,13 +30,16 @@ public class SqlCampaignRepository implements CampaignRepository {
                           start_date = EXCLUDED.start_date,
                           end_date = EXCLUDED.end_date
                         """, campaign.id(), campaign.name(), campaign.budgetId(), campaign.inventoryId(),
-                campaign.startDate() == null ? null : Date.valueOf(campaign.startDate()),
-                campaign.endDate() == null ? null : Date.valueOf(campaign.endDate()));
+                toSqlDateOrNull(campaign.startDate()), toSqlDateOrNull(campaign.endDate()));
+    }
+
+    private Date toSqlDateOrNull(LocalDate localDate) {
+        return localDate == null ? null : Date.valueOf(localDate);
     }
 
     @Override
     public Optional<Campaign> findById(UUID id) {
-        var res = campaignJdbcTemplate.query("SELECT * FROM campaign WHERE id = ?",
+        var result = jdbcTemplate.query("SELECT * FROM campaign WHERE id = ?",
                 (r, n) -> new Campaign(r.getObject("id", UUID.class),
                         r.getString("name"),
                         r.getObject("budget_id", UUID.class),
@@ -47,7 +48,7 @@ public class SqlCampaignRepository implements CampaignRepository {
                         getDateOrNull(r, "end_date")),
                 id);
 
-        return res.isEmpty() ? Optional.empty() : Optional.ofNullable(res.getFirst());
+        return result.isEmpty() ? Optional.empty() : Optional.ofNullable(result.getFirst());
     }
 
     private LocalDate getDateOrNull(ResultSet r, String column) throws SQLException {

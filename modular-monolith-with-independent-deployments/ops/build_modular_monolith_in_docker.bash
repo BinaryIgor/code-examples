@@ -13,8 +13,8 @@ docker volume create --name modular-monolith-with-independent-deployments-build-
 # Socket is for running docker in docker (testcontainers tests during build in docker).
 # If you have some issues with, build package without tests: mvn clean package -DskipTests
 docker run -it --network=host -v "maven-repo:/root/.m2" \
+  -v "modular-monolith-with-independent-deployments-build-volume:/build" \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v "modular-monolith-with-independent-deployments-build-volume:/build/application" \
   --name modular-monolith-with-independent-deployments-build modular-monolith-with-independent-deployments-build \
   mvn clean package
 

@@ -8,7 +8,7 @@
     <artifactId>modular-monolith-with-independent-deployments-spring-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Modular monolith with independent deployments parent</name>
+    <name>Modular monolith with independent deployments spring-based parent</name>
 
     <properties>
         <java.version>21</java.version>
@@ -18,9 +18,13 @@
         <maven.surefire.plugin.version>3.0.0</maven.surefire.plugin.version>
 
         <spring.boot.version>3.1.5</spring.boot.version>
-        <spring.openapi.version>2.0.2</spring.openapi.version>
+        <spring.openapi.version>2.2.0</spring.openapi.version>
         <postresql.driver.version>42.6.0</postresql.driver.version>
         <testcontainers.version>1.17.6</testcontainers.version>
+
+        <internal.repo.id>internal.repo</internal.repo.id>
+        <internal.repo.name>Internal repo</internal.repo.name>
+        <internal.repo.url>http://localhost:8081/repository/maven-snapshots/</internal.repo.url>
     </properties>
 
     <dependencyManagement>
@@ -82,12 +86,12 @@
 
     <repositories>
         <repository>
-            <id>internal.repo</id>
-            <name>Internal Repo</name>
-            <url>http://localhost:8081/repository/maven-snapshots/</url>
+            <id>${internal.repo.id}</id>
+            <name>${internal.repo.name}</name>
+            <url>${internal.repo.url}</url>
             <snapshots>
                 <enabled>true</enabled>
-                <!--we want to always check for new snapshots packages to make independent deployments easier - no need to bump module version on each change. -->
+                <!--we want to always check for new snapshot packages to make independent development and deployments easier - no need to bump module version on each change -->
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
@@ -95,9 +99,9 @@
 
     <distributionManagement>
         <repository>
-            <id>internal.repo</id>
-            <name>Internal Repo</name>
-            <url>http://localhost:8081/repository/maven-snapshots/</url>
+            <id>${internal.repo.id}</id>
+            <name>${internal.repo.name}</name>
+            <url>${internal.repo.url}</url>
         </repository>
     </distributionManagement>
 </project>

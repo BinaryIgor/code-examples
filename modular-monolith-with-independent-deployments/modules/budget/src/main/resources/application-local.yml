@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    budget:
+      url: jdbc:postgresql://localhost:5555/budget
+      username: budget_module
+      password: budget_module

@@ -1,25 +1,23 @@
 package com.binaryigor.modularmonolith.budget;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public class SqlBudgetRepository implements BudgetRepository {
 
-    private final JdbcTemplate budgetJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public SqlBudgetRepository(JdbcTemplate budgetJdbcTemplate) {
-        this.budgetJdbcTemplate = budgetJdbcTemplate;
+    public SqlBudgetRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void save(Budget budget) {
-        budgetJdbcTemplate.update("""
+        jdbcTemplate.update("""
                 INSERT INTO budget (id, amount, created_at)
                 VALUES (?, ?, ?)
                 ON CONFLICT (id)
@@ -31,7 +29,7 @@ public class SqlBudgetRepository implements BudgetRepository {
 
     @Override
     public Optional<Budget> findById(UUID id) {
-        var result = budgetJdbcTemplate.query("SELECT * FROM budget WHERE id = ?",
+        var result = jdbcTemplate.query("SELECT * FROM budget WHERE id = ?",
                 (r, n) -> new Budget(r.getObject("id", UUID.class),
                         r.getObject("amount", BigDecimal.class),
                         r.getTimestamp("created_at").toInstant()),

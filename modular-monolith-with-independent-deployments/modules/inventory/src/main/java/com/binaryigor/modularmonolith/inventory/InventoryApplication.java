@@ -41,6 +41,22 @@ public class InventoryApplication {
     }
 
     @Bean
+    PlatformTransactionManager inventoryTransactionManager(DataSource inventoryDataSource) {
+        return new JdbcTransactionManager(inventoryDataSource);
+    }
+
+    @Bean
+    public TransactionTemplate inventoryTransactionTemplate(PlatformTransactionManager inventoryTransactionManager) {
+        return new TransactionTemplate(inventoryTransactionManager);
+    }
+
+    @Bean
+    public InventoryRepository inventoryRepository(JdbcTemplate inventoryJdbcTemplate,
+                                                   TransactionTemplate inventoryTransactionTemplate) {
+        return new SqlInventoryRepository(inventoryJdbcTemplate, inventoryTransactionTemplate);
+    }
+
+    @Bean
     public DataSourceInitializer inventoryDataSourceInitializer(DataSource inventoryDataSource) {
         var resourceDatabasePopulator = new ResourceDatabasePopulator(new ClassPathResource("/inventory_schema.sql"));
 
@@ -49,15 +65,5 @@ public class InventoryApplication {
         dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
 
         return dataSourceInitializer;
-    }
-
-    @Bean
-    PlatformTransactionManager inventoryTransactionManager(DataSource inventoryDataSource) {
-        return new JdbcTransactionManager(inventoryDataSource);
-    }
-
-    @Bean
-    public TransactionTemplate inventoryTransactionTemplate(PlatformTransactionManager inventoryTransactionManager) {
-        return new TransactionTemplate(inventoryTransactionManager);
     }
 }

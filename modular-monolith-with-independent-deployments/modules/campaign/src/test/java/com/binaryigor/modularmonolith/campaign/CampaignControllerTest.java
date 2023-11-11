@@ -20,8 +20,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @ActiveProfiles(value = {"campaign", "integration"})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = CampaignControllerTest.TestConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CampaignControllerTest {
 
     static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:15");
@@ -51,25 +50,20 @@ public class CampaignControllerTest {
     void shouldCreateAndReturnCampaign() {
         var campaign = randomCampaign();
 
-        var nonexistentCampaignResponse = getCampaign(campaign.id(), ErrorResponse.class);
-
-        Assertions.assertThat(nonexistentCampaignResponse.getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
-        Assertions.assertThat(nonexistentCampaignResponse.getBody())
-                .isEqualTo(ErrorResponse.fromException(new CampaignNotFoundException(campaign.id())));
+        Assertions.assertThat(getCampaign(campaign.id(), ErrorResponse.class))
+                .matches(r -> r.getStatusCode().equals(HttpStatus.NOT_FOUND))
+                .matches(r -> r.getBody()
+                        .equals(ErrorResponse.fromException(new CampaignNotFoundException(campaign.id()))));
 
         testBudgetClient.addBudget(campaign.budgetId());
         testInventoryClient.addInventory(campaign.inventoryId());
 
-        Assertions.assertThat(saveCampaign(campaign).getStatusCode())
-                .isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(saveCampaign(campaign))
+                .matches(r -> r.getStatusCode().is2xxSuccessful());
 
-        var saveCampaignResponse = getCampaign(campaign.id());
-
-        Assertions.assertThat(saveCampaignResponse.getStatusCode())
-                .isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(saveCampaignResponse.getBody())
-                .isEqualTo(campaign);
+        Assertions.assertThat(getCampaign(campaign.id()))
+                .matches(r -> r.getStatusCode().is2xxSuccessful())
+                .matches(r -> r.getBody().equals(campaign));
     }
 
     @Test
@@ -115,11 +109,13 @@ public class CampaignControllerTest {
 
     private void expectCampaignValidationError(ResponseEntity<ErrorResponse> response,
                                                String messageContains) {
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        Assertions.assertThat(response.getBody().error())
-                .isEqualTo(ErrorResponse.exceptionAsError(CampaignValidationException.class));
-        Assertions.assertThat(response.getBody().message())
-                .contains(messageContains);
+        Assertions.assertThat(response)
+                .matches(r -> r.getStatusCode().equals(HttpStatus.BAD_REQUEST))
+                .matches(r -> {
+                    var body = r.getBody();
+                    return body.error().equals(ErrorResponse.exceptionAsError(CampaignValidationException.class))
+                            && body.message().contains(messageContains);
+                });
     }
 
     @TestConfiguration

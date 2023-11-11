@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    inventory:
+      url: jdbc:postgresql://localhost:5555/inventory
+      username: inventory_module
+      password: inventory_module

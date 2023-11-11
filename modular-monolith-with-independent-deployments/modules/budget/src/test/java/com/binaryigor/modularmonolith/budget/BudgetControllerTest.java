@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BudgetControllerTest {
 
-    protected static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:15");
+    private static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER = new PostgreSQLContainer<>("postgres:15");
 
     static {
         POSTGRESQL_CONTAINER.start();

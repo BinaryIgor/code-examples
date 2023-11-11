@@ -1,10 +1,9 @@
 spring:
   application: modular-monolith
+  # This is a mechanism that we use to have application-budget.yml, application-campaign.yml... config files be used in this module.
+  # It allows each module to be configured independently
   profiles:
-    active:
-      - budget
-      - campaign
-      - inventory
+    active: [ budget, campaign, inventory ]
 
 springdoc:
   api-docs:

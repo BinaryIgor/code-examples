@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS inventory (
     created_at TIMESTAMP
 );
 
-CREATE TABLE IF not exists inventory_sku (
+CREATE TABLE IF NOT EXISTS inventory_sku (
     inventory_id UUID NOT NULL REFERENCES inventory ON DELETE CASCADE,
     sku TEXT NOT NULL,
 
