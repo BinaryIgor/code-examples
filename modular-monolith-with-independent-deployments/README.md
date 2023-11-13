@@ -74,19 +74,6 @@ DockerfileBuild and related `build_modular_monolith_in_docker.bash` has only sou
 aggregated all other modules.
 Rest of the modules are taken by it from our Nexus repo, so we need to upload them first!
 
-We will upload those artifacts from our local machine see we need to add:
-```
-<servers>
-  <server>
-    <id>internal.repo</id>
-    <username>admin</username>
-    <password>admin</password>
-  </server>
-</servers>
-```
-
-...to the `$HOME/.m2/settings.xml`. If you don't have one, just copy maven_settings.xml (as settings.xml) from the repo there.
-
 Go to ops and run:
 ```
 bash upload_all_modules_to_nexus_repo.bash

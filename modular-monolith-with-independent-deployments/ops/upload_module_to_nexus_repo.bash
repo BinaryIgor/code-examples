@@ -8,6 +8,8 @@ if [ -z $module ]; then
   exit 1
 fi
 
+maven_settings_file="$PWD/../maven_settings.xml"
+
 cd ..
 
 full_module_path="$PWD/$module"
@@ -19,5 +21,6 @@ fi
 
 cd $full_module_path
 
-echo "Building and upload $full_module_path to local nexus repo..."
-mvn clean deploy
+echo "Building and uploading $full_module_path to local nexus repo..."
+
+mvn -s $maven_settings_file clean deploy
