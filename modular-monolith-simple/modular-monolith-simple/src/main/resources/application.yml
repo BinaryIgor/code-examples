@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: modular-monolith-simple
+  datasource:
+    url: "${DB_URL}"
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"

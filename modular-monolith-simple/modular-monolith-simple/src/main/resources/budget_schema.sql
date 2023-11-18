@@ -1,0 +1,7 @@
+CREATE SCHEMA IF NOT EXISTS budget;
+
+CREATE TABLE IF NOT EXISTS budget.budget (
+    id UUID PRIMARY KEY,
+    amount NUMERIC(4, 2) NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
