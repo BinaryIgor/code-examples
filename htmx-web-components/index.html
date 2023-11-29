@@ -1,0 +1,96 @@
+<html>
+
+<head>
+    <title>Web components Experiments</title>
+</head>
+
+<body>
+    <h1>Web components Experiments</h1>
+
+    <div id="app"></div>
+
+    <script>
+        const CUSTOM_ELEMENT_INITIALIZED_EVENT = "custom-element-initialized";
+
+        console.log("Some Web components");
+
+        class NestedCustomElement extends HTMLElement {
+            constructor() {
+                super();
+                this.innerHTML = `<span>Nested HTML element with a value: ${this.getAttribute("value")}</span>`;
+            }
+
+            connectedCallback() {
+                console.log("Nested custom element added to page.");
+                window.dispatchEvent(new CustomEvent(CUSTOM_ELEMENT_INITIALIZED_EVENT, { detail: "nested-custom-element" }));
+            }
+        }
+
+        class SomeCustomElement extends HTMLElement {
+            static observedAttributes = ["color", "size", "title", "subtitle"];
+
+            constructor() {
+                super();
+                this.customElementInitializedListener = e => {
+                    console.log("Got custom-element-initialized event...", e.detail);
+                };
+                window.addEventListener(CUSTOM_ELEMENT_INITIALIZED_EVENT, this.customElementInitializedListener);
+                this._render();
+            }
+
+            _render() {
+                const title = this.getAttribute("title");
+                const subtitle = this.getAttribute("subtitle");
+                this.innerHTML = `<div>
+                    <h1>${title}</h1>
+                    <p>This is a pretty nice, custom element with subtitle: ${subtitle ? subtitle : title}</p>    
+                    <nested-custom-element value="12"></nested-custom-element>
+                </div>`;
+            }
+
+            connectedCallback() {
+                console.log("Custom element added to page.");
+            }
+
+            disconnectedCallback() {
+                console.log("Custom element removed from page.");
+                window.removeEventListener(CUSTOM_ELEMENT_INITIALIZED_EVENT, this.customElementInitializedListener);
+            }
+
+            adoptedCallback() {
+                console.log("Custom element moved to new page.");
+            }
+
+            attributeChangedCallback(name, oldValue, newValue) {
+                console.log(`Attribute ${name} has changed.`);
+                // this._render();
+            }
+        }
+
+
+        if (!customElements.get('some-custom-element')) {
+            customElements.define("some-custom-element", SomeCustomElement);
+        }
+
+        if (!customElements.get('some-custom-element')) {
+            customElements.define("some-custom-element", SomeCustomElement);
+        }
+
+        customElements.define("nested-custom-element", NestedCustomElement);
+
+        const customElement = document.querySelector("some-custom-element");
+
+        function createNewCustomElement() {
+            const app = document.getElementById("app");
+            app.innerHTML = "";
+            app.innerHTML = `<some-custom-element size="100" color="red" title="custom-xd" subtitle="sub-custom-xd"></some-custom-element>`;
+        }
+
+
+        createNewCustomElement();
+
+
+        setInterval(() => createNewCustomElement(), 5000);
+    </script>
+</body>
+<html>
