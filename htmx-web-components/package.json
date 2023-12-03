@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "htmx + web components",
   "main": "index.js",
-  "scripts": {  },
+  "scripts": { 
+    "build:run": "bash build_and_run.bash"
+   },
   "author": "Igor",
   "license": "ISC",
   "type": "module",

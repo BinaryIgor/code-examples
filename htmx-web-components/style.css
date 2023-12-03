@@ -1,8 +1,8 @@
-* {
-    margin: 6px;
-    padding: 0;
-    box-sizing: border-box;
-    word-break: break-word;
-    color: black;
-    font-family: "Courier New", Courier, monospace;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.error {
+    color: red;
+    font-style: italic;
 }
