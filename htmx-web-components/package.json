@@ -1,0 +1,19 @@
+{
+  "name": "htmx-web-components",
+  "version": "1.0.0",
+  "description": "htmx + web components",
+  "main": "index.js",
+  "scripts": {  },
+  "author": "Igor",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=19.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.3"
+  }
+}
