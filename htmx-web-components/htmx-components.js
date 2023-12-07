@@ -1,5 +1,13 @@
-const defaultErrorClass = "htmx-components__error";
-const defaultHiddenClass = "htmx-components__hiden";
+const defaultErrorClass = prefixedClass("error");
+const defaultHiddenClass = prefixedClass("hiden");
+const modalContainerClass = prefixedClass("modal");
+const defaultModalContentClass = prefixedClass("modal-content");
+const modalCloseClass = prefixedClass("close");
+const defaultModalCloseClass = prefixedClass("default-close");
+
+function prefixedClass(className) {
+    return `htmx-components__${className}`
+}
 
 const styles = `
     .${defaultErrorClass} {
@@ -7,6 +15,28 @@ const styles = `
     }
     .${defaultHiddenClass} {
         display: none;
+    }
+    .${modalContainerClass} {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+    .${defaultModalContentClass} {
+        margin: auto;
+        margin-top: 10%;
+        padding: 8px;
+        width: 80%;
+        background-color: white;
+    }
+    .${modalCloseClass} {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 `;
 document.head.appendChild(document.createElement("style")).innerHTML = styles;
@@ -36,7 +66,7 @@ class HTMXElement extends HTMLElement {
         super();
     }
 
-    getAttributeOrDefault(attribute, defaultValue="") {
+    getAttributeOrDefault(attribute, defaultValue = "") {
         const attrValue = this.getAttribute(attribute);
         return attrValue ? attrValue : defaultValue;
     }
@@ -45,12 +75,12 @@ class HTMXElement extends HTMLElement {
         return this.getAttributeOrDefault(`class-${suffix}`, defaultValue);
     }
 
-    getToRenderHTMXAttribute(sourceAttribute, htmxAttribute=null) {
+    getToRenderHTMXAttribute(sourceAttribute, htmxAttribute = null) {
         const value = this.getAttribute(sourceAttribute);
         if (!value) {
             return "";
         }
-        
+
         let toUseAttribute;
         if (htmxAttribute) {
             toUseAttribute = htmxAttribute;
@@ -64,11 +94,65 @@ class HTMXElement extends HTMLElement {
     renderedAttributeIfSourceNotEmpty(targetAttribute, sourceAttribute) {
         const sourceAttributeValue = this.getAttribute(sourceAttribute);
         return sourceAttributeValue ? `${targetAttribute}="${sourceAttributeValue}"` : "";
-    } 
+    }
 
     renderedElementClassIfSourceNotEmpty(classSufix) {
         return this.renderedAttributeIfSourceNotEmpty("class", `class-${classSufix}`);
-    } 
+    }
+}
+
+class CustomModal extends HTMXElement {
+
+    constructor() {
+        super();
+        this._modalContainerClass = `${modalContainerClass} ${this.getElementClassOrDefault("container")}`;
+        this._modalContentClass = this.getElementClassOrDefault("content", defaultModalContentClass);
+        this._modalCloseClass = `${modalCloseClass} ${this.getElementClassOrDefault("close")}`;
+        this._render();
+    }
+
+    _render(title, message) {
+        const titleToRender = title ? title : "Default title";
+        const messageToRender = message ? message : "Default message";
+
+        this.innerHTML = `
+        <div class="${this._modalContainerClass}">
+            <div style="position: relative;" class="${this._modalContentClass}">
+              <span class="${this._modalCloseClass}">&times;</span>
+              <div ${this.renderedElementClassIfSourceNotEmpty("title")}>${titleToRender}</div>
+              <div ${this.renderedElementClassIfSourceNotEmpty("message")}>${messageToRender}</div>
+            </div>
+        </div>
+        `;
+    }
+
+    connectedCallback() {
+        this.showModal = (e) => {
+            console.log("Show modal..")
+            this._render(e.detail.title, e.detail.message);
+            this._modalContainer().style.display = "block";
+            this.querySelector("span").onclick = () => this._modalContainer().style.display = "none";
+        }
+
+        this.hideModal = e => {
+            const modal = this._modalContainer();
+            if (e.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        window.addEventListener("click", this.hideModal);
+        window.addEventListener("show-custom-modal", this.showModal);
+    }
+
+    _modalContainer() {
+        return this.querySelector("div");
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener("click", this.hideModal);
+        window.removeEventListener("show-custom-modal", this.showModal);
+    }
 }
 
 class SingleInputError extends HTMXElement {
@@ -186,6 +270,7 @@ class ItemsList extends HTMXElement {
     }
 }
 
+customElements.define("custom-modal", CustomModal);
 customElements.define("single-input-error", SingleInputError);
 customElements.define("custom-form", CustomForm);
 customElements.define("item-element", ItemElement);

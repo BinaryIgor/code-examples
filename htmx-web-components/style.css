@@ -6,3 +6,7 @@
     color: red;
     font-style: italic;
 }
+
+.modal-background {
+    background-color: rgba(0, 0, 0, 0.7);
+}
