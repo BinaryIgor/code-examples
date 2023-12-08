@@ -1,5 +1,5 @@
 const defaultErrorClass = prefixedClass("error");
-const defaultHiddenClass = prefixedClass("hiden");
+const hiddenClass = prefixedClass("hiden");
 const modalContainerClass = prefixedClass("modal");
 const defaultModalContentClass = prefixedClass("modal-content");
 const modalCloseClass = prefixedClass("close");
@@ -13,7 +13,7 @@ const styles = `
     .${defaultErrorClass} {
         color: red;
     }
-    .${defaultHiddenClass} {
+    .${hiddenClass} {
         display: none;
     }
     .${modalContainerClass} {
@@ -56,12 +56,16 @@ const HTMX = {
     isRequestFromPath(event, desiredPath) {
         return this.requestPathFromEvent(event) == desiredPath;
     },
+    isRequestFromElement(event, element) {
+        return event.target == element;
+    },
     requestResponseFromEvent(event) {
         return event.detail.xhr.response;
     }
 };
 
 class HTMXElement extends HTMLElement {
+
     constructor() {
         super();
     }
@@ -71,182 +75,168 @@ class HTMXElement extends HTMLElement {
         return attrValue ? attrValue : defaultValue;
     }
 
-    getElementClassOrDefault(suffix, defaultValue) {
-        return this.getAttributeOrDefault(`class-${suffix}`, defaultValue);
+    getElementClassOrDefault(element, defaultValue = "") {
+        return this.getAttributeOrDefault(`class-${element}`, defaultValue);
     }
 
-    getToRenderHTMXAttribute(sourceAttribute, htmxAttribute = null) {
-        const value = this.getAttribute(sourceAttribute);
-        if (!value) {
-            return "";
-        }
-
-        let toUseAttribute;
-        if (htmxAttribute) {
-            toUseAttribute = htmxAttribute;
-        } else {
-            toUseAttribute = sourceAttribute.replace("_", "");
-        }
-
-        return `${toUseAttribute}="${value}"`;
-    }
-
-    renderedAttributeIfSourceNotEmpty(targetAttribute, sourceAttribute) {
+    renderedAttributeIfSet(targetAttribute, sourceAttribute) {
         const sourceAttributeValue = this.getAttribute(sourceAttribute);
         return sourceAttributeValue ? `${targetAttribute}="${sourceAttributeValue}"` : "";
     }
 
-    renderedElementClassIfSourceNotEmpty(classSufix) {
-        return this.renderedAttributeIfSourceNotEmpty("class", `class-${classSufix}`);
+    renderedElementClassIfSet(element) {
+        return this.renderedAttributeIfSet("class", `class-${element}`);
+    }
+
+    renderedElementHTMXAttributes(element) {
+        const htmxAttributes = this.getAttributeNames()
+            .filter(a => a.startsWith("hx-") && a.endsWith(element));
+
+        if (htmxAttributes.length == 0) {
+            return "";
+        }
+
+        return htmxAttributes.map(a => {
+            const key = a.replace(`-${element}`, "");
+            const value = this.getAttribute(a);
+            return `${key}="${value}"`;
+        }).join("\n");
     }
 }
 
-class CustomModal extends HTMXElement {
+// class CustomModal extends HTMXElement {
 
-    constructor() {
-        super();
-        this._modalContainerClass = `${modalContainerClass} ${this.getElementClassOrDefault("container")}`;
-        this._modalContentClass = this.getElementClassOrDefault("content", defaultModalContentClass);
-        this._modalCloseClass = `${modalCloseClass} ${this.getElementClassOrDefault("close")}`;
-        this._render();
-    }
+//     constructor() {
+//         super();
+//         this._modalContainerClass = `${modalContainerClass} ${this.getElementClassOrDefault("container")}`;
+//         this._modalContentClass = this.getElementClassOrDefault("content", defaultModalContentClass);
+//         this._modalCloseClass = `${modalCloseClass} ${this.getElementClassOrDefault("close")}`;
+//         this._render();
+//     }
 
-    _render(title, message) {
-        const titleToRender = title ? title : "Default title";
-        const messageToRender = message ? message : "Default message";
+//     _render(title, message, titleAdditionalClass, messageAdditionalClass) {
+//         const titleToRender = title ? title : "Default title";
+//         const messageToRender = message ? message : "Default message";
 
-        this.innerHTML = `
-        <div class="${this._modalContainerClass}">
-            <div style="position: relative;" class="${this._modalContentClass}">
-              <span class="${this._modalCloseClass}">&times;</span>
-              <div ${this.renderedElementClassIfSourceNotEmpty("title")}>${titleToRender}</div>
-              <div ${this.renderedElementClassIfSourceNotEmpty("message")}>${messageToRender}</div>
-            </div>
-        </div>
-        `;
-    }
+//         const titleClass = `${this.getElementClassOrDefault("title")} ${titleAdditionalClass ? titleAdditionalClass : ""}`;
+//         const messageClass = `${this.getElementClassOrDefault("message")} ${messageAdditionalClass ? messageAdditionalClass : ""}`;
 
-    connectedCallback() {
-        this.showModal = (e) => {
-            console.log("Show modal..")
-            this._render(e.detail.title, e.detail.message);
-            this._modalContainer().style.display = "block";
-            this.querySelector("span").onclick = () => this._modalContainer().style.display = "none";
-        }
+//         this.innerHTML = `
+//         <div class="${this._modalContainerClass}">
+//             <div style="position: relative;" class="${this._modalContentClass}">
+//               <span class="${this._modalCloseClass}">&times;</span>
+//               <div class="${titleClass}">${titleToRender}</div>
+//               <div class="${messageClass}">${messageToRender}</div>
+//             </div>
+//         </div>
+//         `;
+//     }
 
-        this.hideModal = e => {
-            const modal = this._modalContainer();
-            if (e.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+//     connectedCallback() {
+//         this.showModal = (e) => {
+//             const eDetail = e.detail;
+//             this._render(eDetail.title, eDetail.message, eDetail.titleAdditionalClass, eDetail.messageAdditionalClass);
+//             this._modalContainer().style.display = "block";
+//             this.querySelector("span").onclick = () => this._modalContainer().style.display = "none";
+//         }
 
-        window.addEventListener("click", this.hideModal);
-        window.addEventListener("show-custom-modal", this.showModal);
-    }
+//         this.hideModal = e => {
+//             const modal = this._modalContainer();
+//             if (e.target == modal) {
+//                 modal.style.display = "none";
+//             }
+//         }
 
-    _modalContainer() {
-        return this.querySelector("div");
-    }
+//         window.addEventListener("click", this.hideModal);
+//         window.addEventListener("show-custom-modal", this.showModal);
+//     }
 
-    disconnectedCallback() {
-        window.removeEventListener("click", this.hideModal);
-        window.removeEventListener("show-custom-modal", this.showModal);
-    }
-}
+//     _modalContainer() {
+//         return this.querySelector("div");
+//     }
 
-class SingleInputError extends HTMXElement {
+//     disconnectedCallback() {
+//         window.removeEventListener("click", this.hideModal);
+//         window.removeEventListener("show-custom-modal", this.showModal);
+//     }
+// }
+
+class InputError extends HTMXElement {
 
     static observedAttributes = ["message"];
 
     constructor() {
         super();
-        this._hiddenClass = this.getElementClassOrDefault("hidden", defaultHiddenClass);
-        this._errorClass = this.getElementClassOrDefault("error", defaultErrorClass);
-        this._render();
+        const message = this.getAttributeOrDefault("message");
+        this._render(message);
     }
 
-    _render() {
-        const message = this.getAttributeOrDefault("message");
-        const hiddenClass = message ? "" : this._hiddenClass;
-
-        this.innerHTML = `<p class="${this._errorClass} ${hiddenClass}">${message}</p>`;
+    _render(message) {
+        const errorClass = this.getElementClassOrDefault("error", defaultErrorClass);
+        this.innerHTML = `<p class="${errorClass} ${message ? "" : hiddenClass}">${message}</p>`;
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        this._render();
+        this._render(newValue);
     }
 }
 
-class CustomForm extends HTMXElement {
+class ItemForm extends HTMXElement {
     constructor() {
         super();
-
-        this._postFormPath = this.getAttribute("_hx-post");
-        const hxPost = this.getToRenderHTMXAttribute("_hx-post");
-
-        const hxTarget = this.getToRenderHTMXAttribute("_hx-target");
-        const hxSwap = this.getToRenderHTMXAttribute("_hx-swap");
-
-        const idValidationHxPost = this.getToRenderHTMXAttribute("_hx-post-id-validation", "hx-post");
-
-        const nameValidationHxPost = this.getToRenderHTMXAttribute("_hx-post-name-validation", "hx-post");
-
-        const renderInput = (hxPost, name, placeholder) =>
-            `<input style="display: block" ${this.renderedElementClassIfSourceNotEmpty(`${name}-input`)}
-            hx-trigger="input changed delay:500ms" 
-            hx-swap="outerHTML" 
-            hx-target="next single-input-error" 
-            ${hxPost}
-            name="${name}" placeholder="${placeholder}">`;
-
         this.innerHTML = `
-            <div ${this.renderedElementClassIfSourceNotEmpty("container")}">
-                <single-input-error ${this.renderedAttributeIfSourceNotEmpty("class-error", "class-generic-error")}></single-input-error>
-                <form ${hxPost} ${hxTarget} ${hxSwap}>
-                    ${renderInput(idValidationHxPost, "id", "id")}
-                    <single-input-error></single-input-error>
-                    ${renderInput(nameValidationHxPost, "name", "name")}
-                    <single-input-error></single-input-error>
-                    <input ${this.renderedElementClassIfSourceNotEmpty("submit-input")} type="submit" value="Add new item">
-                </form>
-            <div>
+        <div ${this.renderedElementClassIfSet("container")}>
+            <input-error ${this.renderedAttributeIfSet("class-error", "class-generic-error")}></input-error>
+            <form ${this.renderedElementHTMXAttributes("form")}>
+                ${this._renderedInput("id", "Item id")}
+                <input-error></input-error>
+                ${this._renderedInput("name", "Item name")}
+                <input-error></input-error>
+                <input ${this.renderedElementClassIfSet("submit")} type="submit" value="Add item">
+            </form>
+        <div>
         `;
+    }
 
-        this._genericError = this.querySelector("single-input-error");
+    _renderedInput(name, placeholder) {
+        const inputId = `${name}-input`;
+        return `<input ${this.renderedElementHTMXAttributes(inputId)}
+            ${this.renderedElementClassIfSet(inputId)}
+            hx-trigger="input changed delay:500ms"
+            hx-target="next input-error"
+            hx-swap="outerHTML"
+            style="display: block" name="${name}" placeholder="${placeholder}">`;
     }
 
     connectedCallback() {
-        this.clearInputs = (e) => {
-            const inputs = this.querySelectorAll(`input:not([type="submit"])`);
-            if (HTMX.isRequestFromPath(e, this._postFormPath) && !HTMX.isFailedRequest(e)) {
+        const from = this.querySelector("form");
+        const genericError = this.querySelector("input-error");
+        const inputs = this.querySelectorAll(`input:not([type="submit"])`);
+
+        this._afterRequestListener = e => {
+            if (!HTMX.isRequestFromElement(e, from)) {
+                return;
+            }
+            if (HTMX.isFailedRequest(e)) {
+                const error = HTMX.requestResponseFromEvent(e);
+                genericError.setAttribute("message", error);
+            } else {
                 inputs.forEach(i => i.value = "");
             }
         };
 
-        this.showGenericError = (e) => {
-            if (HTMX.isRequestFromPath(e, this._postFormPath)) {
-                this._setGenericErrorMessage(HTMX.requestResponseFromEvent(e));
-            }
-        };
+        this.addEventListener(HTMX.events.afterRequest, this._afterRequestListener);
 
-        this.addEventListener(HTMX.events.afterRequest, this.clearInputs);
-        this.addEventListener(HTMX.events.responseError, this.showGenericError);
-
-        this.querySelectorAll("input").forEach(i => {
-            i.addEventListener("input", () => {
-                this._setGenericErrorMessage("");
+        inputs.forEach(i => {
+            i.addEventListener("input", i => {
+                genericError.setAttribute("message", "");
             });
         });
     }
 
-    _setGenericErrorMessage(message) {
-        this._genericError.setAttribute("message", message);
-    }
 
     disconnectedCallback() {
-        this.removeEventListener(HTMX.events.afterRequest, this.clearInputs);
-        this.removeEventListener(HTMX.events.responseError, this.showGenericError);
+        this.removeEventListener(HTMX.events.afterRequest, this._afterRequestListener);
     }
 }
 
@@ -255,7 +245,12 @@ class ItemElement extends HTMXElement {
         super();
         const id = this.getAttribute("item-id");
         const name = this.getAttribute("item-name");
-        this.innerHTML = `<li ${this.renderedElementClassIfSourceNotEmpty("item")}>Id: ${id}, Name: ${name}</li>`;
+
+        this.innerHTML = `<li ${this.renderedElementClassIfSet("item")}>Id: ${id}, Name: ${name}</li>`;
+
+        this.querySelector("li").onclick = () => {
+            window.dispatchEvent(new CustomEvent("item-element-clicked", { detail: { id, name } }));
+        };
     }
 }
 
@@ -263,15 +258,14 @@ class ItemsList extends HTMXElement {
     constructor() {
         super();
         this.innerHTML = `
-        <ul ${this.renderedElementClassIfSourceNotEmpty("container")}>
+        <ul ${this.renderedElementClassIfSet("container")}>
             ${this.innerHTML}
         </ul>
         `;
     }
 }
 
-customElements.define("custom-modal", CustomModal);
-customElements.define("single-input-error", SingleInputError);
-customElements.define("custom-form", CustomForm);
+customElements.define("input-error", InputError);
+customElements.define("item-form", ItemForm);
 customElements.define("item-element", ItemElement);
 customElements.define("items-list", ItemsList);

@@ -1,7 +1,7 @@
 {
   "name": "htmx-web-components",
   "version": "1.0.0",
-  "description": "htmx + web components",
+  "description": "HTMX + Web Components",
   "main": "server.js",
   "scripts": { 
     "build:run": "bash build_and_run.bash"

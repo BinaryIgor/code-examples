@@ -1,11 +1,6 @@
-function showCustomModal(itemId, itemName) {
-    window.dispatchEvent(new CustomEvent("show-custom-modal",
-        {
-            detail: {
-                title: "Custom title",
-                message: `Custom message from item of ${itemId} id and ${itemName} name`
-            }
-        }));
-}
 
-console.log("HTMX with web components!");
+console.log("HTMX with Web Components!");
+
+window.addEventListener("item-element-clicked", e => {
+    console.log(`Clicked on the item:`, e.detail);
+});

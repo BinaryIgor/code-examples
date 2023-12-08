@@ -9,6 +9,9 @@ const CSS_PATH = path.join("dist", "style.css");
 const JS_PATH = "index.js";
 const COMPONENTS_PATH = "htmx-components.js";
 
+const MIN_NAME_LENGTH = 3;
+const MAX_NAME_LENGTH = 25;
+
 const items = [
     {
         id: 1,
@@ -24,16 +27,14 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-    returnIndexHtmlPage(res);
+    returnHtmlPage(res, indexHtmlPage());
 });
 
 app.get("*", async (req, res) => {
     if (req.url.includes(".css")) {
-        const css = await staticFileContentOfPath(CSS_PATH);
-        returnCss(res, css);
+        returnCss(res, await staticFileContentOfPath(CSS_PATH));
     } else if (req.url.includes(COMPONENTS_PATH)) {
-        const js = await staticFileContentOfPath(COMPONENTS_PATH);
-        returnJs(res, js);
+        returnJs(res, await staticFileContentOfPath(COMPONENTS_PATH));
     } else if (req.url.includes(JS_PATH)) {
         returnJs(res, await staticFileContentOfPath(JS_PATH));
     } else {
@@ -51,61 +52,60 @@ app.post("/add-item", (req, res) => {
         name: req.body.name
     };
 
-    const itemIsValid = isIdValid(newItem.id) && isNameValid(newItem.name);
-
-    if (itemIsValid) {
+    if (isIdValid(newItem.id) && isNameValid(newItem.name)) {
         if (isIdTaken(newItem.id)) {
-            returnError(res, `${newItem.id} is taken, it must be unique`);
+            returnHtmlPage(res, "Id needs to be unique", 400);
         } else {
             items.push(newItem);
             returnItemsComponent(res, items);
         }
     } else {
-        returnError(res, "Valid id and name are required");
+        returnHtmlPage(res, "Valid id and name is required", 400);
     }
 });
 
 app.post("/add-item/validate-id", (req, res) => {
     const id = req.body.id;
 
-    const idErrorCommponent = isIdValid(id) ? hiddenSingleInputErrorComponent() :
-        singleInputErrorComponent("Id must be a valid, positive number");
-
-    returnHtmlPage(res, idErrorCommponent);
+    if (isIdValid(id)) {
+        returnHtmlPage(res, hiddenInputErrorComponent());
+    } else {
+        returnHtmlPage(res, inputErrorComponent("Id needs to be a positive number"));
+    }
 });
 
 function isIdValid(id) {
     try {
-        const idAsNumber = parseInt(id);
-        return !isNaN(idAsNumber) && idAsNumber > 0;
+        return !isNaN(id) && parseInt(id) > 0;
     } catch (e) {
         return false;
     }
+}
+
+function inputErrorComponent(message, additionalErrorClasses = "mb-2") {
+    return `<input-error class-error="error ${additionalErrorClasses}" message="${message}"></input-error>`;
+}
+
+function hiddenInputErrorComponent() {
+    return inputErrorComponent("");
 }
 
 function isIdTaken(id) {
     return items.some(i => i.id == id);
 }
 
-function singleInputErrorComponent(message, additionalErrorClasses = "mb-4") {
-    return `<single-input-error error-class="error ${additionalErrorClasses}" message="${message}"></single-input-error>`
-}
-
-function hiddenSingleInputErrorComponent() {
-    return singleInputErrorComponent("");
-}
-
 app.post("/add-item/validate-name", (req, res) => {
     const name = req.body.name;
 
-    const nameErrorCommponent = isNameValid(name) ? hiddenSingleInputErrorComponent() :
-        singleInputErrorComponent("Name can't be empty and it must be between 3 and 25 characters");
-
-    returnHtmlPage(res, nameErrorCommponent);
+    if (isNameValid(name)) {
+        returnHtmlPage(res, hiddenInputErrorComponent());
+    } else {
+        returnHtmlPage(res, inputErrorComponent(`Name needs to have between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters`));
+    }
 });
 
 function isNameValid(name) {
-    return name && name.length >= 3 && name.length <= 25;
+    return name && name.length >= MIN_NAME_LENGTH && name.length <= MAX_NAME_LENGTH;
 }
 
 app.listen(APP_PORT, () => {
@@ -119,50 +119,42 @@ function returnItemsComponent(res, items) {
 function itemsComponent(items) {
     const itemsHtml = items.map((i, idx) => {
         const itemMarginTop = idx > 0 ? "mt-2" : "";
-        return `<item-element onclick="showCustomModal('${i.id}', '${i.name}')" class-item="border-2 rounded border-solid border-black p-2 cursor-pointer ${itemMarginTop}" 
+        return `<item-element class-item="cursor-pointer rounded bg-slate-100 p-4 border-2 border-solid border-slate-200 ${itemMarginTop}" 
             item-id="${i.id}" item-name="${i.name}"></item-element>`;
     }).join("\n");
 
-    return `
-    <items-list class-container="px-2" id="items">${itemsHtml}</items-list>`;
+    return `<items-list class-container="mt-4" id="items">${itemsHtml}</items-list>`;
 }
 
-function returnIndexHtmlPage(res) {
-    returnHtmlPage(res, `
-        <html>
-            <head>
-                <title>HTMX + Web Components</title>
-                <link href="${CSS_PATH}" rel="stylesheet">
-            </head>
-            <body class="m-4">
-              <custom-modal
-                class-close="px-1 text-3xl cursor-pointer"
-                class-container="modal-background"
-                class-content="rounded bg-slate-100 w-80 mt-16 m-auto px-4 py-8"
-                class-title="font-bold text-2xl">
-              </custom-modal>
-              <h1 class="text-2xl">HTMX - Web Components</h1>
-              
-              <custom-form 
-                class-container="m-2 p-2 bg-slate-100 rounded" 
-                class-generic-error="error" 
+function indexHtmlPage() {
+    return `
+    <html>
+        <head>
+            <title>HTMX + Web Components</title>
+            <link href="${CSS_PATH}" rel="stylesheet">
+        </head>
+        <body class="m-4">
+            <h1 class="text-3xl font-bold mb-8">HTMX + Web Components</h1>
+
+            <item-form
+                class-container="bg-slate-100 rounded p-4"
+                class-generic-error="error"
                 class-id-input="p-2 rounded"
-                class-name-input="mt-4 p-2 rounded"
-                class-submit-input="font-bold border-2 border-black rounded p-2 mt-2"
-                _hx-post="/add-item" _hx-target="#items"
-                _hx-swap="outerHTML"
-                _hx-post-id-validation="/add-item/validate-id"
-                _hx-post-name-validation="/add-item/validate-name">
-              </custom-form>
+                class-name-input="p-2 rounded mt-4"
+                class-submit="px-8 py-2 border-solid border-slate-300 border-2 rounded mt-4"
+                hx-post-form="/add-item"
+                hx-target-form="#items"
+                hx-post-id-input="/add-item/validate-id"
+                hx-post-name-input="/add-item/validate-name">
+            </item-form>
 
-             ${itemsComponent(items)}
+            ${itemsComponent(items)}
 
-              ${HTMX_SCRIPT}
-              <script src="${COMPONENTS_PATH}"></script>
-              <script src="${JS_PATH}"></script>
-            </body>
-        <html>
-    `);
+            ${HTMX_SCRIPT}
+            <script src="${COMPONENTS_PATH}"></script>
+            <script src="${JS_PATH}"></script>
+        </body>
+    <html>`;
 }
 
 function returnHtmlPage(res, page, status = 200) {
@@ -177,17 +169,12 @@ function returnText(res, text, status = 200) {
     res.send(text);
 }
 
-function returnError(res, error, status = 400) {
-    returnText(res, error, status);
-}
-
 function returnCss(res, css) {
     res.contentType("text/css");
     res.send(css);
 }
 
-
-export function returnJs(res, js) {
+function returnJs(res, js) {
     res.contentType("application/javascript");
     res.send(js);
 }
