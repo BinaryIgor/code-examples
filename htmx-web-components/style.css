@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.error {
+    color: red;
+    font-style: italic;
+}
+
+.modal-error {
+    color: red;
+}
+
+.modal-background {
+    background-color: rgba(0, 0, 0, 0.7);
+}

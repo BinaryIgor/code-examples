@@ -1,0 +1,21 @@
+{
+  "name": "htmx-web-components",
+  "version": "1.0.0",
+  "description": "HTMX + Web Components",
+  "main": "server.js",
+  "scripts": { 
+    "build:run": "bash build_and_run.bash"
+   },
+  "author": "Igor",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=19.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.3"
+  }
+}
