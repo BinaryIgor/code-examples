@@ -1,5 +1,5 @@
 export const Components = {
-    //TODO: more options, fuller support, simplify, test
+    //TODO:  simplify, test
     mappedAttributes(element, elementSuffix,
         { defaultAttributes = {},
             defaultClass = "",
@@ -16,10 +16,17 @@ export const Components = {
         return Object.entries(mappedAttributes).map(e => `${e[0]}="${e[1]}"`).join("\n");
     },
 
-
-    attributeValueOrDefault(element, attribute, defaultValue) {
+    attributeValueOrDefault(element, attribute, defaultValue="") {
         const value = element.getAttribute(attribute);
         return value ? value : defaultValue;
+    },
+
+    queryByCustomId(element, value) {
+        return element.querySelector(`[data-custom-id="${value}"]`);
+    },
+
+    renderedCustomIdAttribute(value) {
+        return `data-custom-id="${value}"`;
     }
 };
 

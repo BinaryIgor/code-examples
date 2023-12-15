@@ -5,6 +5,7 @@ import path from "path";
 
 import * as Web from "./shared/web.js";
 import * as InfoModalComponent from './components/info-modal.js';
+import * as ConfirmableModalComponent from './components/confirmable-modal.js';
 
 const SERVER_PORT = process.env.SERVER_PORT || 8080;
 const CSS_PATH = path.join("dist", "style.css");
@@ -28,6 +29,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(InfoModalComponent.PATH, InfoModalComponent.router);
+app.use(ConfirmableModalComponent.PATH, ConfirmableModalComponent.router);
 
 app.get("*", async (req, res) => {
     try {
