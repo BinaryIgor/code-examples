@@ -6,6 +6,7 @@ import path from "path";
 import * as Web from "./shared/web.js";
 import * as InfoModalComponent from './components/info-modal.js';
 import * as ConfirmableModalComponent from './components/confirmable-modal.js';
+import * as InputWithErrorComponent from './components/input-with-error.js';
 
 const SERVER_PORT = process.env.SERVER_PORT || 8080;
 const CSS_PATH = path.join("dist", "style.css");
@@ -14,13 +15,12 @@ const COMPONENTS_DIR = '../components';
 
 const components = fs.readdirSync(COMPONENTS_DIR);
 
+const availableComponentsPaths = [InfoModalComponent.PATH, ConfirmableModalComponent.PATH, InputWithErrorComponent.PATH];
+
 console.log();
 console.log("Available components: ");
-components.forEach(c => {
-    if (c.startsWith("base")) {
-        return;
-    }
-    console.log(`* http://localhost:${SERVER_PORT}/${c.replace(".js", "")}`);
+availableComponentsPaths.forEach(p => {
+    console.log(`* http://localhost:${SERVER_PORT}${p}`);
 });
 console.log();
 
@@ -30,6 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(InfoModalComponent.PATH, InfoModalComponent.router);
 app.use(ConfirmableModalComponent.PATH, ConfirmableModalComponent.router);
+app.use(InputWithErrorComponent.PATH, InputWithErrorComponent.router);
 
 app.get("*", async (req, res) => {
     try {

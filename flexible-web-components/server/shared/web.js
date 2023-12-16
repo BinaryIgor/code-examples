@@ -9,11 +9,11 @@ export function htmlPage(body, component, script="", additionalComponents=[]) {
     return `
     <html>
         <head>
-            <title>HTMX Components: ${component}</title>
+            <title>Flexible Web Components: ${component}</title>
             <link href="${CSS_PATH}" rel="stylesheet">
         </head>
         <body class="m-4">
-            <h1 class="text-3xl font-bold mb-8">HTMX Components: ${component}</h1>
+            <h1 class="text-3xl font-bold mb-8">Flexible Web Components: ${component}</h1>
 
             ${body}
 

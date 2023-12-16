@@ -5,18 +5,19 @@ export const Components = {
             defaultClass = "",
             toAddAttributes = {},
             toAddClass = "",
-            toSkipAttributes = [] } = {}) {
+            toSkipAttributes = [],
+            keepSufix: keepSuffix = false } = {}) {
 
         let baseAttributes = baseAtrributesFromDefaults(defaultAttributes, defaultClass);
 
-        let mappedAttributes = mappedAttributesWithDefaults(element, elementSuffix, baseAttributes, toSkipAttributes);
+        let mappedAttributes = mappedAttributesWithDefaults(element, elementSuffix, baseAttributes, toSkipAttributes, keepSuffix);
 
         mappedAttributes = mappedAttributesWithToAddValues(mappedAttributes, toAddAttributes, toAddClass);
 
         return Object.entries(mappedAttributes).map(e => `${e[0]}="${e[1]}"`).join("\n");
     },
 
-    attributeValueOrDefault(element, attribute, defaultValue="") {
+    attributeValueOrDefault(element, attribute, defaultValue = "") {
         const value = element.getAttribute(attribute);
         return value ? value : defaultValue;
     },
@@ -38,7 +39,7 @@ function baseAtrributesFromDefaults(defaultAttributes, defaultClass) {
     return defaultAttributes;
 }
 
-function mappedAttributesWithDefaults(element, elementSuffix, defaultAttributes, toSkipAttributes) {
+function mappedAttributesWithDefaults(element, elementSuffix, defaultAttributes, toSkipAttributes, keepSuffix) {
     const replaceSuffix = `-${elementSuffix}`;
     const addSuffix = `-${elementSuffix}-add`;
 
@@ -52,10 +53,10 @@ function mappedAttributesWithDefaults(element, elementSuffix, defaultAttributes,
         let add;
         if (a.endsWith(addSuffix)) {
             add = true;
-            targetKey = a.replace(addSuffix, "");
+            targetKey = keepSuffix ? a : a.replace(addSuffix, "");
         } else {
             add = false;
-            targetKey = a.replace(replaceSuffix, "");
+            targetKey = keepSuffix ? a : a.replace(replaceSuffix, "");
         }
 
         if (toSkipAttributes.includes(targetKey)) {
