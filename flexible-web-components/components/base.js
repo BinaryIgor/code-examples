@@ -1,15 +1,15 @@
 export const Components = {
-    mappedAttributes(element, elementSuffix,
+    mappedAttributes(element, elementId,
         { defaultAttributes = {},
             defaultClass = "",
             toAddAttributes = {},
             toAddClass = "",
             toSkipAttributes = [],
-            keepSufix: keepSuffix = false } = {}) {
+            keepId = false } = {}) {
 
         let baseAttributes = baseAtrributesFromDefaults(defaultAttributes, defaultClass);
 
-        let mappedAttributes = mappedAttributesWithDefaults(element, elementSuffix, baseAttributes, toSkipAttributes, keepSuffix);
+        let mappedAttributes = mappedAttributesWithDefaults(element, elementId, baseAttributes, toSkipAttributes, keepId);
 
         mappedAttributes = mappedAttributesWithToAddValues(mappedAttributes, toAddAttributes, toAddClass);
 
@@ -38,24 +38,24 @@ function baseAtrributesFromDefaults(defaultAttributes, defaultClass) {
     return defaultAttributes;
 }
 
-function mappedAttributesWithDefaults(element, elementSuffix, defaultAttributes, toSkipAttributes, keepSuffix) {
-    const replaceSuffix = `-${elementSuffix}`;
-    const addSuffix = `-${elementSuffix}-add`;
+function mappedAttributesWithDefaults(element, elementId, defaultAttributes, toSkipAttributes, keepId) {
+    const replacePrefix = `${elementId}:`;
+    const addPrefix = `${elementId}:add:`;
 
     const toMapAttributes = element.getAttributeNames()
-        .filter(a => a.endsWith(replaceSuffix) || a.endsWith(addSuffix));
+        .filter(a => a.startsWith(replacePrefix) || a.startsWith(addPrefix));
 
     const mappedAttributes = { ...defaultAttributes };
 
     toMapAttributes.forEach(a => {
         let targetKey;
         let add;
-        if (a.endsWith(addSuffix)) {
+        if (a.startsWith(addPrefix)) {
             add = true;
-            targetKey = keepSuffix ? a : a.replace(addSuffix, "");
+            targetKey = keepId ? a : a.replace(addPrefix, "");
         } else {
             add = false;
-            targetKey = keepSuffix ? a : a.replace(replaceSuffix, "");
+            targetKey = keepId ? a : a.replace(replacePrefix, "");
         }
 
         if (toSkipAttributes.includes(targetKey)) {

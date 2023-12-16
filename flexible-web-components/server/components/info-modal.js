@@ -8,15 +8,15 @@ export const router = express.Router();
 
 router.get("/", (req, res) => {
     const body = `
-    <info-modal id="error-modal" class-title-add="text-red-500">
+    <info-modal id="error-modal" title:add:class="text-red-500">
     </info-modal>
 
     <info-modal id="info-modal" 
-        class-container="bg-black/80"
-        class-content="bg-amber-300 border-solid border-4 border-black rounded-md m-auto mt-32 px-8 pt-8 pb-32 w-3/5"
-        class-message="text-lg italic"
+        container:class="bg-black/80"
+        content:class="bg-amber-300 border-solid border-4 border-black rounded-md m-auto mt-32 px-8 pt-8 pb-32 w-3/5"
+        message:class="text-lg italic"
         close-icon="&#10006;"
-        class-close="text-2xl p-4 cursor-pointer">
+        close:class="text-2xl p-4 cursor-pointer">
     </info-modal>
 
     <button hx-post="${PATH}/error" class="rounded border-2 border-bg-slate-200 p-2">

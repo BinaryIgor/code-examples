@@ -27,51 +27,50 @@ const orders = [
 
 router.get("/", (req, res) => {
     const body = `
-    <info-modal id="error-modal" class-title-add="text-red-500" title="Something went wrong...">
+    <info-modal id="error-modal" title:add:class="text-red-500" title="Something went wrong...">
     </info-modal>
 
     <form-container
-        id-form="order-form"
-        class-form="rounded bg-slate-200 p-2"
-        class-submit="py-2 rounded bg-slate-100 mt-4 w-full"
-        value-submit="Add Order"
-        hx-post-form="${PATH}/add"
-        hx-target-form="#orders"
-        hx-post-input="${PATH}/validate">
+        form:id="order-form"
+        form:class="rounded bg-slate-200 p-2"
+        submit:class="py-2 rounded bg-slate-100 mt-4 w-full"
+        submit:value="Add Order"
+        form:hx-post="${PATH}/add"
+        form:hx-target="#orders">
 
     <input-with-error 
-        class-container="mb-2"
-        class-input-add="w-full"
-        name-input="id"
-        placeholder-input="Order id"
+        container:class="mb-2"
+        input:add:class="w-full"
+        input:name="id"
+        input:placeholder="Order id"
         ${inputWithErrorHtmxAttributes(`${PATH}/validate-id`)}
-        hx-include-input="#secret-input">
+        input:hx-include="#secret-input">
     </input-with-error>
     
     <input-with-error 
-        class-container="mb-2"
-        class-input-add="w-full"
-        name-input="name"
-        placeholder-input="Order name"
+        container:class="mb-2"
+        input:add:class="w-full"
+        input:name="name"
+        input:placeholder="Order name"
         ${inputWithErrorHtmxAttributes(`${PATH}/validate-name`)}>
     </input-with-error>
 
     <input-with-error 
-        class-container="mb-2"
-        class-input-add="w-full"
-        name-input="description"
-        placeholder-input="Order description"
+        container:class="mb-2"
+        input:add:class="w-full"
+        input:name="description"
+        input:placeholder="Order description"
         ${inputWithErrorHtmxAttributes(`${PATH}/validate-description`)}>
     </input-with-error>
 
     <input-with-error 
-        class-container="mb-2"
-        class-input-add="w-full"
-        type-input="password"
-        name-input="secret"
-        id-input="secret-input"
-        id-input-error="${SECRET_ERROR_ID}"
-        placeholder-input="Order secret, compatibility with id is required"
+        container:class="mb-2"
+        input:add:class="w-full"
+        input:type="password"
+        input:name="secret"
+        input:id="secret-input"
+        input:placeholder="Order secret, compatibility with id is required"
+        input-error:id="${SECRET_ERROR_ID}"
         ${inputWithErrorHtmxAttributes(`${PATH}/validate-secret`)}>
     </input-with-error>
 
@@ -113,10 +112,10 @@ router.get("/", (req, res) => {
 
 function inputWithErrorHtmxAttributes(validationPost) {
     return `
-        hx-post-input="${validationPost}"
-        hx-trigger-input="input changed delay:500ms"
-        hx-swap-input="outerHTML"
-        hx-target-input="next input-error"`;
+        input:hx-post="${validationPost}"
+        input:hx-trigger="input changed delay:500ms"
+        input:hx-swap="outerHTML"
+        input:hx-target="next input-error"`;
 }
 
 function ordersHtml() {
