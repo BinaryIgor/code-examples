@@ -1,5 +1,4 @@
 export const Components = {
-    //TODO:  simplify, test
     mappedAttributes(element, elementSuffix,
         { defaultAttributes = {},
             defaultClass = "",

@@ -2,11 +2,11 @@ import { Components } from "./base.js";
 
 const containerClass = "fixed z-10 left-0 top-0 w-full h-full overflow-auto";
 const containerClassDefault = "bg-black/50";
-const contentClassDefault = "m-auto mt-16 p-8 w-4/5 md:w-3/5 lg:w-2/5 bg-white rounded";
+const contentClassDefault = "m-auto mt-16 p-4 w-4/5 md:w-3/5 lg:w-2/5 bg-white rounded";
 const titleClassDefault = "text-2xl font-bold mb-2";
 const messageClassDefault = "text-lg";
 const closeClass = "absolute top-0 right-0";
-const closeClassDefault = "cursor-pointer text-3xl px-4";
+const closeClassDefault = "cursor-pointer text-3xl px-2";
 
 const SHOW_EVENT = "show-info-modal";
 const HIDDEN_EVENT = "info-modal-hidden";
@@ -15,7 +15,6 @@ class InfoModal extends HTMLElement {
 
     constructor() {
         super();
-        this._hidden = !this.hasAttribute("visible");
         this._render();
     }
 
@@ -42,7 +41,7 @@ class InfoModal extends HTMLElement {
         });
 
         this.innerHTML = `
-        <div ${this._hidden ? `style="display: none;"` : ""} ${containerAttributes}>
+        <div style="display: none;" ${containerAttributes}>
             <div style="position: relative;" ${contentAttributes}>
                 <span ${closeAttributes}>${closeIcon}</span>
                 <div ${titleAttributes}>${titleToRender}</div>
@@ -56,29 +55,33 @@ class InfoModal extends HTMLElement {
     }
 
     connectedCallback() {
-        this.showModal = (e) => {
+        this._showOnEvent = (e) => {
             const eDetail = e.detail;
             if (!this.id || this.id == eDetail.targetId) {
-                this._render(eDetail.title, eDetail.message);
-                this._container.style.display = "block";
-                this._close.onclick = () => this._container.style.display = "none";
+                this.show(eDetail.title, eDetail.message);
             }
         }
 
-        this.hideModal = e => {
+        this.show = ({ title = "", message = "" }) => {
+            this._render(title, message);
+            this._container.style.display = "block";
+            this._close.onclick = () => this._container.style.display = "none";
+        };
+
+        this.hide = e => {
             if (e.target == this._container) {
                 this._container.style.display = "none";
                 window.dispatchEvent(new CustomEvent(HIDDEN_EVENT, { detail: { id: this.id } }));
             }
         }
 
-        window.addEventListener("click", this.hideModal);
-        window.addEventListener(SHOW_EVENT, this.showModal);
+        window.addEventListener("click", this.hide);
+        window.addEventListener(SHOW_EVENT, this._showOnEvent);
     }
 
     disconnectedCallback() {
-        window.removeEventListener("click", this.hideModal);
-        window.removeEventListener(SHOW_EVENT, this.showModal);
+        window.removeEventListener("click", this.hide);
+        window.removeEventListener(SHOW_EVENT, this._showOnEvent);
     }
 }
 
