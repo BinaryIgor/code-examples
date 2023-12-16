@@ -8,7 +8,7 @@ export const router = express.Router();
 
 router.get("/", (req, res) => {
     const body = `
-    <confirmable-modal title="Delete confirmation" ok="Delete">
+    <confirmable-modal title="Delete confirmation" ok-text="Delete">
     </confirmable-modal>
 
     <button hx-delete="${PATH}/test"
@@ -26,6 +26,7 @@ router.get("/", (req, res) => {
         document.addEventListener("htmx:confirm", e => {
             console.log("Let's confirm htmx request..", e);
             
+            // do not issue htmx request
             e.preventDefault();
 
             confirmableModal.onOk = () => {

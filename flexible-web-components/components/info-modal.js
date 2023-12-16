@@ -47,8 +47,7 @@ class InfoModal extends HTMLElement {
                 <div ${titleAttributes}>${titleToRender}</div>
                 <div ${messageAttributes}>${messageToRender}</div>
             </div>
-        </div>
-        `;
+        </div>`;
 
         this._container = this.querySelector("div");
         this._close = this.querySelector("span");
@@ -62,6 +61,7 @@ class InfoModal extends HTMLElement {
             }
         }
 
+        // defined here because of the this for window listener issues
         this.show = ({ title = "", message = "" }) => {
             this._render(title, message);
             this._container.style.display = "block";
@@ -73,7 +73,7 @@ class InfoModal extends HTMLElement {
                 this._container.style.display = "none";
                 window.dispatchEvent(new CustomEvent(HIDDEN_EVENT, { detail: { id: this.id } }));
             }
-        }
+        };
 
         window.addEventListener("click", this.hide);
         window.addEventListener(SHOW_EVENT, this._showOnEvent);

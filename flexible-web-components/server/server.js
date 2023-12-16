@@ -8,16 +8,16 @@ import * as InfoModalComponent from './components/info-modal.js';
 import * as ConfirmableModalComponent from './components/confirmable-modal.js';
 import * as InputWithErrorComponent from './components/input-with-error.js';
 import * as FormContainerComponent from './components/form-container.js';
+import * as ExperimentsComponent from './components/experiments.js';
 
 const SERVER_PORT = process.env.SERVER_PORT || 8080;
 const CSS_PATH = path.join("dist", "style.css");
-//TODO: fix this!
 const COMPONENTS_DIR = '../components';
 
 const components = fs.readdirSync(COMPONENTS_DIR);
 
 const availableComponentsPaths = [InfoModalComponent.PATH, ConfirmableModalComponent.PATH,
-InputWithErrorComponent.PATH, FormContainerComponent.PATH];
+InputWithErrorComponent.PATH, FormContainerComponent.PATH, ExperimentsComponent.PATH];
 
 console.log();
 console.log("Available components: ");
@@ -34,6 +34,7 @@ app.use(InfoModalComponent.PATH, InfoModalComponent.router);
 app.use(ConfirmableModalComponent.PATH, ConfirmableModalComponent.router);
 app.use(InputWithErrorComponent.PATH, InputWithErrorComponent.router);
 app.use(FormContainerComponent.PATH, FormContainerComponent.router);
+app.use(ExperimentsComponent.PATH, ExperimentsComponent.router);
 
 app.get("*", async (req, res) => {
     try {

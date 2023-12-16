@@ -1,6 +1,6 @@
 import { Components } from "./base.js";
 
-const inputClassDefault = "rounded p-2 border-2 border-solid border-slate-100 focus:outline-slate-300";
+const inputClassDefault = "rounded p-2 border-2 border-solid border-slate-100 focus:border-slate-300 outline-none";
 
 //Dependencies: registered input-error
 export class InputWithError extends HTMLElement {
@@ -34,14 +34,13 @@ export class InputWithError extends HTMLElement {
 
     connectedCallback() {
         this._input.addEventListener("input", e => {
-            console.log("Input value changed!");
             if (this.onInputChanged) {
                 this.onInputChanged(this._input.value);
             }
         });
     }
 
-    attributeChangeCallback(name, oldValue, newValue) {
+    attributeChangedCallback(name, oldValue, newValue) {
         this.onInputChanged(newValue);
     }
 }

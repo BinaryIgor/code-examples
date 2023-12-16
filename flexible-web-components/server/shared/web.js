@@ -2,10 +2,8 @@ import path from "path";
 
 const HTMX_SCRIPT = '<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>';
 const CSS_PATH = path.join("dist", "style.css");
-//TODO: fix this!
 
 export function htmlPage(body, component, script="", additionalComponents=[]) {
-    //TODO: remove unnecessary Tailwind classes
     return `
     <html>
         <head>

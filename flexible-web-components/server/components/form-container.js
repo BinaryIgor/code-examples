@@ -7,7 +7,7 @@ export const PATH = "/form-container";
 export const router = express.Router();
 
 const MIN_ID_LEN = 4;
-const MAX_ID_LEN = 16;
+const MAX_ID_LEN = 40;
 
 const MIN_NAME_LEN = 3;
 const MAX_NAME_LEN = 30;
@@ -32,7 +32,7 @@ router.get("/", (req, res) => {
 
     <form-container
         form:id="order-form"
-        form:class="rounded bg-slate-200 p-2"
+        form:class="rounded bg-slate-200 p-2 max-w-screen-md"
         submit:class="py-2 rounded bg-slate-100 mt-4 w-full"
         submit:value="Add Order"
         form:hx-post="${PATH}/add"
@@ -76,11 +76,11 @@ router.get("/", (req, res) => {
 
     </form-container>
 
-    <button class="p-4 rounded-md bg-slate-100 border-4 border-bg-slate-200 mb-8 w-full"
+    <!--button class="p-4 rounded-md bg-slate-100 border-4 border-bg-slate-200 mb-8 w-full max-w-screen-md"
         onclick="clearForm()">
-    Clear Form</button>
+    Clear Form</button-->
 
-    <ul id="orders" class="space-y-2">
+    <ul id="orders" class="space-y-2 max-w-screen-md">
         ${ordersHtml()}
     </ul>
     `;
@@ -99,7 +99,7 @@ router.get("/", (req, res) => {
             const form = document.getElementById("order-form");
             if (e.srcElement == form) {
                 const error = e.detail.failed ? e.detail.xhr.response : "";
-                formContainer.afterSubmit({error: error, showGenericError: false});
+                formContainer.afterSubmit({error: error});
                 if (error) {
                     errorModal.show({message: error});
                 }

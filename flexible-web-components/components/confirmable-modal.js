@@ -6,7 +6,7 @@ const contentClassDefault = "m-auto mt-16 p-2 w-4/5 md:w-3/5 lg:w-2/5 bg-white r
 const titleClassDefault = "text-2xl font-bold mb-2 px-4 pt-4";
 const messageClassDefault = "text-lg px-4";
 const closeClass = "absolute top-0 right-0";
-const closeClassDefault = "cursor-pointer text-3xl px-4";
+const closeClassDefault = "cursor-pointer text-3xl px-2";
 const cancelOkContainerClassDefault = "mt-4";
 const cancelClassDefault = "cursor-pointer text-lg";
 const okClassDefault = "cursor-pointer text-lg";
@@ -30,8 +30,8 @@ class ConfirmableModal extends HTMLElement {
     _render(title, message, cancel, ok) {
         const titleToRender = title ? title : Components.attributeValueOrDefault(this, "title", "Default title");
         const messageToRender = message ? message : Components.attributeValueOrDefault(this, "message", "Default message");
-        const cancelToRender = cancel ? cancel : Components.attributeValueOrDefault(this, "cancel", "Cancel");
-        const okToRender = ok ? ok : Components.attributeValueOrDefault(this, "ok", "Ok");
+        const cancelToRender = cancel ? cancel : Components.attributeValueOrDefault(this, "cancel-text", "Cancel");
+        const okToRender = ok ? ok : Components.attributeValueOrDefault(this, "ok-text", "Ok");
 
         const containerAttributes = Components.mappedAttributes(this, "container", {
             toAddClass: containerClass,

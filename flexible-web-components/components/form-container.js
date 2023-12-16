@@ -44,7 +44,7 @@ class FormContainer extends HTMLElement {
         });
     }
 
-    afterSubmit({ error = "", alwaysClearInputs = false, showGenericError = true }) {
+    afterSubmit({ error = "", alwaysClearInputs = false, showGenericError = false}) {
         console.log("After submit, error:", error);
         this._submit.disabled = false;
 
