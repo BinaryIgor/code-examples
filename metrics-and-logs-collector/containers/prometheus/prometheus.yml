@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 30s
+  scrape_timeout: 5s
+  evaluation_interval: 30s
+
+rule_files:
+  - alert_rules.yml
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+  - job_name: metrics-and-logs-collector
+    # by default it's /metrics if I am not mistaken
+    metrics_path: ""
+    static_configs:
+      - targets: [ 'localhost:10101' ]
