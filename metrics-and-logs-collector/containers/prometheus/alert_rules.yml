@@ -1,44 +1,46 @@
 groups:
-  - name: application-alerts
-    rules:
-    - alert: ContainerDown
+  - name: general-alerts
+    rules: 
+    - alert: ApplicationDown
       expr: up == 0
       for: 3m
       labels:
         severity: critical
       annotations:
-        summary: "Container {{ $labels.job }} is DOWN"
-        description: "Container {{ $labels.job }} has been down for a while"
-    # - alert: ApplicationInstanceDown
-    #   # Ignore backup instances that are renamed during zero-downtime deploy. It's normal that they are down!
-    #   expr: (time() - monitoring_application_up_timestamp_seconds{application!~"${INSTANCE_ALERT_TO_IGNORE_APPS_REGEX}"}) > 120
-    #   labels:
-    #     severity: critical
-    #   annotations:
-    #     summary: "Instance of {{ $labels.application }} application is DOWN"
-    #     description: "Instance of {{ $labels.application }} application, running on {{ $labels.machine }}, has been down for a while"
-    # - alert: ApplicationHighMemoryUsage
-    #   expr: (monitoring_application_used_memory_bytes / monitoring_application_max_memory_bytes) > 0.8
-    #   for: 5m
-    #   labels:
-    #     severity: critical
-    #   annotations:
-    #     summary: "Application {{ $labels.application }} high Memory Usage"
-    #     description: "Application {{ $labels.application }} is using more than 80% of memory for 5 minutes" 
-    # - alert: ApplicationHighCpuUsage
-    #   expr: monitoring_application_cpu_usage_percent > 0.8
-    #   for: 5m
-    #   labels:
-    #     severity: critical
-    #   annotations:
-    #     summary: "Application {{ $labels.application }} high CPU usage"
-    #     description: "Application {{ $labels.application }} is using more than 80% of CPU for 5 minutes"
-    # - alert: ApplicationLogsErrors
-    #   # were there any errors in the last 15 minutes
-    #   expr: (time() - monitoring_application_logs_error_timestamp_seconds{application!~"${LOGS_ERRORS_ALERT_TO_IGNORE_APPS_REGEX}"}) < 900
-    #   labels:
-    #     severity: critical
-    #   annotations:
-    #     summary: "Application {{ $labels.application }} ERROR"
-    #     description: "Application {{ $labels.application }} is having errors in its logs"
+        summary: "Application {{ $labels.job }} is DOWN"
+        description: "Application {{ $labels.job }} has been down for a while"
+  - name: container-alerts
+    rules:
+    - alert: ContainerDown
+      expr: (time() - container_up_timestamp_seconds) > 120
+      for: 3m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Container {{ $labels.container }} is DOWN"
+        description: "Container {{ $labels.container }}, running on {{ $labels.machine }} has been down for a while"
+    - alert: ApplicationHighMemoryUsage
+      expr: (monitoring_application_used_memory_bytes / monitoring_application_max_memory_bytes) > 0.8
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Application {{ $labels.application }} high Memory Usage"
+        description: "Application {{ $labels.application }} is using more than 80% of memory for 5 minutes" 
+    - alert: ApplicationHighCpuUsage
+      expr: monitoring_application_cpu_usage_percent > 0.8
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Application {{ $labels.application }} high CPU usage"
+        description: "Application {{ $labels.application }} is using more than 80% of CPU for 5 minutes"
+    - alert: ApplicationLogsErrors
+      # were there any errors in the last 15 minutes
+      expr: (time() - monitoring_application_logs_error_timestamp_seconds{application!~"${LOGS_ERRORS_ALERT_TO_IGNORE_APPS_REGEX}"}) < 900
+      labels:
+        severity: critical
+      annotations:
+        summary: "Application {{ $labels.application }} ERROR"
+        description: "Application {{ $labels.application }} is having errors in its logs"
       

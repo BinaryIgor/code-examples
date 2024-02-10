@@ -1,6 +1,6 @@
 #!/bin/bash
 
-containers=("postgres-db" "prometheus" "some-app")
+containers=("postgres-db" "prometheus" "some-custom-app" "logs-browser")
 
 echo "About to run containers: ${containers[@]}"
 echo

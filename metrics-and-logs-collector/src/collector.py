@@ -1,14 +1,13 @@
-import json
-import random
 import signal
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from os import environ
 
-import containers
+import logs_exporter
 import metrics_exporter
 import utils
+from containers import Containers, new_docker_client
 
 logger = utils.new_logger("collector")
 
@@ -17,16 +16,14 @@ MACHINE_NAME = environ.get("MACHINE_NAME", "local-machine")
 METRICS_COLLECTION_INTERVAL = int(environ.get("METRICS_COLLECTION_INTERVAL", 20))
 LOGS_COLLECTION_INTERVAL = int(environ.get("LOGS_COLLECTION_INTERVAL", 5))
 
-LAST_METRICS_READ_AT_FILE_PATH = environ.get("LAST_METRICS_READ_AT_FILE",
-                                             "/tmp/last-metrics-read-at.txt")
-LAST_LOGS_READ_AT_FILE_PATH = environ.get("LAST_LOGS_READ_AT_FILE",
-                                          "/tmp/last-logs-read-at.txt")
+LAST_METRICS_COLLECTED_AT_FILE = environ.get("LAST_METRICS_COLLECTED_AT_FILE",
+                                             "/tmp/last-metrics-collected-at.txt")
+LAST_LOGS_COLLECTED_AT_FILE = environ.get("LAST_LOGS_COLLECTED_AT_FILE",
+                                          "/tmp/last-logs-collected-at.txt")
 
-MAX_COLLECTOR_THREADS = environ.get("max_collector_threads", 3)
+MAX_COLLECTOR_THREADS = environ.get("MAX_COLLECTOR_THREADS", 5)
 
-MAX_LOGS_NOT_SEND_AGO = 10 * 60
-
-METRICS_EXPORTER_PORT = int(environ.get("METRICS_EXPORTER_PORT", 8080))
+METRICS_EXPORTER_PORT = int(environ.get("METRICS_EXPORTER_PORT", 10101))
 
 
 class GracefulShutdown:
@@ -43,66 +40,50 @@ class GracefulShutdown:
 
 shutdown = GracefulShutdown()
 
+logger.info(f"Starting collector for {MACHINE_NAME} machine!")
+logger.info(f"METRICS_COLLECTION_INTERVAL: {METRICS_COLLECTION_INTERVAL}")
+logger.info(f"LOGS_COLLECTION_INTERVAL: {LOGS_COLLECTION_INTERVAL}")
+logger.info(f"MAX_COLLECTOR_THREADS: {MAX_COLLECTOR_THREADS}")
+logger.info(f"LAST_METRICS_COLLECTED_AT_FILE: {LAST_METRICS_COLLECTED_AT_FILE}")
+logger.info(f"LAST_LOGS_COLLECTED_AT_FILE: {LAST_LOGS_COLLECTED_AT_FILE}")
 
-def data_object_formatted(data_object):
-    return json.dumps(data_object, indent=2)
-
-
-def random_retry_interval():
-    return round(random.uniform(1, 5), 3)
-
-
-def log_exception(message):
-    logger.exception(f"{message}")
-    print()
-
-
-def current_timestamp():
-    return int(time.time())
-
-
-def current_timestamp_millis():
-    return int(time.time() * 1000)
+logs_exporter.print_config()
+print()
 
 
 def connected_docker_client_retrying():
-    logger.info(f"Starting monitoring of {MACHINE_NAME}...")
-
     while True:
         try:
             logger.info("Trying to get client...")
-            client = containers.new_docker_client()
-            ver = data_object_formatted(client.version())
-            logger.info(f"Client connected, docker version: {ver}")
+            client = new_docker_client()
+            ver = utils.pretty_data_object(client.version())
+            logger.info(f"Client connected, docker version: {ver}\n")
             return client
         except Exception:
             if shutdown.stop:
                 logger.info("Shutdown requested, exiting")
                 sys.exit(0)
 
-            retry_interval = random_retry_interval()
-            log_exception(f"Problem while connecting to docker client, retrying in {retry_interval}s...")
+            retry_interval = utils.random_retry_interval()
+            logger.exception(f"Problem while connecting to docker client, retrying in {retry_interval}s...")
             time.sleep(retry_interval)
 
 
-docker_containers = containers.DockerContainers(connected_docker_client_retrying())
+containers = Containers(connected_docker_client_retrying())
 
 
 def keep_collecting_and_exporting():
     try:
         do_keep_collecting_and_exporting()
     except Exception:
-        log_exception("Problem while collecting, retrying...")
+        logger.exception("Problem while collecting, retrying...")
         keep_collecting_and_exporting()
 
 
-# TODO: thread pool for better collection
 def do_keep_collecting_and_exporting():
     collection_interval = min(METRICS_COLLECTION_INTERVAL, LOGS_COLLECTION_INTERVAL)
     last_metrics_collection_timestamp = 0
     last_logs_collection_timestamp = 0
-
-    containers_last_logs_check_timestamps = {}
 
     with ThreadPoolExecutor(max_workers=MAX_COLLECTOR_THREADS) as executor:
         while True:
@@ -110,37 +91,47 @@ def do_keep_collecting_and_exporting():
                 logger.info("Shutdown requested, exiting gracefully")
                 break
 
-            timestamp = current_timestamp()
+            timestamp = utils.current_timestamp()
 
             logger.info("Checking containers...")
 
-            running_containers = docker_containers.get()
+            containers.fetch()
 
-            logger.info(f"Running containers: {running_containers}")
+            logger.info(f"To check containers: {containers.to_print_containers()}")
 
-            should_gather_metrics = timestamp - last_metrics_collection_timestamp >= METRICS_COLLECTION_INTERVAL
-            should_gather_logs = timestamp - last_logs_collection_timestamp >= LOGS_COLLECTION_INTERVAL
+            should_collect_metrics = (timestamp - last_metrics_collection_timestamp) >= METRICS_COLLECTION_INTERVAL
+            should_collect_logs = (timestamp - last_logs_collection_timestamp) >= LOGS_COLLECTION_INTERVAL
 
-            if should_gather_metrics:
-                containers.gather_and_export_metrics(MACHINE_NAME, docker_containers)
-                last_metrics_collection_timestamp = current_timestamp()
-            if should_gather_logs:
-                containers.gather_and_export_logs(MACHINE_NAME, docker_containers,
-                                                  containers_last_logs_check_timestamps)
-                last_logs_collection_timestamp = current_timestamp()
-
-            print("...")
+            if should_collect_metrics:
+                containers.collect_and_export_metrics(MACHINE_NAME, executor)
+                last_metrics_collection_timestamp = utils.current_timestamp()
+                update_last_data_read_at_file(LAST_METRICS_COLLECTED_AT_FILE, last_metrics_collection_timestamp)
+            if should_collect_logs:
+                # Logs collection is fast, we don't need to use a thread pool
+                containers.collect_and_export_logs(MACHINE_NAME)
+                last_logs_collection_timestamp = utils.current_timestamp()
+                update_last_data_read_at_file(LAST_LOGS_COLLECTED_AT_FILE, last_logs_collection_timestamp)
 
             metrics_exporter.on_next_collection(MACHINE_NAME)
 
             if shutdown.stop:
-                logger.info("Shutdown requested, existing gracefully")
+                logger.info("Shutdown requested, exiting gracefully")
 
-            logger.info(f"Sleeping for {collection_interval}s")
-            print()
+            logger.info(f"\nSleeping for {collection_interval}s...\n")
 
             time.sleep(collection_interval)
 
 
+def update_last_data_read_at_file(file, read_at):
+    try:
+        logger.info(f"Updating last-data-read-at file: {file}")
+        with open(file, "w") as f:
+            f.write(str(read_at))
+    except Exception:
+        logger.exception("Problem while updating last data read at file...")
+
+
 metrics_exporter.export(METRICS_EXPORTER_PORT)
+logger.info(f"Metrics are exported on port {METRICS_EXPORTER_PORT}\n")
+
 keep_collecting_and_exporting()
