@@ -50,6 +50,9 @@ logger.info(f"LAST_LOGS_COLLECTED_AT_FILE: {LAST_LOGS_COLLECTED_AT_FILE}")
 logs_exporter.print_config()
 print()
 
+if LOGS_COLLECTION_INTERVAL > METRICS_COLLECTION_INTERVAL:
+    raise Exception("LOGS_COLLECTION_INTERVAL needs to be <= METRICS_COLLECTION_INTERVAL!")
+
 
 def connected_docker_client_retrying():
     while True:
@@ -81,9 +84,9 @@ def keep_collecting_and_exporting():
 
 
 def do_keep_collecting_and_exporting():
-    collection_interval = min(METRICS_COLLECTION_INTERVAL, LOGS_COLLECTION_INTERVAL)
+    # LOGS_COLLECTION_INTERVAL is always <= METRICS_COLLECTION_INTERVAL
+    collection_interval = LOGS_COLLECTION_INTERVAL
     last_metrics_collection_timestamp = 0
-    last_logs_collection_timestamp = 0
 
     with ThreadPoolExecutor(max_workers=MAX_COLLECTOR_THREADS) as executor:
         while True:
@@ -100,17 +103,15 @@ def do_keep_collecting_and_exporting():
             logger.info(f"To check containers: {containers.to_print_containers()}")
 
             should_collect_metrics = (timestamp - last_metrics_collection_timestamp) >= METRICS_COLLECTION_INTERVAL
-            should_collect_logs = (timestamp - last_logs_collection_timestamp) >= LOGS_COLLECTION_INTERVAL
-
             if should_collect_metrics:
                 containers.collect_and_export_metrics(MACHINE_NAME, executor)
                 last_metrics_collection_timestamp = utils.current_timestamp()
-                update_last_data_read_at_file(LAST_METRICS_COLLECTED_AT_FILE, last_metrics_collection_timestamp)
-            if should_collect_logs:
-                # Logs collection is fast, we don't need to use a thread pool
-                containers.collect_and_export_logs(MACHINE_NAME)
-                last_logs_collection_timestamp = utils.current_timestamp()
-                update_last_data_read_at_file(LAST_LOGS_COLLECTED_AT_FILE, last_logs_collection_timestamp)
+                update_last_data_collected_at_file(LAST_METRICS_COLLECTED_AT_FILE, last_metrics_collection_timestamp)
+
+            # Logs collection is fast, we don't need to use a thread pool
+            containers.collect_and_export_logs(MACHINE_NAME)
+            last_logs_collection_timestamp = utils.current_timestamp()
+            update_last_data_collected_at_file(LAST_LOGS_COLLECTED_AT_FILE, last_logs_collection_timestamp)
 
             metrics_exporter.on_next_collection(MACHINE_NAME)
 
@@ -122,13 +123,13 @@ def do_keep_collecting_and_exporting():
             time.sleep(collection_interval)
 
 
-def update_last_data_read_at_file(file, read_at):
+def update_last_data_collected_at_file(file, collected_at):
     try:
-        logger.info(f"Updating last-data-read-at file: {file}")
+        logger.info(f"Updating last-data-collected-at file: {file}")
         with open(file, "w") as f:
-            f.write(str(read_at))
+            f.write(str(collected_at))
     except Exception:
-        logger.exception("Problem while updating last data read at file...")
+        logger.exception("Problem while updating last data collected at file...")
 
 
 metrics_exporter.export(METRICS_EXPORTER_PORT)

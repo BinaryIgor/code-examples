@@ -1,6 +1,7 @@
 import json
 import re
 from datetime import datetime
+from os import environ
 
 import docker
 from docker.errors import NotFound
@@ -9,7 +10,7 @@ import logs_exporter
 import metrics_exporter
 import utils
 
-DEFAULT_LOGS_SINCE_NOW = 60
+DEFAULT_LOGS_SINCE_NOW = int(environ.get("DEFAULT_LOGS_SINCE_NOW", 60))
 CPU_NANOS = 1_000_000_000.0
 
 logger = utils.new_logger("containers")
@@ -51,7 +52,7 @@ class Containers:
         get_metrics_tasks = []
 
         for c in self.containers.values():
-            c_metrics_future = executor.submit(container_metrics, c)
+            c_metrics_future = executor.submit(_container_metrics, c)
             get_metrics_tasks.append(c_metrics_future)
 
         for t in get_metrics_tasks:
@@ -65,7 +66,7 @@ class Containers:
         logger.info(f"Have {len(self.containers)} running containers, checking their logs...")
 
         for c in self.containers.values():
-            c_logs = container_logs(c, self.containers_last_logs_check_timestamps)
+            c_logs = _container_logs(c, self.containers_last_logs_check_timestamps)
             if c_logs:
                 logs_exporter.export(machine_name, logs_exporter.ContainerLogs(c.name, c_logs))
 
@@ -76,7 +77,7 @@ def new_docker_client():
     return docker.DockerClient(base_url="unix://var/run/docker.sock")
 
 
-def container_metrics(container):
+def _container_metrics(container):
     try:
         c_metrics = container.stats(stream=False)
 
@@ -84,10 +85,10 @@ def container_metrics(container):
         prev_cpu_metrics = c_metrics["precpu_stats"]
         cpu_metrics = c_metrics["cpu_stats"]
 
-        return formatted_container_metrics(container=container,
-                                           memory_metrics=memory_metrics,
-                                           precpu_metrics=prev_cpu_metrics,
-                                           cpu_metrics=cpu_metrics)
+        return _formatted_container_metrics(container=container,
+                                            memory_metrics=memory_metrics,
+                                            precpu_metrics=prev_cpu_metrics,
+                                            cpu_metrics=cpu_metrics)
     except NotFound:
         logger.info(f"Container {container.name}:{container.id} not found, skipping!")
         return None
@@ -99,7 +100,7 @@ def container_metrics(container):
         return None
 
 
-def container_available_cpus(container):
+def _container_available_cpus(container):
     host_config = container.attrs["HostConfig"]
     nano_cpus = int(host_config['NanoCpus'])
     # containers run without cpu limits have 0 nano_cpus
@@ -109,24 +110,24 @@ def container_available_cpus(container):
     return nano_cpus / CPU_NANOS
 
 
-def container_started_at(container):
+def _container_started_at(container):
     started_at = container.attrs['State']['StartedAt']
     # make date format compatible with python iso format impl
     started_at = re.sub("(\\.[0-9]+)", "", started_at).replace("Z", "")
     return int(datetime.fromisoformat(started_at).timestamp())
 
 
-def formatted_container_metrics(container, memory_metrics, precpu_metrics, cpu_metrics):
+def _formatted_container_metrics(container, memory_metrics, precpu_metrics, cpu_metrics):
     try:
         system_cpus = cpu_metrics.get('online_cpus', 1)
-        container_cpus = container_available_cpus(container)
+        container_cpus = _container_available_cpus(container)
 
-        cpu_usage = container_cpu_metrics(precpu_metrics=precpu_metrics,
-                                          cpu_metrics=cpu_metrics,
-                                          system_cpus=system_cpus)
+        cpu_usage = _container_cpu_metrics(precpu_metrics=precpu_metrics,
+                                           cpu_metrics=cpu_metrics,
+                                           system_cpus=system_cpus)
 
         return metrics_exporter.ContainerMetrics(container=container.name,
-                                                 started_at=container_started_at(container),
+                                                 started_at=_container_started_at(container),
                                                  used_memory=memory_metrics["usage"],
                                                  max_memory=memory_metrics["limit"],
                                                  cpu_usage=cpu_usage,
@@ -137,7 +138,7 @@ def formatted_container_metrics(container, memory_metrics, precpu_metrics, cpu_m
         return None
 
 
-def container_cpu_metrics(precpu_metrics, cpu_metrics, system_cpus):
+def _container_cpu_metrics(precpu_metrics, cpu_metrics, system_cpus):
     prev_usage = precpu_metrics['cpu_usage']
     prev_container_usage = prev_usage['total_usage']
     prev_system_usage = precpu_metrics['system_cpu_usage']
@@ -158,7 +159,7 @@ def container_cpu_metrics(precpu_metrics, cpu_metrics, system_cpus):
     return 0
 
 
-def container_logs(container, containers_last_logs_check_timestamps):
+def _container_logs(container, containers_last_logs_check_timestamps):
     try:
         now = utils.current_timestamp()
 

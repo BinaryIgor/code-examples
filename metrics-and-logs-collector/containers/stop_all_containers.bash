@@ -10,5 +10,5 @@ for c in ${containers[@]}; do
 done
 
 echo
-echo "All containers should be stopped, let's see..."
+echo "All containers (except metrics-and-logs-collector) should be stopped, let's see..."
 docker ps

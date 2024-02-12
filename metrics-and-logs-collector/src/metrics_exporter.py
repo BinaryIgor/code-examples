@@ -1,5 +1,3 @@
-import time
-
 from prometheus_client import start_http_server, Gauge, Counter
 
 import utils
@@ -29,26 +27,27 @@ container_started_at_timestamp_gauge = Gauge("container_started_at_timestamp_sec
                                              "When container has started",
                                              COMMONS_LABELS)
 container_up_timestamp_gauge = Gauge("container_up_timestamp_seconds",
-                                     "Heartbeat of the container, increased after every metrics collection",
+                                     "Heartbeat of a container, increased after every metrics collection",
                                      COMMONS_LABELS)
 container_used_memory_gauge = Gauge("container_used_memory_bytes",
                                     "Current container memory usage in bytes",
                                     COMMONS_LABELS)
 container_max_memory_gauge = Gauge("container_max_memory_bytes",
                                    "Current container memory limit. "
-                                   "If container is not limited, it's equal to the host memory",
+                                   "If a container is not limited, it's equal to the host memory",
                                    COMMONS_LABELS)
 container_cpu_usage_gauge = Gauge("container_cpu_usage_percent",
-                                  "Current container cpu usage of the host resources. "
+                                  "Current container cpu usage of the host resources (cpu). "
                                   "It doesn't take into account how many cpus are available for the container, "
-                                  "so remember to take container_cpus_available into account as well."
-                                  "Additionally, remember that host with 1 cpu can have up to 100% cpu usage, "
+                                  "so remember to take container_cpus_available into account as well. "
+                                  "Additionally, remember that a host with 1 cpu can have up to 100% cpu usage, "
                                   "but one with 4 can have 400%! "
                                   "This is an important detail when designing alerts",
                                   COMMONS_LABELS)
 container_cpus_available = Gauge("container_cpus_available",
-                                 "How many cpus are available for the container"
-                                 "If it doesn't have limits there, it's equal to the host cpus",
+                                 "How many cpus are available for the container. "
+                                 "If it doesn't have limits there, it's equal to the host cpus. "
+                                 "Keep in mind that it's a floating point number and it can be less than 1.0",
                                  COMMONS_LABELS)
 
 container_logs_total = Counter("container_logs_total",
@@ -60,11 +59,11 @@ def export(port):
     start_http_server(port)
 
 
-def on_next_collection(machine: str):
-    collector_up_timestamp_gauge.labels(machine=machine).set(int(time.time()))
+def on_next_collection(machine):
+    collector_up_timestamp_gauge.labels(machine=machine).set(utils.current_timestamp())
 
 
-def on_new_container_metrics(machine: str, metrics: ContainerMetrics):
+def on_new_container_metrics(machine, metrics):
     container = metrics.container
 
     container_started_at_timestamp_gauge.labels(machine=machine, container=container).set(metrics.started_at)

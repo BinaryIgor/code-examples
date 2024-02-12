@@ -2,20 +2,20 @@
 
 Simple Python app/tool that collects metrics and logs from Docker Containers. 
 
-It then exposes those metrics to Prometheus (which just means having a http endpoint) and saves logs in the local file system, limiting their size and rotating files, if necessary.
+It then exposes those metrics to Prometheus (which just means having an http endpoint) and saves logs in the local file system, limiting their size and rotating files, if necessary (it's also pretty straightforward to save logs somewhere else, in a database for example).
 
 Basic requirements:
 * Python 3.10, compatible pip & deps specified in src/requirements.txt
-* Alternatively just Docker and running it as a container - see `build_and_run_collector.bash`
+* Alternatively just Docker and running it as a container - see *build_and_run_collector.bash*
 * Prometheus, if you want to make practical use of the exposed metrics
 
 ## When to use it
 
-If you work on a system that can be deployed on a single machine or a few machines. If this is the case, you don't want to bother with Kubernetes complexity, so you seek for a simpler solution. You can you just use Docker and a few scripts and tools to make your life easier. This is one of those tools - only Docker and a Prometheus instance is needed to use it.
+If you work on a system that can be deployed on a single machine or a few machines. If this is the case, you don't want to bother with Kubernetes complexity, so you seek for a simpler solution. You can just use Docker and a few scripts and tools to make your life easier. This is one of those tools - only Docker and a Prometheus instance is needed to use it.
 
 ## How it works
 
-*collector.py* is an entry point of the *metrics-ands-logs-collector*.
+*collector.py* is an entry point of the *metrics-and-logs-collector* tool.
 When started, it reads config from env variables and prints it to the console like this:
 ```
 2024-02-11 19:15:47.998 [INFO] collector: Starting collector for local-machine machine!
@@ -89,25 +89,24 @@ When started, it reads config from env variables and prints it to the console li
 After this warm welcome, it tries to connect to the Docker Engine, retrying as many times as needed.
 
 Then, the flow continues in the following, infinite loop:
-* get running containers from `Containers` class
-* if needed, collect metrics according to *METRICS_COLLECTION_INTERVAL*, using *MAX_COLLECTOR_THREADS* to make it faster
+* get *running* containers from `Containers` class
+* if needed, collect metrics according to `METRICS_COLLECTION_INTERVAL`, using `MAX_COLLECTOR_THREADS` to make it faster
 * if new metrics were collected:
-    * update metrics in `metrics_exporter.py` so that Prometheus can scrape up-to-date values
+    * update metrics in *metrics_exporter.py* so that Prometheus can scrape up-to-date values
     * update `LAST_METRICS_COLLECTED_AT_FILE` with new timestamp value
-* collect logs if needed, according to *LOGS_COLLECTION_INTERVAL*
-* if new logs were collected:
-    * log logs of every container in `logs_exporter.py` using standard Python `RotatingFileHandler` class
-    * export logs metrics using appriopriate log_levels_mapping
-    * above mechanism allows to define custom logs level assignment logic according to ones defined in a file - for details check `src/config/log_levels_mapping.json` and `logs_exporter.export()` function
+* collect logs:
+    * log logs of every container in *logs_exporter.py* using standard Python `RotatingFileHandler` class
+    * export logs metrics using appropriate *log_levels_mapping*
+    * *log_levels_mapping* mechanism allows to define custom logs level assignment logic according to a chosen config file - for details check *src/config/log_levels_mapping.json* and `logs_exporter.export(machine, container_logs)` function
     * update `LAST_LOGS_COLLECTED_AT_FILE` with new timestamp value
-* sleep for `min(METRICS_COLLECTION_INTERVAL, LOGS_COLLECTION_INTERVAL)` and then repeat the whole process again, as long as the program is alive
+* sleep for `LOGS_COLLECTION_INTERVAL` (it is always <= `METRICS_COLLECTION_INTERVAL`) and then repeat the whole process again, as long as the program is alive
 
 
 ## How to tinker and experiment with it
 
 All you need is an ability to run Docker and most likely Linux-based system (might work on others also, but it is not guaranteed).
 
-From containers/ directory run:
+From `containers` directory run:
 ```
 bash start_all_containers.bash
 ```
@@ -139,13 +138,15 @@ It should give empty results for now, but most of the exposed by the tool metric
 
 ### Browsing logs
 
-Logs are saved by the collector the local file system, by default under `/tmp/metrics-and-logs-collector/logs` path. After running above command, it should be empty, as we haven't started `collector` yet.  
+Logs are saved by the *collector* in the local file system, by default under `/tmp/metrics-and-logs-collector/logs` path. As of now, it should be empty, as we haven't started the *collector* yet.  
 
-Additionaly, we have `logs-browser` container: it is just an nginx instance configured for browsing static files. At this point, you should go to http://localhost:11111 and see empty list. Later on, we will see logs here.
+Additionally, we have *logs-browser* container: it is just a Nginx instance configured for browsing static files. 
+At this point, you should go to http://localhost:11111 and see empty list. Later on, we will see logs from containers here.
 
 ### Collector
 
-At this point, we know how *collector* works and where we should expect metrics and logs, collected by it. Let's then start it! From the root folder (*metrics-and-logs-collector*) run:
+As of now, we know how *collector* works and where we should expect containers metrics and logs, collected by it. Let's then start the *collector*! 
+From the root folder (*metrics-and-logs-collector*) run:
 ```
 bash build_and_run_collector.bash
 ```
@@ -163,7 +164,7 @@ df478cc3dbb4   prometheus                   "/bin/prometheus --s…"   13 minute
 5013fb6189b4   postgres-db                  "docker-entrypoint.s…"   13 minutes ago   Up 13 minutes   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp             postgres-db
 ```
 
-If you are curious you can run:
+If you are curious, you can run:
 ```
 docker logs metrics-and-logs-collector
 ```
@@ -187,15 +188,14 @@ Logs checked.
 Sleeping for 5s...
 
 ```
-...which means that the collector is running and collecting. 
+...which means that the *collector* is running and collecting. 
 
 Running Prometheus query (http://localhost:9090):
 ```
 {__name__=~"container.*"}
 ```
-should give you loads of metrics like these ones:
+should give you loads of metrics like these:
 ```
-
 container_cpu_usage_percent{container="logs-browser", instance="localhost:10101", job="metrics-and-logs-collector", machine="local-machine"}
 0
 container_cpu_usage_percent{container="metrics-and-logs-collector", instance="localhost:10101", job="metrics-and-logs-collector", machine="local-machine"}
@@ -278,14 +278,15 @@ container_used_memory_bytes{container="some-custom-app", instance="localhost:101
 26755072
 ```
 
-Additionaly, all Prometheus alerts should be soon off, which you can see by clicking *Alerts* on the Prometheus UI. If you are curious, whole Prometheus config is available under `containers/prometheus/` directory.
+Additionally, all Prometheus alerts should be soon off, which you can see by clicking *Alerts* on the Prometheus UI. 
+If you are curious, whole Prometheus config is available under `containers/prometheus` directory.
 
-
-At this point, we should also have access to logs. Some of the containers log messages only on start, so let's stop them by running:
+At this point, we should also have access to logs. 
+Some of the containers log messages only on start, so let's stop them by running:
 ```
 bash stop_all_containers.bash
 ```
-...from `containers/` directory. Then let's run again:
+from `containers` directory. Let's then run again:
 ```
 bash start_all_containers.bash
 ```
@@ -302,4 +303,20 @@ drwxr-xr-x 2 root root 4096 lut 12 18:15 postgres-db
 drwxr-xr-x 2 root root 4096 lut 12 18:25 prometheus
 drwxr-xr-x 2 root root 4096 lut 12 18:14 some-custom-app
 ```
-where in each folder we have given container logs. You can also access it by going to the browser http://localhost:11111, thanks to your *logs-browser* container.
+where in each folder we have logs from a container. 
+You can also access them by going to the browser: http://localhost:11111, thanks to our *logs-browser* container.
+
+We can also run:
+```
+docker stats
+```
+to see stats of various containers:
+```
+CONTAINER ID   NAME                         CPU %     MEM USAGE / LIMIT     MEM %     NET I/O         BLOCK I/O         PIDS
+4fa4be087200   metrics-and-logs-collector   0.01%     26.23MiB / 250MiB     10.49%    51kB / 70.3kB   10.3MB / 2.17MB   7
+2f9f1945e109   postgres-db                  0.01%     20.75MiB / 500MiB     4.15%     6.39kB / 0B     455kB / 40MB      6
+711f8b2caa5c   prometheus                   0.00%     27.3MiB / 250MiB      10.92%    0B / 0B         1.29MB / 193kB    18
+2b5a090a92a2   some-custom-app              300.12%   16.98MiB / 31.26GiB   0.05%     6.32kB / 0B     0B / 1.17MB       6
+646b60631e94   logs-browser                 0.00%     9.902MiB / 250MiB     3.96%     5.89kB / 0B     0B / 8.19kB       13
+```
+What's worth noting is that *metrics-and-logs-collector* keeps its CPU and MEM usage extremely low on all times :)

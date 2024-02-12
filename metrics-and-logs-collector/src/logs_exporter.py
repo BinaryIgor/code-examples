@@ -95,7 +95,7 @@ def _log_levels_mapping(container):
 
     for lm in log_levels_mapping.get(MAPPINGS, []):
         container_mapping = False
-
+        
         for c_keyword in lm[CONTAINER_KEYWORDS]:
             if c_keyword in container:
                 container_mapping = True

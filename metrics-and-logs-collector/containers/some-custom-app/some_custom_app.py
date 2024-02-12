@@ -1,11 +1,12 @@
 from concurrent.futures import ProcessPoolExecutor
+from os import environ
 import logging
 import signal
 import sys
 import time
 import random
 
-PROCESSES = 2
+PROCESSES = int(environ.get("BUSY_CPUS", 2))
 
 log = logging.getLogger("some_custom_app")
 log.setLevel(level=logging.INFO)

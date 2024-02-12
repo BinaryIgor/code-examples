@@ -11,7 +11,7 @@ scrape_configs:
     static_configs:
       - targets: [ 'localhost:9090' ]
   - job_name: metrics-and-logs-collector
-    # by default it's /metrics if I am not mistaken
+    # by default it is /metrics if I am not mistaken
     metrics_path: ""
     static_configs:
       - targets: [ 'localhost:10101' ]

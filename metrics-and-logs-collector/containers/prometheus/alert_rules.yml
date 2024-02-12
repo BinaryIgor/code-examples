@@ -1,46 +1,44 @@
 groups:
-  - name: general-alerts
+  - name: scrape-alerts
     rules: 
-    - alert: ApplicationDown
+    - alert: ScrapeTargetDown
       expr: up == 0
       for: 3m
       labels:
         severity: critical
       annotations:
-        summary: "Application {{ $labels.job }} is DOWN"
-        description: "Application {{ $labels.job }} has been down for a while"
+        summary: "Scrape target {{ $labels.job }} is DOWN"
+        description: "Scrape target {{ $labels.job }} has been down for a while"
   - name: container-alerts
     rules:
     - alert: ContainerDown
-      expr: (time() - container_up_timestamp_seconds) > 120
-      for: 3m
+      expr: (time() - container_up_timestamp_seconds) > 60
       labels:
         severity: critical
       annotations:
         summary: "Container {{ $labels.container }} is DOWN"
-        description: "Container {{ $labels.container }}, running on {{ $labels.machine }} has been down for a while"
-    - alert: ApplicationHighMemoryUsage
-      expr: (monitoring_application_used_memory_bytes / monitoring_application_max_memory_bytes) > 0.8
+        description: "Container {{ $labels.container }}, running on {{ $labels.machine }}, has been down for a while"
+    - alert: ContainerHighMemoryUsage
+      expr: (container_used_memory_bytes / container_max_memory_bytes) > 0.8
       for: 5m
       labels:
         severity: critical
       annotations:
-        summary: "Application {{ $labels.application }} high Memory Usage"
-        description: "Application {{ $labels.application }} is using more than 80% of memory for 5 minutes" 
-    - alert: ApplicationHighCpuUsage
-      expr: monitoring_application_cpu_usage_percent > 0.8
+        summary: "Container {{ $labels.container }} high Memory Usage"
+        description: "Container {{ $labels.container }}, running on {{ $labels.machine }}, is using more than 80% of memory for 5 minutes" 
+    - alert: ContainerHighCpuUsage
+      expr: (container_cpu_usage_percent / container_cpus_available) > 0.8
       for: 5m
       labels:
         severity: critical
       annotations:
-        summary: "Application {{ $labels.application }} high CPU usage"
-        description: "Application {{ $labels.application }} is using more than 80% of CPU for 5 minutes"
-    - alert: ApplicationLogsErrors
-      # were there any errors in the last 15 minutes
-      expr: (time() - monitoring_application_logs_error_timestamp_seconds{application!~"${LOGS_ERRORS_ALERT_TO_IGNORE_APPS_REGEX}"}) < 900
+        summary: "Container {{ $labels.container }} high CPU usage"
+        description: "Container {{ $labels.container }}, running on {{ $labels.machine }}, is using more than 80% of CPU for 5 minutes"
+    - alert: ContainerLogsErrors
+      expr: sum by(machine, container) (increase(container_logs_total{level="error"}[5m]))
       labels:
         severity: critical
       annotations:
-        summary: "Application {{ $labels.application }} ERROR"
-        description: "Application {{ $labels.application }} is having errors in its logs"
+        summary: "Container {{ $labels.container }} ERROR"
+        description: "Container {{ $labels.container }}, running on {{ $labels.machine }}, is having errors in its logs"
       
