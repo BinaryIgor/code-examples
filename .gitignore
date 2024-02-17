@@ -11,3 +11,7 @@ target/
 .classpath
 .project
 .settings
+
+# Python
+**/__pycache__/
+**/venv/

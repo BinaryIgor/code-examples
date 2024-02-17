@@ -1,0 +1,27 @@
+{
+  "default_mapping": {
+    "warning_keywords": [
+      "WARNING",
+      "WARN"
+    ],
+    "error_keywords": [
+      "ERROR"
+    ]
+  },
+  "mappings": [
+    {
+      "container_keywords": [
+        "some-custom-app"
+      ],
+      "warning_keywords": [
+        "WARNING"
+      ],
+      "error_keywords": [
+        "ERROR"
+      ],
+      "messages_to_ignore_errors": [
+        "TODO"
+      ]
+    }
+  ]
+}
