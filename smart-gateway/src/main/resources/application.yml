@@ -1,0 +1,14 @@
+spring:
+  threads:
+    virtual:
+      enabled:
+        true
+
+gateway:
+  routes:
+    - id: "user-service"
+      uri: "http://localhost:8080"
+      pathPattern: "/user"
+    - id: "binary"
+      uri: "http://localhost:8080"
+      pathPattern: "/binary"
