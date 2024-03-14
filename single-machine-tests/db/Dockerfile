@@ -1,0 +1,3 @@
+FROM postgres:15.3
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
