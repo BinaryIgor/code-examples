@@ -4,8 +4,7 @@ set -euo pipefail
 app="single-db"
 tag="${TAG:-latest}"
 tagged_image="${app}:${tag}"
-# TODO: fix this
-volume="$HOME/single_machine_volume:/var/lib/postgresql/data"
+volume="/mnt/single_machine_volume/data:/var/lib/postgresql/data"
 
 echo "Creating package in target directory for $tagged_image image..."
 echo "Preparing target dir..."
@@ -30,7 +29,7 @@ export tag=$tag
 export run_cmd="docker run -d --network host -v ${volume} --restart unless-stopped --name $app $tagged_image"
 
 cd ..
-envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > db/target/load_and_run_app.bash
-envsubst '${app} ${run_cmd}' < scripts/template_run_app.bash > db/target/run_app.bash
+envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > $app/target/load_and_run_app.bash
+envsubst '${app} ${run_cmd}' < scripts/template_run_app.bash > $app/target/run_app.bash
 
 echo "Package prepared."
