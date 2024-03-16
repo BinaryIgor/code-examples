@@ -1,4 +1,4 @@
-package com.binaryigor.single.app.shared;
+package com.binaryigor.single.app;
 
 public class ResourceNotFoundException extends RuntimeException {
 

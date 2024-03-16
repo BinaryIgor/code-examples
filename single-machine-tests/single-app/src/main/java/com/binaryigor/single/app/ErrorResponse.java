@@ -1,4 +1,4 @@
-package com.binaryigor.single.app.shared;
+package com.binaryigor.single.app;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

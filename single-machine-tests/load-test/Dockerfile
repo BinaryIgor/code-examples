@@ -1,3 +1,3 @@
-FROM eclipse-temurin:21
-COPY src/LoadTest.java /LoadTest.java
+FROM eclipse-temurin:21-alpine
+COPY LoadTest.java /LoadTest.java
 ENTRYPOINT exec java LoadTest.java

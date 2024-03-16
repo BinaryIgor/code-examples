@@ -31,18 +31,20 @@ def print_and_exit(message):
 if len(sys.argv) < 2:
     print_and_exit("Argument with machine size is required!")
 
-machine_size = sys.argv[1]
-if machine_size == SMALL_MACHINE:
-    machine_slug = SMALL_MACHINE_SLUG
-elif machine_size == MEDIUM_MACHINE:
-    machine_slug = MEDIUM_MACHINE_SLUG
-elif machine_size == LARGE_MACHINE:
-    machine_slug = LARGE_MACHINE_SLUG
-elif machine_size == EXTRA_LARGE_MACHINE:
-    machine_slug = EXTRA_LARGE_MACHINE_SLUG
+single_machine_size = sys.argv[1]
+if single_machine_size == SMALL_MACHINE:
+    single_machine_slug = SMALL_MACHINE_SLUG
+elif single_machine_size == MEDIUM_MACHINE:
+    single_machine_slug = MEDIUM_MACHINE_SLUG
+elif single_machine_size == LARGE_MACHINE:
+    single_machine_slug = LARGE_MACHINE_SLUG
+elif single_machine_size == EXTRA_LARGE_MACHINE:
+    single_machine_slug = EXTRA_LARGE_MACHINE_SLUG
 else:
-    print(f"Unkown machine size: {machine_size}")
+    print(f"Unkown machine size: {single_machine_size}")
     sys.exit(1)
+
+test_machine_slug = MEDIUM_MACHINE_SLUG
 
 SSH_KEY_FINGERPRINT = "a0:3a:d4:d8:52:4a:8b:34:50:fd:20:c7:19:a1:8a:b4"
 
@@ -77,7 +79,7 @@ with open("init_machine.bash") as f:
 single_machine_config = {
     "name": SINGLE_MACHINE_NAME,
     "region": REGION,
-    "size": machine_slug,
+    "size": single_machine_slug,
     "image": IMAGE,
     "ssh_keys": [SSH_KEY_FINGERPRINT],
     "backups": False,
@@ -88,7 +90,7 @@ single_machine_config = {
 test_machine_config =  {
     "name": TEST_MACHINE_NAME,
     "region": REGION,
-    "size": MEDIUM_MACHINE_SLUG,
+    "size": test_machine_slug,
     "image": IMAGE,
     "ssh_keys": [SSH_KEY_FINGERPRINT],
     "backups": False,

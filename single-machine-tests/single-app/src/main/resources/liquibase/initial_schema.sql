@@ -4,3 +4,5 @@ CREATE TABLE account (
     email TEXT UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX account_name ON account(name);

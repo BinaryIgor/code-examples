@@ -35,6 +35,10 @@ public class AccountRepository {
                 .list();
     }
 
+    public void create(List<Account> accounts) {
+        create(accounts, 500);
+    }
+
     public void create(List<Account> accounts, int batchSize) {
         if (accounts.isEmpty()) {
             return;
@@ -64,5 +68,11 @@ public class AccountRepository {
         return accounts.stream()
                 .collect(Collectors.groupingBy(i -> index.getAndIncrement() / batchSize))
                 .values();
+    }
+
+    public void delete(UUID id) {
+        jdbcClient.sql("DELETE FROM account WHERE id = ?")
+                .param(id)
+                .update();
     }
 }
