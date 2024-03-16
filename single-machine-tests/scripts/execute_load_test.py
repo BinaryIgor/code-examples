@@ -7,9 +7,9 @@ import requests as requests_lib
 import random
 
 args = {
-    "requests": 30,
-    "rate_per_second": 3,
-    "endpoints": [""]
+    "requests": 5000,
+    "rate_per_second": 500,
+    "endpoints": ["http://164.92.137.232:8080/accounts"]
 }
 
 endpoints = args["endpoints"]
@@ -19,7 +19,7 @@ print(endpoints)
 
 def task():
     # Make it more uniform, so that not all requests start at once
-    delay = random.uniform(0, 0.2)
+    delay = random.uniform(0, 0.5)
     time.sleep(delay)
 
     start = time.time()
@@ -61,7 +61,7 @@ def percentile(data, percentile):
 rate_per_second = args["rate_per_second"]
 
 requests = args["requests"]
-parallelism = args.get("parallelism", 25)
+parallelism = min(2 * rate_per_second, 250)
 
 start = time.time()
 
@@ -84,16 +84,19 @@ print(f"{requests} requests with {rate_per_second} per second rate took {duratio
 
 sorted_results = sorted(results)
 
-mean = statistics.mean(sorted_results)
-median = statistics.median(sorted_results)
-std = statistics.stdev(sorted_results)
-percentile_75 = percentile(sorted_results, 75)
-percentile_90 = percentile(sorted_results, 90)
-percentile_95 = percentile(sorted_results, 95)
-percentile_99 = percentile(sorted_results, 99)
-percentile_100 = percentile(sorted_results, 100)
+def formatted_seconds(num):
+    return round(num, 3)
 
-print("Stats...")
+mean = formatted_seconds(statistics.mean(sorted_results))
+median = formatted_seconds(statistics.median(sorted_results))
+std = formatted_seconds(statistics.stdev(sorted_results))
+percentile_75 = formatted_seconds(percentile(sorted_results, 75))
+percentile_90 = formatted_seconds(percentile(sorted_results, 90))
+percentile_95 = formatted_seconds(percentile(sorted_results, 95))
+percentile_99 = formatted_seconds(percentile(sorted_results, 99))
+percentile_100 = formatted_seconds(percentile(sorted_results, 100))
+
+print("Stats in seconds...")
 print(f"Mean: {mean}")
 print(f"Median: {median}")
 print(f"Std: {std}")

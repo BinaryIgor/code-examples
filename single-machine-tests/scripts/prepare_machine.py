@@ -3,17 +3,45 @@ from os import environ
 import sys
 import time
 
+SMALL_MACHINE = "small"
+SMALL_MACHINE_SLUG = "s-1vcpu-1gb-amd"
+
+MEDIUM_MACHINE = "medium"
+MEDIUM_MACHINE_SLUG = "s-2vcpu-2gb-amd"
+
+LARGE_MACHINE = "large"
+LARGE_MACHINE_SLUG = "s-4vcpu-8gb-amd"
+
+EXTRA_LARGE_MACHINE = "x-large"
+EXTRA_LARGE_MACHINE_SLUG = "s-8vcpu-16gb-amd"
+
+def print_and_exit(message):
+    print(message)
+    sys.exit(1)
+
+if len(sys.argv) < 2:
+    print_and_exit("Argument with machine size is required!")
+
+machine_size = sys.argv[1]
+if machine_size == SMALL_MACHINE:
+    machine_slug = SMALL_MACHINE_SLUG
+elif machine_size == MEDIUM_MACHINE:
+    machine_slug = MEDIUM_MACHINE_SLUG
+elif machine_size == LARGE_MACHINE:
+    machine_slug = LARGE_MACHINE_SLUG
+elif machine_size == EXTRA_LARGE_MACHINE:
+    machine_slug = EXTRA_LARGE_MACHINE_SLUG
+else:
+    print(f"Unkown machine size: {machine_size}")
+    sys.exit(1)
+
 SSH_KEY_FINGERPRINT = "a0:3a:d4:d8:52:4a:8b:34:50:fd:20:c7:19:a1:8a:b4"
 
 DIGITAL_OCEAN_URL = "https://api.digitalocean.com/v2"
 
-MACHINE_NAME = "single-machine"
-VOLUME_NAME = f"{MACHINE_NAME}-volume"
+MACHINE_NAME = f"single-machine-{machine_size}"
+VOLUME_NAME = f"single-machine-volume"
 
-SMALL_MACHINE = "s-1vcpu-1gb-amd"
-MEDIUM_MACHINE = "s-2vcpu-2gb-amd"
-LARGE_MACHINE = "s-4vcpu-8gb-amd"
-EXTRA_LARGE_MACHINE = "s-8vcpu-16gb-amd"
 REGION = "fra1"
 IMAGE = "ubuntu-22-04-x64"
 
@@ -22,7 +50,7 @@ print("Creating machine for deploy...")
 API_TOKEN = environ.get("DO_API_TOKEN")
 
 if API_TOKEN is None:
-    raise Exception("DO_API_TOKEN env variable needs to be supplied with valid digital ocean token")
+    print("DO_API_TOKEN env variable needs to be supplied with valid digital ocean token")
 
 
 AUTH_HEADER = {"Authorization": f"Bearer {API_TOKEN}"}
@@ -40,7 +68,7 @@ with open("machine_init.bash") as f:
 droplet_config = {
     "name": MACHINE_NAME,
     "region": REGION,
-    "size": SMALL_MACHINE,
+    "size": SMALL_MACHINE_SLUG,
     "image": IMAGE,
     "ssh_keys": [SSH_KEY_FINGERPRINT],
     "backups": False,
@@ -51,7 +79,7 @@ droplet_config = {
 # TODO: describe for what we need this
 volume_config = {
     "name": VOLUME_NAME,
-    "size_gigabytes": 50,
+    "size_gigabytes": 25,
     "region": REGION,
     "filesystem_type": "ext4"
 }
@@ -59,18 +87,22 @@ volume_config = {
 print(droplet_config)
 print()
 
-response = requests.post(f'{DIGITAL_OCEAN_URL}/droplets', headers=AUTH_HEADER, json=droplet_config)
-if not response.ok:
-    print(f'''Fail to create droplet!
-     Code: {response.status_code}
-     Body: {response.text}''')
-    sys.exit(1)
+def create_resource(path, resource, data):
+    response = requests.post(f'{DIGITAL_OCEAN_URL}/{path}', headers=AUTH_HEADER, json=data)
+    if not response.ok:
+        print_and_exit(f'''Fail to create {resource}!
+        Code: {response.status_code}
+        Body: {response.text}''')
 
+    return response.json()[resource]
 
-print("Droplet is being created...")
-created_droplet = response.json()["droplet"]
+print("Creating droplet...")
+
+created_droplet = create_resource("droplets", "droplet", droplet_config)
+
 print("...")
-# print(created_droplet)
+print(created_droplet)
+print("...")
 
 droplet_id = created_droplet["id"]
 droplet_ip = "unknown"
@@ -84,19 +116,10 @@ print("...")
 
 print("Droplet created, creating volume...")
 
-response = requests.post(f'{DIGITAL_OCEAN_URL}/volumes', headers=AUTH_HEADER, json=volume_config)
-if not response.ok:
-    print(f'''Fail to create volume!
-     Code: {response.status_code}
-     Body: {response.text}''')
-    sys.exit(1)
+created_volume = create_resource("volumes", "volume", volume_config)
 
-
-print("Volume is being created...")
-created_volume = response.json()["volume"]
 print("...")
 print(created_volume)
-
 
 print("...")
 
@@ -114,17 +137,15 @@ while True:
         time.sleep(5)
 
 
-
 response = requests.post(f'{DIGITAL_OCEAN_URL}/volumes/actions', headers=AUTH_HEADER, json={
     "type": "attach",
     "volume_name": VOLUME_NAME,
     "droplet_id": droplet_id
 })
 if not response.ok:
-    print(f'''Fail to attach volume!
-     Code: {response.status_code}
-     Body: {response.text}''')
-    sys.exit(1)
+    print_and_exit(f'''Fail to attach volume!
+    Code: {response.status_code}
+    Body: {response.text}''')
 
 print("Volume is being attached!")
 
