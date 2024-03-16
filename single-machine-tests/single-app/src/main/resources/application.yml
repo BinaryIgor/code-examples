@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: single-app
+  datasource:
+    url: "${DB_URL:jdbc:postgresql://localhost:5432/single_db}"
+    username: "${DB_USER:postgres}"
+    password: "${DB_PASSWORD:postgres}"
+    hikari:
+      pool-size: 10
+  liquibase:
+    change-log: classpath:liquibase/changelog.xml
+  threads:
+    virtual:
+      enabled:
+        true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "health", "info", "prometheus" ]
+  metrics:
+    distribution:
+#      percentiles[http.server.requests]: 0.5, 0.75, 0.95, 0.99
+#      percentiles[method.timed]: 0.5, 0.75, 0.95, 0.99
+      percentiles-histogram[http.server.requests]: true
+#      percentiles-histogram[method.timed]: true

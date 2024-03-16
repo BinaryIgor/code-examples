@@ -18,7 +18,7 @@ echo
 echo "Dirs prepared, copying package, this can take a while..."
 
 cd ..
-scp -r $app/target/* ${remote_host}:${latest_deploy_dir}
+scp -r $app/dist/* ${remote_host}:${latest_deploy_dir}
 
 echo
 echo "Package copied, loading and running app, this can take a while.."
