@@ -3,8 +3,9 @@
 # some-wisdom htmx app
 **/__quote-notes.json
 
-# Maven
+# Maven/Java
 target/
+out/
 # Intellij
 .idea/
 *.iml

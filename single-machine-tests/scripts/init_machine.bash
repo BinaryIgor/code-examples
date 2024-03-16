@@ -2,16 +2,16 @@
 set -euo pipefail
 
 # Create user and setup passwordless sudo to simplify admin tasks
-useradd --create-home --shell "/bin/bash" --groups sudo "single-machine"
-echo "single-machine ALL=(ALL) NOPASSWD: ALL" | EDITOR='tee -a' visudo
+useradd --create-home --shell "/bin/bash" --groups sudo "_user_placeholder_"
+echo "_user_placeholder_ ALL=(ALL) NOPASSWD: ALL" | EDITOR='tee -a' visudo
 
 # Create SSH directory for sudo user and move keys over
-home_directory="$(eval echo ~single-machine)"
+home_directory="$(eval echo ~_user_placeholder_)"
 mkdir --parents "${home_directory}/.ssh"
 cp /root/.ssh/authorized_keys "$home_directory/.ssh"
 chmod 0700 "$home_directory/.ssh"
 chmod 0600 "$home_directory/.ssh/authorized_keys"
-chown --recursive "single-machine":"single-machine" "$home_directory/.ssh"
+chown --recursive "_user_placeholder_":"_user_placeholder_" "$home_directory/.ssh"
 
 # Disable root SSH login with password
 sed --in-place 's/^PermitRootLogin.*/PermitRootLogin no/g' /etc/ssh/sshd_config
@@ -33,4 +33,4 @@ apt-cache policy docker-ce
 apt install docker-ce -y
 
 # Allow non root access to a docker
-usermod -aG docker single-machine
+usermod -aG docker _user_placeholder_
