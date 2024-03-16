@@ -50,7 +50,9 @@ DIGITAL_OCEAN_URL = "https://api.digitalocean.com/v2"
 
 SINGLE_MACHINE_NAME = "single-machine"
 TEST_MACHINE_NAME = "test-machine"
-SINGLE_MACHINE_VOLUME_NAME = f"single-machine-volume"
+# single-db volume name needs to be synchronized, if changed!
+SINGLE_MACHINE_VOLUME_NAME = "single-machine-volume"
+FIREWALL_NAME = "single-machine-test-firewall"
 
 REGION = "fra1"
 IMAGE = "ubuntu-22-04-x64"
@@ -68,10 +70,6 @@ with open("init_machine.bash") as f:
 with open("init_machine.bash") as f:
     init_test_machine = f.read().replace(USER_PLACEHOLDER, "test-machine")
 
-
-
-# print("Init script read, its content:")
-# print(machine_init)
 
 # To debug user data, run: 
 # cat /var/log/cloud-init-output.log | grep userdata 
@@ -106,6 +104,55 @@ volume_config = {
     "filesystem_type": "ext4"
 }
 
+firewall_all_addresses =  {
+    "addresses": [
+        "0.0.0.0/0",
+        "::/0"
+    ]
+}
+firewall_config = {
+    "name": FIREWALL_NAME,
+    "inbound_rules": [
+       {
+        "protocol": "icmp",
+        "ports": "0",
+        "sources": firewall_all_addresses
+      },
+      {
+        "protocol": "tcp",
+        "ports": "22",
+        "sources": firewall_all_addresses
+      },
+       {
+        "protocol": "tcp",
+        "ports": "80",
+        "sources": firewall_all_addresses
+      },
+      {
+        "protocol": "tcp",
+        "ports": "443",
+        "sources": firewall_all_addresses
+      }
+    ],
+    "outbound_rules": [
+      {
+        "protocol": "tcp",
+        "ports": "0",
+        "destinations": firewall_all_addresses
+      },
+      {
+        "protocol": "udp",
+        "ports": "0",
+        "destinations": firewall_all_addresses
+      },
+      {
+        "protocol": "icmp",
+        "ports": "0",
+        "destinations": firewall_all_addresses
+      }
+    ]
+}
+
 def get_resources(resource):
     response = requests.get(f'{DIGITAL_OCEAN_URL}/{resource}', headers=AUTH_HEADER)
     response.raise_for_status()
@@ -122,83 +169,147 @@ def create_resource(path, resource, data):
     return response.json()[resource]
 
 def create_droplets_if_needed():
-    single_machine_exists = False
-    test_machine_exists = False
+    droplet_names_ids = {}
     for d in get_resources(DROPLETS_RESOURCE):
         if d[NAME] == SINGLE_MACHINE_NAME:
-            single_machine_exists = True
+            droplet_names_ids[SINGLE_MACHINE_NAME] = d[ID]
         elif d[NAME] == TEST_MACHINE_NAME:
-            test_machine_exists = True
+            droplet_names_ids[TEST_MACHINE_NAME] = d[ID]
 
-    if single_machine_exists:
+
+    wait_for_machines_to_become_active = len(droplet_names_ids) < 2
+
+    if SINGLE_MACHINE_NAME in droplet_names_ids:
         print("Single machine exists, skipping its creation!")
     else:
-        print("Creating single machine...")
+        print(f"Creating {SINGLE_MACHINE_NAME}...")
+        created_droplet = create_resource(DROPLETS_RESOURCE, "droplet", single_machine_config)
+        droplet_names_ids[SINGLE_MACHINE_NAME] = created_droplet[ID]
+        print(f"{SINGLE_MACHINE_NAME} created!")
 
-    if test_machine_exists:
+    if TEST_MACHINE_NAME in droplet_names_ids:
         print("Test machine exists, skipping its creation!")
     else:
-        print("Creating test machine...")
+        print(f"Creating test {TEST_MACHINE_NAME}...")
+        created_droplet = create_resource(DROPLETS_RESOURCE, "droplet", test_machine_config)
+        droplet_names_ids[TEST_MACHINE_NAME] = created_droplet[ID]
+        print(f"{TEST_MACHINE_NAME} created!")
+
+    if not wait_for_machines_to_become_active:
+        return droplet_names_ids
+
+    # Eventual consistency of Digital Ocean: sometimes new droplets are not visible immediately after creation
+    time.sleep(1)
+
+    while True:
+        new_droplets = []
+
+        for d in get_resources(DROPLETS_RESOURCE):
+            d_status = d['status']
+            if d_status == 'new':
+                new_droplets.append(d[NAME])
+
+        if new_droplets:
+            print(f"Waiting for {new_droplets} droplets to become active...")
+            print("...")
+            time.sleep(5)
+        else:
+            print("All droplets are active!")
+            print()
+            break
+
+    return droplet_names_ids
+
+def create_and_attach_volume_if_needed(droplet_names_ids):
+    volume_exists = False
+    volume_attached = False
+    single_machine_droplet_id = droplet_names_ids[SINGLE_MACHINE_NAME]
+    for v in get_resources(VOLUMES_RESOURCE):
+        if v[NAME] == SINGLE_MACHINE_VOLUME_NAME:
+            volume_exists = True
+            attached_to_droplets = v["droplet_ids"]
+            volume_attached = single_machine_droplet_id in attached_to_droplets
+            break
+
+    if volume_exists:
+        print("Volume exists, skipping its creation!")
+    else:
+        print("Creating volume...")
+        create_resource(VOLUMES_RESOURCE, "volume", volume_config)
+        print("Volume created!")
+
+    if not volume_attached:
+        print("Volume not attached, attaching it!")
+        attach_volume(single_machine_droplet_id)
+        print("Volume attached!")
+
+
+def attach_volume(droplet_id):
+    response = requests.post(f'{DIGITAL_OCEAN_URL}/{VOLUMES_RESOURCE}/actions', headers=AUTH_HEADER, json={
+        "type": "attach",
+        "volume_name": SINGLE_MACHINE_VOLUME_NAME,
+        "droplet_id": droplet_id
+    })
+    if not response.ok:
+        print_and_exit(f'''Fail to attach volume!
+        Code: {response.status_code}
+        Body: {response.text}''')
+
+def create_and_assign_firewall_if_needed(droplet_names_ids):
+    firewall_id = None
+    assigned_droplet_ids = []
+    for f in get_resources(FIREWALLS_RESOURCE):
+        if f[NAME] == FIREWALL_NAME:
+            firewall_id = f[ID]
+            assigned_droplet_ids = f["droplet_ids"]
+            break
+
+    
+    if firewall_id:
+        print("Firewall exists, skipping its creation!")
+    else:
+        print("Firewall does not exist, creating it..")
+        create_resource(FIREWALLS_RESOURCE, "firewall", firewall_config)
+        print("Firewall created!")
+
+    droplet_ids = droplet_names_ids.values()
+    to_assign_droplet_ids = [did for did in droplet_ids if did not in assigned_droplet_ids]
+
+    if len(to_assign_droplet_ids) > 0:
+        print("Droplets are not assinged to firewall, assigning them...")
+        assign_firewall(firewall_id, to_assign_droplet_ids)
+        print("Droplets assigned!")
+    else:
+        print("Droplets are assigned to firewalls already!")
+
+
+def assign_firewall(firewall_id, droplet_ids):
+    response = requests.post(f'{DIGITAL_OCEAN_URL}/{FIREWALLS_RESOURCE}/{firewall_id}/{DROPLETS_RESOURCE}',
+                                headers=AUTH_HEADER, 
+                                json={ "droplet_ids": droplet_ids })
+    if not response.ok:
+        print_and_exit(f'''Fail to assign firewall to droplets!
+        Code: {response.status_code}
+        Body: {response.text}''')
 
 
 print("Creating droplets, if needed...")
 
-create_droplets_if_needed()
+droplet_names_ids = create_droplets_if_needed()
+print("...")
+time.sleep(1)
 
-# print("...")
-# print(created_droplet)
-# print("...")
+print("Droplets prepared, creating and attaching volume if needed...")
 
-# droplet_id = created_droplet["id"]
-# droplet_ip = "unknown"
-# droplet_ips = created_droplet["networks"]["v4"]
-# for a in droplet_ips:
-#     if a['type'] == 'public':
-#         droplet_ip = a['ip_address']
-#         break
+create_and_attach_volume_if_needed(droplet_names_ids)
+print("...")
+time.sleep(1)
 
-# print("...")
+print("Volume created and attached, creating and assigning firewall if needed...")
 
-# print("Droplet created, creating volume...")
+create_and_assign_firewall_if_needed(droplet_names_ids)
 
-# created_volume = create_resource("volumes", "volume", volume_config)
+print("...")
 
-# print("...")
-# print(created_volume)
-
-# print("...")
-
-# print("Before attaching volume, we need to wait for the droplet creation to finish...")
-
-# while True:
-#     response = requests.get(f'{DIGITAL_OCEAN_URL}/droplets/{droplet_id}', headers=AUTH_HEADER)
-#     d_status = response.json()["droplet"]['status']
-#     print(f"Droplet status: {d_status}")
-#     if d_status == 'active':
-#         print("Droplet is active, we can now attach its volume!")
-#         break
-#     else:
-#         print("Waiting for droplet to become active...")
-#         time.sleep(5)
-
-
-# response = requests.post(f'{DIGITAL_OCEAN_URL}/volumes/actions', headers=AUTH_HEADER, json={
-#     "type": "attach",
-#     "volume_name": VOLUME_NAME,
-#     "droplet_id": droplet_id
-# })
-# if not response.ok:
-#     print_and_exit(f'''Fail to attach volume!
-#     Code: {response.status_code}
-#     Body: {response.text}''')
-
-# print("Volume is being attached!")
-
-# print("...")
-
-# time.sleep(1)
-
-# print("Everything should be ready in a few minutes!")
-# print("...")
-# print("To check it out, run:")
-# print(f"ssh single-machine@{droplet_ip}")
+print("Everything should be ready!")
+print("Get your machine addresses from DigitalOcean UI and start experimenting!")

@@ -4,8 +4,7 @@ set -euo pipefail
 app="single-db"
 tag="${TAG:-latest}"
 tagged_image="${app}:${tag}"
-# TODO: better naming strategy
-volume="-v /mnt/single_machine_small_volume/data:/var/lib/postgresql/data"
+volume="-v /mnt/single_machine_volume/data:/var/lib/postgresql/data"
 
 echo "Creating package in dist directory for $tagged_image image..."
 echo "Preparing dist dir..."

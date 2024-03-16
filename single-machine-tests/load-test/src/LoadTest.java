@@ -6,29 +6,30 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class LoadTest {
 
     static final Random RANDOM = new Random();
+    static final AtomicLong REQUEST_ERRORS = new AtomicLong();
 
     public static void main(String[] args) throws Exception {
-        var requests = envIntValueOrDefault("REQUESTS", 100);
-        var ratePerSecond = envIntValueOrDefault("RATE_PER_SECOND", 10);
-        var maxPendingFutures = envIntValueOrDefault("MAX_PENDING_FUTURES", 500);
+        var requests = envIntValueOrDefault("REQUESTS", 10_000);
+        var ratePerSecond = envIntValueOrDefault("RATE_PER_SECOND", 100);
+        var maxPendingFutures = envIntValueOrDefault("MAX_PENDING_FUTURES", 100);
+        var connectTimeout = envIntValueOrDefault("CONNECT_TIMEOUT", 2_000);
+        var requestTimeout = envIntValueOrDefault("REQUEST_TIMEOUT", 10_000);
         var endpoints = endpoints();
 
-        System.out.println("About to make %d requests, with %d/s rate to %s endpoints..."
-                .formatted(requests, ratePerSecond, endpoints));
+        System.out.println("About to make %d requests, with %d/s rate, %d and %d timeouts, to %s endpoints..."
+                .formatted(requests, ratePerSecond, connectTimeout, requestTimeout, endpoints));
 
         var start = System.currentTimeMillis();
 
-        var httpClient = newHttpClient();
+        var httpClient = newHttpClient(connectTimeout);
 
         var executor = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -36,7 +37,7 @@ public class LoadTest {
         var results = new LinkedList<Long>();
 
         for (var i = 0; i < requests; i++) {
-            var result = executor.submit(() -> task(httpClient, endpoints));
+            var result = executor.submit(() -> task(httpClient, requestTimeout, endpoints));
             resultFutures.add(result);
 
             var issuedRequests = i + 1;
@@ -85,6 +86,11 @@ public class LoadTest {
         System.out.println("Percentile 95: " + formattedSeconds(percentile95));
         System.out.println("Percentile 99: " + formattedSeconds(percentile99));
         System.out.println("Percentile 999: " + formattedSeconds(percentile999));
+
+        System.out.println();
+
+        System.out.println("Completed requests: " + requests);
+        System.out.println("Request errors: " + REQUEST_ERRORS.get());
     }
 
     static int envIntValueOrDefault(String key, int defaultValue) {
@@ -96,31 +102,41 @@ public class LoadTest {
     }
 
     static List<String> endpoints() {
-        var endpoints = envValueOrDefault("ENDPOINTS", "");
+        var endpoints = envValueOrDefault("ENDPOINTS",
+                String.join(",",
+                        accountByIdEndpoint(UUID.randomUUID()),
+                        accountByIdEndpoint(UUID.randomUUID()),
+                        accountByIdEndpoint(UUID.randomUUID()))
+        );
         if (endpoints.isEmpty()) {
             throw new RuntimeException("At least one endpoint is required!");
         }
-        return Arrays.stream(endpoints.split(",")).toList();
+        return Arrays.stream(endpoints.split(",")).map(String::strip).toList();
     }
 
-    static HttpClient newHttpClient() {
+    static String accountByIdEndpoint(UUID id) {
+        return "http://206.189.55.168:80/accounts/" + id;
+    }
+
+    static HttpClient newHttpClient(int connectTimeout) {
         return HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
+                .followRedirects(HttpClient.Redirect.NEVER)
+                .connectTimeout(Duration.ofMillis(connectTimeout))
                 .build();
     }
 
-    static long task(HttpClient httpClient, List<String> endpoints) {
+    static long task(HttpClient httpClient, int timeout, List<String> endpoints) {
         var start = System.currentTimeMillis();
         try {
             var request = HttpRequest.newBuilder()
                     .uri(URI.create(randomEndpoint(endpoints)))
                     .GET()
-                    .timeout(Duration.ofSeconds(10))
+                    .timeout(Duration.ofMillis(timeout))
                     .build();
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             System.out.println("Timeout or another problem!");
-            e.printStackTrace();
+            REQUEST_ERRORS.incrementAndGet();
         }
         return System.currentTimeMillis() - start;
     }
