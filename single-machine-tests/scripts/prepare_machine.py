@@ -50,12 +50,12 @@ print("Creating machine for deploy...")
 API_TOKEN = environ.get("DO_API_TOKEN")
 
 if API_TOKEN is None:
-    print("DO_API_TOKEN env variable needs to be supplied with valid digital ocean token")
+    print_and_exit("DO_API_TOKEN env variable needs to be supplied with valid digital ocean token")
 
 
 AUTH_HEADER = {"Authorization": f"Bearer {API_TOKEN}"}
 
-with open("machine_init.bash") as f:
+with open("init_single_machine.bash") as f:
     machine_init = f.read()
 
 
@@ -68,7 +68,7 @@ with open("machine_init.bash") as f:
 droplet_config = {
     "name": MACHINE_NAME,
     "region": REGION,
-    "size": SMALL_MACHINE_SLUG,
+    "size": machine_slug,
     "image": IMAGE,
     "ssh_keys": [SSH_KEY_FINGERPRINT],
     "backups": False,

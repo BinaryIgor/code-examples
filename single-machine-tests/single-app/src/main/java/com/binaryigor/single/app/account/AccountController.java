@@ -27,6 +27,11 @@ public class AccountController {
                 .orElseThrow(() -> new ResourceNotFoundException("Account of %s id does not exist".formatted(id)));
     }
 
+    @GetMapping
+    List<Account> getAccounts(@RequestParam String name) {
+        return accountRepository.accountsByName(name);
+    }
+
     @PostMapping("generate-random")
     List<UUID> generateRandom(@RequestParam(required = false, defaultValue = "10") Integer size) {
         var accounts = Stream.generate(() -> {
@@ -36,7 +41,7 @@ public class AccountController {
                 .limit(size)
                 .toList();
 
-        accountRepository.create(accounts, 100);
+        accountRepository.create(accounts, 1000);
 
         return accounts.stream().map(Account::id).toList();
     }

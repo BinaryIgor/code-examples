@@ -28,6 +28,13 @@ public class AccountRepository {
                 .optional();
     }
 
+    public List<Account> accountsByName(String name) {
+        return jdbcClient.sql("SELECT * FROM account WHERE name = ?")
+                .param(name)
+                .query(Account.class)
+                .list();
+    }
+
     public void create(List<Account> accounts, int batchSize) {
         if (accounts.isEmpty()) {
             return;
