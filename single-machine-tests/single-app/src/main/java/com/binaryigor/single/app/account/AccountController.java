@@ -38,10 +38,9 @@ public class AccountController {
                 .orElseThrow(() -> new ResourceNotFoundException("Account of %s id does not exist".formatted(id)));
     }
 
-    // TODO: do we need it?
-    @GetMapping
-    List<Account> getAccounts(@RequestParam String name) {
-        return accountRepository.accountsByName(name);
+    @GetMapping("count")
+    CountAccountsByNameResponse countAccountsByName(@RequestParam String name) {
+        return new CountAccountsByNameResponse(name, accountRepository.countByName(name));
     }
 
     @PostMapping("generate-test-data")
@@ -109,6 +108,6 @@ public class AccountController {
         return ErrorResponse.asResponseEntity(HttpStatus.NOT_FOUND, exception);
     }
 
-    record GenerateRandomAccountsResponse(int generated, List<UUID> someIds) {
+    record CountAccountsByNameResponse(String name, int count) {
     }
 }

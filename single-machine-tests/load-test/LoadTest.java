@@ -1,8 +1,5 @@
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpConnectTimeoutException;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.http.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -10,31 +7,29 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class LoadTest {
 
-    static final int REQUESTS = envIntValueOrDefault("REQUESTS", 100);
-    static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", 10);
-    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 5000);
+    static final TestProfileParams TEST_PROFILE = testProfileParams();
+    static final int REQUESTS = envIntValueOrDefault("REQUESTS", TEST_PROFILE.requests());
+    static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", TEST_PROFILE.requestsPerSecond());
+    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", TEST_PROFILE.maxConcurrency());
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 1000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     // Modify these ones for your custom endpoints to a one host
     static final String HOST = envValueOrDefault("HOST", "http://164.92.167.184:80");
     static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
-    static final List<Endpoint> ENDPOINTS = endpoints(HOST);
-
     static final Random RANDOM = new Random();
-
-    static final int MAX_TO_LOG_ISSUES = 100;
+    static final List<Endpoint> ENDPOINTS = endpoints();
+    static final List<String> ENDPOINT_IDS = ENDPOINTS.stream().map(Endpoint::id).distinct().toList();
+    static final int MAX_TO_LOG_ISSUES = 10;
     static final AtomicInteger LOGGED_ISSUES = new AtomicInteger(0);
-    static final AtomicLong REQUESTS_TOTAL = new AtomicLong(0);
-    static final AtomicLong REQUEST_CONNECT_TIMEOUTS_TOTAL = new AtomicLong(0);
 
     public static void main(String[] args) throws Exception {
-        var endpointsStats = ENDPOINTS.stream()
+        var endpointsStats = ENDPOINT_IDS.stream()
                 .collect(Collectors.toMap(Function.identity(), k -> EndpointStats.empty()));
 
         System.out.println("Starting LoadTest!");
@@ -42,7 +37,7 @@ public class LoadTest {
         System.out.println("Timeouts are %d ms for connect and %d ms for request".formatted(CONNECT_TIMEOUT, REQUEST_TIMEOUT));
         System.out.println("Max concurrency is capped at: " + MAX_CONCURRENCY);
         System.out.println("Endpoints to test (chosen randomly):");
-        ENDPOINTS.forEach(System.out::println);
+        ENDPOINTS.forEach(e -> System.out.println(e.id()));
         printDelimiter();
 
         var start = System.currentTimeMillis();
@@ -51,8 +46,8 @@ public class LoadTest {
 
         var executor = Executors.newVirtualThreadPerTaskExecutor();
 
-        var resultFutures = new LinkedList<Future<Long>>();
-        var results = new LinkedList<Long>();
+        var resultFutures = new LinkedList<Future<EndpointResult>>();
+        var results = new LinkedList<EndpointResult>();
 
         for (var i = 0; i < REQUESTS; i++) {
             var result = executor.submit(() -> task(httpClient, endpointsStats));
@@ -76,15 +71,199 @@ public class LoadTest {
             resultFutures.clear();
         }
 
-        var sortedResults = results.stream().sorted().toList();
-
         var duration = Duration.ofMillis(System.currentTimeMillis() - start);
 
         printDelimiter();
         System.out.println("%d requests with %d per second rate took %s".formatted(REQUESTS, REQUESTS_PER_SECOND, duration));
         printDelimiter();
 
-        System.out.println("Stats in seconds:");
+        System.out.println("General stats in seconds:");
+
+        var sortedResults = results.stream().map(EndpointResult::time).sorted().toList();
+        var connectTimeoutRequests = endpointsStats.values().stream().mapToInt(e -> e.connectTimeoutRequests().get()).sum();
+        var requestTimeoutRequests = endpointsStats.values().stream().mapToInt(e -> e.requestTimeoutRequests().get()).sum();
+        printStats(sortedResults, connectTimeoutRequests, requestTimeoutRequests);
+
+        printDelimiter();
+
+        ENDPOINT_IDS.forEach(endpointId -> {
+            System.out.println(endpointId + " endpoint stats in seconds:");
+
+            var endpointSortedResults = results.stream()
+                    .filter(e -> e.id().equals(endpointId))
+                    .map(EndpointResult::time).sorted().toList();
+
+            var endpointStats = endpointsStats.get(endpointId);
+
+            printStats(endpointSortedResults,
+                    endpointStats.connectTimeoutRequests().get(),
+                    endpointStats.requestTimeoutRequests().get());
+
+            System.out.println();
+            System.out.println(endpointStats);
+            printDelimiter();
+        });
+    }
+
+    static TestProfileParams testProfileParams() {
+        var envTestProfile = envValueOrDefault("TEST_PROFILE", TestProfile.LOW_LOAD.name());
+        TestProfile testProfile;
+        try {
+            testProfile = TestProfile.valueOf(envTestProfile);
+        } catch (Exception e) {
+            throw new RuntimeException(envTestProfile + " is not supported. Supported profiles: "
+                    + Arrays.toString(TestProfile.values()));
+        }
+
+        return switch (testProfile) {
+            case LOW_LOAD -> new TestProfileParams(100, 5);
+            case AVERAGE_LOAD -> new TestProfileParams(1_000, 50);
+            case HIGH_LOAD -> new TestProfileParams(10_000, 500);
+            case VERY_HIGH_LOAD -> new TestProfileParams(100_000, 5_000);
+        };
+    }
+
+    static void printDelimiter() {
+        System.out.println();
+        System.out.println("...");
+        System.out.println();
+    }
+
+    static int envIntValueOrDefault(String key, int defaultValue) {
+        return Integer.parseInt(envValueOrDefault(key, String.valueOf(defaultValue)));
+    }
+
+    static String envValueOrDefault(String key, String defaultValue) {
+        return System.getenv().getOrDefault(key, defaultValue);
+    }
+
+    static List<Endpoint> endpoints() {
+        // Used in AccountController to generate test data!
+        var existingId1 = UUID.fromString("06f40771-6460-479a-a47c-177473e240b5");
+        var existingId2 = UUID.fromString("4db7506f-43fe-475e-afbe-842514a6223b");
+        var accountByIdEndpoint = accountByIdEndpoint(List.of(existingId1, existingId2));
+
+        var existingName1 = "name-1";
+        var existingName2 = "name-5";
+        var existingName3 = "name-20";
+        var countAccountsByNameEndpoint = countAccountsByName(List.of(existingName1, existingName2, existingName3));
+
+        var writeEndpoint = Endpoint.oneInstance(
+                "POST: /accounts/execute-random-write",
+                "POST",
+                EndpointInstance.withoutBody(HOST + "/accounts/execute-random-write?secret=" + SECRET_QUERY));
+
+        return List.of(
+                writeEndpoint,
+                accountByIdEndpoint,
+                accountByIdEndpoint,
+                countAccountsByNameEndpoint);
+    }
+
+    static Endpoint accountByIdEndpoint(List<UUID> existingIds) {
+        var existingInstances = existingIds.stream().map(LoadTest::accountByIdEndpointInstance).toList();
+        return new Endpoint("GET: /accounts/{id}", "GET",
+                () -> {
+                    if (RANDOM.nextBoolean()) {
+                        return randomChoice(existingInstances);
+                    }
+                    var nonExistingId = UUID.randomUUID();
+                    return accountByIdEndpointInstance(nonExistingId);
+                });
+    }
+
+    static EndpointInstance accountByIdEndpointInstance(UUID id) {
+        return EndpointInstance.withoutBody(HOST + "/accounts/" + id + "?secret=" + SECRET_QUERY);
+    }
+
+    static Endpoint countAccountsByName(List<String> existingNames) {
+        var existingInstances = existingNames.stream().map(LoadTest::countAccountsByNameEndpointInstance).toList();
+        return new Endpoint("GET: /accounts/count?name={name}", "GET",
+                () -> {
+                    if (RANDOM.nextBoolean()) {
+                        return randomChoice(existingInstances);
+                    }
+                    var nonExistingName = "name-" + UUID.randomUUID();
+                    return countAccountsByNameEndpointInstance(nonExistingName);
+                });
+    }
+
+    static EndpointInstance countAccountsByNameEndpointInstance(String name) {
+        return EndpointInstance.withoutBody(HOST + "/accounts/count?name=%s&secret=%s".formatted(name, SECRET_QUERY));
+    }
+
+    static HttpClient newHttpClient() {
+        return HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NEVER)
+                .connectTimeout(Duration.ofMillis(CONNECT_TIMEOUT))
+                .build();
+    }
+
+    static EndpointResult task(HttpClient httpClient, Map<String, EndpointStats> endpointsStats) {
+        var start = System.currentTimeMillis();
+
+        var endpoint = randomChoice(ENDPOINTS);
+        var endpointStats = endpointsStats.get(endpoint.id());
+
+        endpointStats.incrementRequests();
+
+        try {
+            var endpointInstance = endpoint.instanceSupplier.get();
+            var body = endpointInstance.body == null ?
+                    HttpRequest.BodyPublishers.noBody() :
+                    HttpRequest.BodyPublishers.ofString(endpointInstance.body);
+
+            var request = HttpRequest.newBuilder()
+                    .uri(URI.create(endpointInstance.url))
+                    .method(endpoint.method, body)
+                    .timeout(Duration.ofMillis(REQUEST_TIMEOUT))
+                    .build();
+
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            endpointStats.incrementRequestStatus(response.statusCode());
+        } catch (Exception e) {
+            if (LOGGED_ISSUES.getAndIncrement() < MAX_TO_LOG_ISSUES) {
+                System.out.println("Timeout or another issue during request!");
+                e.printStackTrace();
+            }
+            if (e instanceof HttpConnectTimeoutException) {
+                endpointStats.incrementConnectTimeoutRequests();
+            } else if (e instanceof HttpTimeoutException) {
+                endpointStats.incrementRequestTimeoutRequests();
+            }
+        }
+
+        return new EndpointResult(endpoint.id(), System.currentTimeMillis() - start);
+    }
+
+    static List<EndpointResult> getFutureResults(List<Future<EndpointResult>> futureResults) {
+        return futureResults.stream()
+                .map(r -> {
+                    try {
+                        return r.get();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .toList();
+    }
+
+    static <T> T randomChoice(List<T> elements) {
+        var idx = RANDOM.nextInt(elements.size());
+        return elements.get(idx);
+    }
+
+    static void printStats(List<Long> sortedResults,
+                           int connectTimeoutRequests,
+                           int requestTimeoutRequests) {
+
+        var allRequests = sortedResults.size();
+        System.out.println("Executed requests: " + allRequests);
+        System.out.println("Requests with connect timeout [%d]: %d, as percentage: %d"
+                .formatted(CONNECT_TIMEOUT, connectTimeoutRequests, (connectTimeoutRequests * 100) / allRequests));
+        System.out.println("Requests with request timeout [%d]: %d, as percentage: %d"
+                .formatted(REQUEST_TIMEOUT, requestTimeoutRequests, (requestTimeoutRequests * 100) / allRequests));
 
         var min = sortedResults.getFirst();
         var max = sortedResults.getLast();
@@ -106,110 +285,6 @@ public class LoadTest {
         System.out.println("Percentile 95: " + formattedSeconds(percentile95));
         System.out.println("Percentile 99: " + formattedSeconds(percentile99));
         System.out.println("Percentile 999: " + formattedSeconds(percentile999));
-        System.out.println("Total requests: " + REQUESTS_TOTAL.get());
-        System.out.println("Total requests with connect timeout: " + REQUEST_CONNECT_TIMEOUTS_TOTAL.get());
-        System.out.println("Total requests with connect timeout %: "
-                + REQUEST_CONNECT_TIMEOUTS_TOTAL.get() * 100 / REQUESTS_TOTAL.get());
-
-        printDelimiter();
-
-        System.out.println("Endpoints stats:");
-        endpointsStats.forEach((k, v) -> {
-            System.out.println();
-            System.out.println(k);
-            System.out.println(v);
-        });
-    }
-
-    static void printDelimiter() {
-        System.out.println();
-        System.out.println("...");
-        System.out.println();
-    }
-
-    static int envIntValueOrDefault(String key, int defaultValue) {
-        return Integer.parseInt(envValueOrDefault(key, String.valueOf(defaultValue)));
-    }
-
-    static String envValueOrDefault(String key, String defaultValue) {
-        return System.getenv().getOrDefault(key, defaultValue);
-    }
-
-    static List<Endpoint> endpoints(String host) {
-        // Used in AccountController to generate test data!
-        var existingId1 = UUID.fromString("06f40771-6460-479a-a47c-177473e240b5");
-        var existingId2 = UUID.fromString("4db7506f-43fe-475e-afbe-842514a6223b");
-        return List.of(
-                Endpoint.withoutBody("POST", host + "/accounts/execute-random-write" + SECRET_QUERY),
-                accountByIdEndpoint(host, UUID.randomUUID()),
-                accountByIdEndpoint(host, existingId1),
-                accountByIdEndpoint(host, existingId2));
-    }
-
-    static Endpoint accountByIdEndpoint(String host, UUID id) {
-        return Endpoint.withoutBody("GET", host + "/accounts/" + id + "?secret=" + SECRET_QUERY);
-    }
-
-    static HttpClient newHttpClient() {
-        return HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NEVER)
-                .connectTimeout(Duration.ofMillis(CONNECT_TIMEOUT))
-                .build();
-    }
-
-    static long task(HttpClient httpClient, Map<Endpoint, EndpointStats> endpointsStats) {
-        var start = System.currentTimeMillis();
-
-        var endpoint = randomEndpoint(ENDPOINTS);
-        var endpointStats = endpointsStats.get(endpoint);
-
-        endpointStats.incrementRequests();
-
-        try {
-            var body = endpoint.body == null ?
-                    HttpRequest.BodyPublishers.noBody() :
-                    HttpRequest.BodyPublishers.ofString(endpoint.body);
-
-            var request = HttpRequest.newBuilder()
-                    .uri(URI.create(endpoint.url))
-                    .method(endpoint.method, body)
-                    .timeout(Duration.ofMillis(REQUEST_TIMEOUT))
-                    .build();
-
-            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            endpointStats.incrementRequestStatus(response.statusCode());
-        } catch (Exception e) {
-            if (LOGGED_ISSUES.getAndIncrement() < MAX_TO_LOG_ISSUES) {
-                System.out.println("Timeout or another issue during request!");
-                e.printStackTrace();
-            }
-            if (e instanceof HttpConnectTimeoutException) {
-                REQUEST_CONNECT_TIMEOUTS_TOTAL.incrementAndGet();
-            }
-            endpointStats.incrementExceptionRequests();
-        }
-
-        REQUESTS_TOTAL.incrementAndGet();
-
-        return System.currentTimeMillis() - start;
-    }
-
-    static List<Long> getFutureResults(List<Future<Long>> futureResults) {
-        return futureResults.stream()
-                .map(r -> {
-                    try {
-                        return r.get();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toList();
-    }
-
-    static Endpoint randomEndpoint(List<Endpoint> endpoints) {
-        var idx = RANDOM.nextInt(endpoints.size());
-        return endpoints.get(idx);
     }
 
     static double formattedSeconds(double milliseconds) {
@@ -253,19 +328,41 @@ public class LoadTest {
         return Math.round(value) - value <= 10e6;
     }
 
-    record Endpoint(String method, String url, String body) {
+    enum TestProfile {
+        LOW_LOAD, AVERAGE_LOAD, HIGH_LOAD, VERY_HIGH_LOAD
+    }
 
-        static Endpoint withoutBody(String method, String url) {
-            return new Endpoint(method, url, null);
+    record TestProfileParams(int requests, int requestsPerSecond, int maxConcurrency) {
+        TestProfileParams(int requests, int requestsPerSecond) {
+            this(requests, requestsPerSecond, 5000);
+        }
+    }
+
+    record EndpointResult(String id, long time) {
+    }
+
+    record Endpoint(String id, String method, Supplier<EndpointInstance> instanceSupplier) {
+
+        static Endpoint oneInstance(String id, String method, EndpointInstance instance) {
+            return new Endpoint(id, method, () -> instance);
+        }
+    }
+
+    record EndpointInstance(String url, String body) {
+
+        static EndpointInstance withoutBody(String url) {
+            return new EndpointInstance(url, null);
         }
     }
 
     record EndpointStats(AtomicInteger requests,
-                         AtomicInteger exceptionRequests,
+                         AtomicInteger connectTimeoutRequests,
+                         AtomicInteger requestTimeoutRequests,
                          Map<Integer, AtomicInteger> requestsByStatus) {
 
         static EndpointStats empty() {
             return new EndpointStats(new AtomicInteger(0),
+                    new AtomicInteger(0),
                     new AtomicInteger(0),
                     new ConcurrentHashMap<>());
         }
@@ -274,8 +371,12 @@ public class LoadTest {
             requests.getAndIncrement();
         }
 
-        void incrementExceptionRequests() {
-            exceptionRequests.getAndIncrement();
+        void incrementConnectTimeoutRequests() {
+            connectTimeoutRequests.getAndIncrement();
+        }
+
+        void incrementRequestTimeoutRequests() {
+            requestTimeoutRequests.getAndIncrement();
         }
 
         void incrementRequestStatus(int status) {

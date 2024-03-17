@@ -28,11 +28,12 @@ public class AccountRepository {
                 .optional();
     }
 
-    public List<Account> accountsByName(String name) {
-        return jdbcClient.sql("SELECT * FROM account WHERE name = ?")
+    public int countByName(String name) {
+        return jdbcClient.sql("SELECT COUNT(*) FROM account WHERE name = ?")
                 .param(name)
-                .query(Account.class)
-                .list();
+                .query(Integer.class)
+                .optional()
+                .orElse(0);
     }
 
     public void create(List<Account> accounts) {
