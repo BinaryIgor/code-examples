@@ -19,7 +19,7 @@ public class LoadTest {
     static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", TEST_PROFILE.maxConcurrency());
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 1000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
-    // Modify these ones for your custom endpoints to a one host
+    // Modify these for your custom endpoints to a one host
     static final String HOST = envValueOrDefault("HOST", "http://164.92.167.184:80");
     static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
     static final Random RANDOM = new Random();
@@ -116,10 +116,10 @@ public class LoadTest {
         }
 
         return switch (testProfile) {
-            case LOW_LOAD -> new TestProfileParams(100, 5);
-            case AVERAGE_LOAD -> new TestProfileParams(1_000, 50);
-            case HIGH_LOAD -> new TestProfileParams(10_000, 500);
-            case VERY_HIGH_LOAD -> new TestProfileParams(100_000, 5_000);
+            case LOW_LOAD -> new TestProfileParams(50, 5);
+            case AVERAGE_LOAD -> new TestProfileParams(500, 50);
+            case HIGH_LOAD -> new TestProfileParams(5_000, 500);
+            case VERY_HIGH_LOAD -> new TestProfileParams(50_000, 5_000);
         };
     }
 
@@ -199,6 +199,7 @@ public class LoadTest {
                 .build();
     }
 
+    //TODO: refactor
     static EndpointResult task(HttpClient httpClient, Map<String, EndpointStats> endpointsStats) {
         var start = System.currentTimeMillis();
 
@@ -208,6 +209,10 @@ public class LoadTest {
         endpointStats.incrementRequests();
 
         try {
+            // Make requests more uniform
+            randomDelay();
+
+            start = System.currentTimeMillis();
             var endpointInstance = endpoint.instanceSupplier.get();
             var body = endpointInstance.body == null ?
                     HttpRequest.BodyPublishers.noBody() :
@@ -235,6 +240,15 @@ public class LoadTest {
         }
 
         return new EndpointResult(endpoint.id(), System.currentTimeMillis() - start);
+    }
+
+    static void randomDelay() {
+        try {
+            var randomDelay = RANDOM.nextInt(500);
+            Thread.sleep(randomDelay);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static List<EndpointResult> getFutureResults(List<Future<EndpointResult>> futureResults) {

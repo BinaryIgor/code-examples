@@ -210,7 +210,7 @@ def create_droplets_if_needed():
         return droplet_names_ids
 
     # Eventual consistency of Digital Ocean: sometimes new droplets are not visible immediately after creation
-    time.sleep(1)
+    time.sleep(3)
 
     while True:
         new_droplets = []
