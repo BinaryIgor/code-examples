@@ -44,7 +44,7 @@ public class AccountController {
     }
 
     @PostMapping("generate-test-data")
-    ResponseEntity<Void> generateTestData(@RequestParam(required = false, defaultValue = "1000000") int size) {
+    ResponseEntity<Void> generateTestData(@RequestParam(required = false, defaultValue = "2000000") int size) {
         Thread.startVirtualThread(() -> {
             var requiredAccountsToCreate = Stream.of(LOAD_TEST_ACCOUNT_ID1, LOAD_TEST_ACCOUNT_ID2)
                     .filter(id -> accountRepository.accountById(id).isEmpty())
