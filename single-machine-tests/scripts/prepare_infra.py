@@ -51,7 +51,9 @@ SSH_KEY_FINGERPRINT = "a0:3a:d4:d8:52:4a:8b:34:50:fd:20:c7:19:a1:8a:b4"
 DIGITAL_OCEAN_URL = "https://api.digitalocean.com/v2"
 
 SINGLE_MACHINE_NAME = "single-machine"
-TEST_MACHINE_NAME = "test-machine"
+TEST_MACHINE_1_NAME = "test-machine-1"
+TEST_MACHINE_2_NAME = "test-machine-2"
+test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME]
 # single-db volume name needs to be synchronized, if changed!
 SINGLE_MACHINE_VOLUME_NAME = "single-machine-volume"
 FIREWALL_NAME = "single-machine-test-firewall"
@@ -87,17 +89,21 @@ single_machine_config = {
     "monitoring": True,
     "user_data": init_single_machine
 }
-test_machine_config =  {
-    "name": TEST_MACHINE_NAME,
-    "region": REGION,
-    "size": test_machine_slug,
-    "image": IMAGE,
-    "ssh_keys": [SSH_KEY_FINGERPRINT],
-    "backups": False,
-    "ipv6": True,
-    "monitoring": True,
-    "user_data": init_test_machine
-}
+
+def test_machine_config(name):
+    return {
+        "name": name,
+        "region": REGION,
+        "size": test_machine_slug,
+        "image": IMAGE,
+        "ssh_keys": [SSH_KEY_FINGERPRINT],
+        "backups": False,
+        "ipv6": True,
+        "monitoring": True,
+        "user_data": init_test_machine
+    }
+
+
 # TODO: describe for what we need this
 volume_config = {
     "name": SINGLE_MACHINE_VOLUME_NAME,
@@ -175,11 +181,13 @@ def create_droplets_if_needed():
     for d in get_resources(DROPLETS_RESOURCE):
         if d[NAME] == SINGLE_MACHINE_NAME:
             droplet_names_ids[SINGLE_MACHINE_NAME] = d[ID]
-        elif d[NAME] == TEST_MACHINE_NAME:
-            droplet_names_ids[TEST_MACHINE_NAME] = d[ID]
+        elif d[NAME] == TEST_MACHINE_1_NAME:
+            droplet_names_ids[TEST_MACHINE_1_NAME] = d[ID]
+        elif d[NAME] == TEST_MACHINE_2_NAME:
+            droplet_names_ids[TEST_MACHINE_2_NAME] = d[ID]
 
 
-    wait_for_machines_to_become_active = len(droplet_names_ids) < 2
+    wait_for_machines_to_become_active = len(droplet_names_ids) < (1 + len(test_machine_names))
 
     if SINGLE_MACHINE_NAME in droplet_names_ids:
         print("Single machine exists, skipping its creation!")
@@ -189,13 +197,14 @@ def create_droplets_if_needed():
         droplet_names_ids[SINGLE_MACHINE_NAME] = created_droplet[ID]
         print(f"{SINGLE_MACHINE_NAME} created!")
 
-    if TEST_MACHINE_NAME in droplet_names_ids:
-        print("Test machine exists, skipping its creation!")
-    else:
-        print(f"Creating test {TEST_MACHINE_NAME}...")
-        created_droplet = create_resource(DROPLETS_RESOURCE, "droplet", test_machine_config)
-        droplet_names_ids[TEST_MACHINE_NAME] = created_droplet[ID]
-        print(f"{TEST_MACHINE_NAME} created!")
+    for tm in test_machine_names:
+        if tm in droplet_names_ids:
+            print(f"{tm} exists, skipping its creation!")
+        else:
+            print(f"Creating {tm}...")
+            created_droplet = create_resource(DROPLETS_RESOURCE, "droplet", test_machine_config(tm))
+            droplet_names_ids[tm] = created_droplet[ID]
+            print(f"{tm} created!")
 
     if not wait_for_machines_to_become_active:
         return droplet_names_ids
@@ -278,7 +287,7 @@ def create_and_assign_firewall_if_needed(droplet_names_ids):
     to_assign_droplet_ids = [did for did in droplet_ids if did not in assigned_droplet_ids]
 
     if len(to_assign_droplet_ids) > 0:
-        print("Droplets are not assinged to firewall, assigning them...")
+        print(f"{len(to_assign_droplet_ids)} droplets are not assinged to firewall, assigning them...")
         assign_firewall(firewall_id, to_assign_droplet_ids)
         print("Droplets assigned!")
     else:
