@@ -6,7 +6,9 @@ spring:
     username: "${DB_USER:postgres}"
     password: "${DB_PASSWORD:postgres}"
     hikari:
-      pool-size: 10
+      pool-name: single-app-pool
+      minimum-idle: 10
+      maximum-pool-size: 20
   liquibase:
     change-log: classpath:liquibase/changelog.xml
   threads:
