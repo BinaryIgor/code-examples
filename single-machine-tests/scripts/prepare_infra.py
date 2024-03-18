@@ -22,7 +22,8 @@ LARGE_MACHINE = "large"
 LARGE_MACHINE_SLUG = "s-4vcpu-8gb-amd"
 
 EXTRA_LARGE_MACHINE = "x-large"
-EXTRA_LARGE_MACHINE_SLUG = "s-8vcpu-16gb-amd"
+# 8 CPU, 16 GB RAM + dedicated CPU!
+EXTRA_LARGE_MACHINE_SLUG = "c-8"
 
 def print_and_exit(message):
     print(message)

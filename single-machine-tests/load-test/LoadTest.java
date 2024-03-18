@@ -17,7 +17,7 @@ public class LoadTest {
     static final int REQUESTS = envIntValueOrDefault("REQUESTS", TEST_PROFILE.requests());
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", TEST_PROFILE.requestsPerSecond());
     static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", TEST_PROFILE.maxConcurrency());
-    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 1000);
+    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     // Modify these for your custom endpoints to a one host
     static final String HOST = envValueOrDefault("HOST", "http://164.92.167.184:80");
