@@ -17,10 +17,10 @@ public class LoadTest {
     static final int REQUESTS = envIntValueOrDefault("REQUESTS", TEST_PROFILE.requests());
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", TEST_PROFILE.requestsPerSecond());
     static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", TEST_PROFILE.maxConcurrency());
-    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
-    static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
+    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 2500);
+    static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 7500);
     // Modify these for your custom endpoints to a one host
-    static final String HOST = envValueOrDefault("HOST", "http://164.92.167.184:80");
+    static final String HOST = envValueOrDefault("HOST", "http://138.197.183.232:80");
     static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
     static final Random RANDOM = new Random();
     static final List<Endpoint> ENDPOINTS = endpoints();
@@ -119,7 +119,7 @@ public class LoadTest {
             case LOW_LOAD -> new TestProfileParams(50, 5);
             case AVERAGE_LOAD -> new TestProfileParams(500, 50);
             case HIGH_LOAD -> new TestProfileParams(5_000, 500);
-            case VERY_HIGH_LOAD -> new TestProfileParams(50_000, 5_000);
+            case VERY_HIGH_LOAD -> new TestProfileParams(30_000, 3_000);
         };
     }
 
@@ -199,7 +199,6 @@ public class LoadTest {
                 .build();
     }
 
-    //TODO: refactor
     static EndpointResult task(HttpClient httpClient, Map<String, EndpointStats> endpointsStats) {
         var start = System.currentTimeMillis();
 
@@ -283,7 +282,8 @@ public class LoadTest {
         var max = sortedResults.getLast();
 
         var mean = sortedResults.stream().mapToLong(Long::longValue).average().getAsDouble();
-        var median = percentile(sortedResults, 50);
+        var percentile25 = percentile(sortedResults, 25);
+        var percentile50 = percentile(sortedResults, 50);
         var percentile75 = percentile(sortedResults, 75);
         var percentile90 = percentile(sortedResults, 90);
         var percentile95 = percentile(sortedResults, 95);
@@ -293,7 +293,8 @@ public class LoadTest {
         System.out.println("Min: " + formattedSeconds(min));
         System.out.println("Max: " + formattedSeconds(max));
         System.out.println("Mean: " + formattedSeconds(mean));
-        System.out.println("Median: " + formattedSeconds(median));
+        System.out.println("Percentile 25: " + formattedSeconds(percentile25));
+        System.out.println("Percentile 50 (Median): " + formattedSeconds(percentile50));
         System.out.println("Percentile 75: " + formattedSeconds(percentile75));
         System.out.println("Percentile 90: " + formattedSeconds(percentile90));
         System.out.println("Percentile 95: " + formattedSeconds(percentile95));
@@ -348,7 +349,7 @@ public class LoadTest {
 
     record TestProfileParams(int requests, int requestsPerSecond, int maxConcurrency) {
         TestProfileParams(int requests, int requestsPerSecond) {
-            this(requests, requestsPerSecond, 5000);
+            this(requests, requestsPerSecond, 10_000);
         }
     }
 

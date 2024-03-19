@@ -54,7 +54,8 @@ DIGITAL_OCEAN_URL = "https://api.digitalocean.com/v2"
 SINGLE_MACHINE_NAME = "single-machine"
 TEST_MACHINE_1_NAME = "test-machine-1"
 TEST_MACHINE_2_NAME = "test-machine-2"
-test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME]
+TEST_MACHINE_3_NAME = "test-machine-3"
+test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME, TEST_MACHINE_3_NAME]
 # single-db volume name needs to be synchronized, if changed!
 SINGLE_MACHINE_VOLUME_NAME = "single-machine-volume"
 FIREWALL_NAME = "single-machine-test-firewall"
@@ -186,6 +187,8 @@ def create_droplets_if_needed():
             droplet_names_ids[TEST_MACHINE_1_NAME] = d[ID]
         elif d[NAME] == TEST_MACHINE_2_NAME:
             droplet_names_ids[TEST_MACHINE_2_NAME] = d[ID]
+        elif d[NAME] == TEST_MACHINE_3_NAME:
+            droplet_names_ids[TEST_MACHINE_3_NAME] = d[ID]
 
 
     wait_for_machines_to_become_active = len(droplet_names_ids) < (1 + len(test_machine_names))
