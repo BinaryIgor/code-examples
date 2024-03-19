@@ -19,11 +19,8 @@ MEDIUM_MACHINE = "medium"
 MEDIUM_MACHINE_SLUG = "s-2vcpu-2gb-amd"
 
 LARGE_MACHINE = "large"
-LARGE_MACHINE_SLUG = "s-4vcpu-8gb-amd"
-
-EXTRA_LARGE_MACHINE = "x-large"
-# 8 CPU, 16 GB RAM + dedicated CPU!
-EXTRA_LARGE_MACHINE_SLUG = "c-8"
+# 4 CPU, 8 GB RAM + dedicated CPU!
+LARGE_MACHINE_SLUG = "c-4"
 
 def print_and_exit(message):
     print(message)
@@ -54,8 +51,7 @@ DIGITAL_OCEAN_URL = "https://api.digitalocean.com/v2"
 SINGLE_MACHINE_NAME = "single-machine"
 TEST_MACHINE_1_NAME = "test-machine-1"
 TEST_MACHINE_2_NAME = "test-machine-2"
-TEST_MACHINE_3_NAME = "test-machine-3"
-test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME, TEST_MACHINE_3_NAME]
+test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME]
 # single-db volume name needs to be synchronized, if changed!
 SINGLE_MACHINE_VOLUME_NAME = "single-machine-volume"
 FIREWALL_NAME = "single-machine-test-firewall"
@@ -187,9 +183,6 @@ def create_droplets_if_needed():
             droplet_names_ids[TEST_MACHINE_1_NAME] = d[ID]
         elif d[NAME] == TEST_MACHINE_2_NAME:
             droplet_names_ids[TEST_MACHINE_2_NAME] = d[ID]
-        elif d[NAME] == TEST_MACHINE_3_NAME:
-            droplet_names_ids[TEST_MACHINE_3_NAME] = d[ID]
-
 
     wait_for_machines_to_become_active = len(droplet_names_ids) < (1 + len(test_machine_names))
 

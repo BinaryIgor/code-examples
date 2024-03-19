@@ -17,8 +17,8 @@ public class LoadTest {
     static final int REQUESTS = envIntValueOrDefault("REQUESTS", TEST_PROFILE.requests());
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", TEST_PROFILE.requestsPerSecond());
     static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", TEST_PROFILE.maxConcurrency());
-    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 2500);
-    static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 7500);
+    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
+    static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     // Modify these for your custom endpoints to a one host
     static final String HOST = envValueOrDefault("HOST", "http://138.197.183.232:80");
     static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
@@ -88,16 +88,16 @@ public class LoadTest {
 
         ENDPOINT_IDS.forEach(endpointId -> {
             System.out.println(endpointId + " endpoint stats in seconds:");
-
-            var endpointSortedResults = results.stream()
-                    .filter(e -> e.id().equals(endpointId))
-                    .map(EndpointResult::time).sorted().toList();
+//
+//            var endpointSortedResults = results.stream()
+//                    .filter(e -> e.id().equals(endpointId))
+//                    .map(EndpointResult::time).sorted().toList();
 
             var endpointStats = endpointsStats.get(endpointId);
 
-            printStats(endpointSortedResults,
-                    endpointStats.connectTimeoutRequests().get(),
-                    endpointStats.requestTimeoutRequests().get());
+//            printStats(endpointSortedResults,
+//                    endpointStats.connectTimeoutRequests().get(),
+//                    endpointStats.requestTimeoutRequests().get());
 
             System.out.println();
             System.out.println(endpointStats);
@@ -119,7 +119,7 @@ public class LoadTest {
             case LOW_LOAD -> new TestProfileParams(50, 5);
             case AVERAGE_LOAD -> new TestProfileParams(500, 50);
             case HIGH_LOAD -> new TestProfileParams(5_000, 500);
-            case VERY_HIGH_LOAD -> new TestProfileParams(30_000, 3_000);
+            case VERY_HIGH_LOAD -> new TestProfileParams(50_000, 5_000);
         };
     }
 
