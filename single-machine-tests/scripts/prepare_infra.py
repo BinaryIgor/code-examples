@@ -22,6 +22,9 @@ LARGE_MACHINE = "large"
 # 4 CPU, 8 GB RAM + dedicated CPU!
 LARGE_MACHINE_SLUG = "c-4"
 
+HUGE_MACHINE = "huge"
+HUGE_MACHINE_SLUG = "c-16"
+
 def print_and_exit(message):
     print(message)
     sys.exit(1)
@@ -36,6 +39,8 @@ elif single_machine_size == MEDIUM_MACHINE:
     single_machine_slug = MEDIUM_MACHINE_SLUG
 elif single_machine_size == LARGE_MACHINE:
     single_machine_slug = LARGE_MACHINE_SLUG
+elif single_machine_size == HUGE_MACHINE:
+    single_machine_slug = HUGE_MACHINE_SLUG
 else:
     print(f"Unkown machine size: {single_machine_size}")
     sys.exit(1)
@@ -50,7 +55,8 @@ SINGLE_MACHINE_NAME = "single-machine"
 TEST_MACHINE_1_NAME = "test-machine-1"
 TEST_MACHINE_2_NAME = "test-machine-2"
 TEST_MACHINE_3_NAME = "test-machine-3"
-test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME, TEST_MACHINE_3_NAME]
+TEST_MACHINE_4_NAME = "test-machine-4"
+test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME, TEST_MACHINE_3_NAME, TEST_MACHINE_4_NAME]
 # single-db volume name needs to be synchronized, if changed!
 SINGLE_MACHINE_VOLUME_NAME = "single-machine-volume"
 FIREWALL_NAME = "single-machine-test-firewall"
@@ -184,6 +190,8 @@ def create_droplets_if_needed():
             droplet_names_ids[TEST_MACHINE_2_NAME] = d[ID]
         elif d[NAME] == TEST_MACHINE_3_NAME:
             droplet_names_ids[TEST_MACHINE_3_NAME] = d[ID]
+        elif d[NAME] == TEST_MACHINE_4_NAME:
+            droplet_names_ids[TEST_MACHINE_4_NAME] = d[ID]
 
     wait_for_machines_to_become_active = len(droplet_names_ids) < (1 + len(test_machine_names))
 
