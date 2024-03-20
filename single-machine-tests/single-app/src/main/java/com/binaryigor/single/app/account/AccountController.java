@@ -25,6 +25,7 @@ public class AccountController {
     private static final UUID LOAD_TEST_ACCOUNT_ID2 = UUID.fromString("4db7506f-43fe-475e-afbe-842514a6223b");
     private static final int UNIQUE_NAMES = 500;
     private static final Random RANDOM = new Random();
+    private final Account inMemoryAccount = randomAccount();
 
     private final AccountRepository accountRepository;
 
@@ -38,13 +39,18 @@ public class AccountController {
                 .orElseThrow(() -> new ResourceNotFoundException("Account of %s id does not exist".formatted(id)));
     }
 
+    @GetMapping("in-memory")
+    Account getInMemoryAccount() {
+        return inMemoryAccount;
+    }
+
     @GetMapping("count")
     CountAccountsByNameResponse countAccountsByName(@RequestParam String name) {
         return new CountAccountsByNameResponse(name, accountRepository.countByName(name));
     }
 
     @PostMapping("generate-test-data")
-    ResponseEntity<Void> generateTestData(@RequestParam(required = false, defaultValue = "2000000") int size) {
+    ResponseEntity<Void> generateTestData(@RequestParam(required = false, defaultValue = "1000000") int size) {
         Thread.startVirtualThread(() -> {
             var requiredAccountsToCreate = Stream.of(LOAD_TEST_ACCOUNT_ID1, LOAD_TEST_ACCOUNT_ID2)
                     .filter(id -> accountRepository.accountById(id).isEmpty())

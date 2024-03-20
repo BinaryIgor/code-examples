@@ -20,7 +20,8 @@ public class LoadTest {
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     // Modify these for your custom endpoints to a one host
-    static final String HOST = envValueOrDefault("HOST", "http://138.197.183.232:80");
+    static final String HOST = envValueOrDefault("HOST", "http://46.101.207.179:80");
+    static final boolean IN_MEMORY_ENDPOINT = Boolean.parseBoolean(envValueOrDefault("IN_MEMORY_ENDPOINT", "false"));
     static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
     static final Random RANDOM = new Random();
     static final List<Endpoint> ENDPOINTS = endpoints();
@@ -88,16 +89,8 @@ public class LoadTest {
 
         ENDPOINT_IDS.forEach(endpointId -> {
             System.out.println(endpointId + " endpoint stats in seconds:");
-//
-//            var endpointSortedResults = results.stream()
-//                    .filter(e -> e.id().equals(endpointId))
-//                    .map(EndpointResult::time).sorted().toList();
 
             var endpointStats = endpointsStats.get(endpointId);
-
-//            printStats(endpointSortedResults,
-//                    endpointStats.connectTimeoutRequests().get(),
-//                    endpointStats.requestTimeoutRequests().get());
 
             System.out.println();
             System.out.println(endpointStats);
@@ -138,6 +131,11 @@ public class LoadTest {
     }
 
     static List<Endpoint> endpoints() {
+        if (IN_MEMORY_ENDPOINT) {
+            return List.of(Endpoint.oneInstance("GET: /accounts/in-memory", "GET",
+                    EndpointInstance.withoutBody(HOST + "/accounts/in-memory?secret=" + SECRET_QUERY)));
+        }
+
         // Used in AccountController to generate test data!
         var existingId1 = UUID.fromString("06f40771-6460-479a-a47c-177473e240b5");
         var existingId2 = UUID.fromString("4db7506f-43fe-475e-afbe-842514a6223b");

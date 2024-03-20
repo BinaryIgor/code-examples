@@ -36,8 +36,6 @@ elif single_machine_size == MEDIUM_MACHINE:
     single_machine_slug = MEDIUM_MACHINE_SLUG
 elif single_machine_size == LARGE_MACHINE:
     single_machine_slug = LARGE_MACHINE_SLUG
-elif single_machine_size == EXTRA_LARGE_MACHINE:
-    single_machine_slug = EXTRA_LARGE_MACHINE_SLUG
 else:
     print(f"Unkown machine size: {single_machine_size}")
     sys.exit(1)
