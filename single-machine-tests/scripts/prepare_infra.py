@@ -13,14 +13,14 @@ ID = "id"
 NAME = "name"
 
 SMALL_MACHINE = "small"
-SMALL_MACHINE_SLUG = "s-2vcpu-2gb-amd"
+SMALL_MACHINE_SLUG = "s-1vcpu-1gb-amd"
 
 MEDIUM_MACHINE = "medium"
-MEDIUM_MACHINE_SLUG = "s-4vcpu-8gb-amd"
+MEDIUM_MACHINE_SLUG = "s-2vcpu-2gb-amd"
 
 LARGE_MACHINE = "large"
-# 8 CPU, 16 GB RAM + dedicated CPU!
-LARGE_MACHINE_SLUG = "c-8"
+# 4 CPU, 8 GB RAM + dedicated CPU!
+LARGE_MACHINE_SLUG = "c-4"
 
 def print_and_exit(message):
     print(message)
@@ -40,7 +40,7 @@ else:
     print(f"Unkown machine size: {single_machine_size}")
     sys.exit(1)
 
-test_machine_slug = "s-4vcpu-8gb-amd"
+test_machine_slug = "s-2vcpu-2gb-amd"
 
 SSH_KEY_FINGERPRINT = "a0:3a:d4:d8:52:4a:8b:34:50:fd:20:c7:19:a1:8a:b4"
 
@@ -49,7 +49,8 @@ DIGITAL_OCEAN_URL = "https://api.digitalocean.com/v2"
 SINGLE_MACHINE_NAME = "single-machine"
 TEST_MACHINE_1_NAME = "test-machine-1"
 TEST_MACHINE_2_NAME = "test-machine-2"
-test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME]
+TEST_MACHINE_3_NAME = "test-machine-3"
+test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME, TEST_MACHINE_3_NAME]
 # single-db volume name needs to be synchronized, if changed!
 SINGLE_MACHINE_VOLUME_NAME = "single-machine-volume"
 FIREWALL_NAME = "single-machine-test-firewall"
@@ -181,6 +182,8 @@ def create_droplets_if_needed():
             droplet_names_ids[TEST_MACHINE_1_NAME] = d[ID]
         elif d[NAME] == TEST_MACHINE_2_NAME:
             droplet_names_ids[TEST_MACHINE_2_NAME] = d[ID]
+        elif d[NAME] == TEST_MACHINE_3_NAME:
+            droplet_names_ids[TEST_MACHINE_3_NAME] = d[ID]
 
     wait_for_machines_to_become_active = len(droplet_names_ids) < (1 + len(test_machine_names))
 

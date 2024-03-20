@@ -17,10 +17,10 @@ public class LoadTest {
     static final int REQUESTS = envIntValueOrDefault("REQUESTS", TEST_PROFILE.requests());
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", TEST_PROFILE.requestsPerSecond());
     static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", TEST_PROFILE.maxConcurrency());
-    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
+    static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 2500);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     // Modify these for your custom endpoints to a one host
-    static final String HOST = envValueOrDefault("HOST", "http://64.226.94.120:80");
+    static final String HOST = envValueOrDefault("HOST", "http://164.92.181.253:80");
     static final boolean IN_MEMORY_ENDPOINT = Boolean.parseBoolean(envValueOrDefault("IN_MEMORY_ENDPOINT", "false"));
     static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
     static final Random RANDOM = new Random();
@@ -109,10 +109,10 @@ public class LoadTest {
         }
 
         return switch (testProfile) {
-            case LOW_LOAD -> new TestProfileParams(50, 5);
-            case AVERAGE_LOAD -> new TestProfileParams(500, 50);
-            case HIGH_LOAD -> new TestProfileParams(5_000, 500);
-            case VERY_HIGH_LOAD -> new TestProfileParams(50_000, 5_000);
+            case LOW_LOAD -> new TestProfileParams(100, 10);
+            case AVERAGE_LOAD -> new TestProfileParams(1000, 100);
+            case HIGH_LOAD -> new TestProfileParams(3_500, 350);
+            case VERY_HIGH_LOAD -> new TestProfileParams(10_000, 1_000);
         };
     }
 

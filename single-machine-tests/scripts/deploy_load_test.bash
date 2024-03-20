@@ -3,7 +3,7 @@ set -euo pipefail
 
 app="load-test"
 deploy_user="test-machine"
-remote_host="$deploy_user@$DEPLOY_TEST_HOST"
+remote_host="$deploy_user@$TEST_HOST"
 deploy_dir="/home/$deploy_user/deploy/$app"
 previous_deploy_dir="$deploy_dir/previous"
 latest_deploy_dir="$deploy_dir/latest"
