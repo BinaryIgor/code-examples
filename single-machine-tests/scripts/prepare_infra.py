@@ -13,14 +13,14 @@ ID = "id"
 NAME = "name"
 
 SMALL_MACHINE = "small"
-SMALL_MACHINE_SLUG = "s-1vcpu-1gb-amd"
+SMALL_MACHINE_SLUG = "s-2vcpu-2gb-amd"
 
 MEDIUM_MACHINE = "medium"
-MEDIUM_MACHINE_SLUG = "s-2vcpu-2gb-amd"
+MEDIUM_MACHINE_SLUG = "s-4vcpu-8gb-amd"
 
 LARGE_MACHINE = "large"
-# 4 CPU, 8 GB RAM + dedicated CPU!
-LARGE_MACHINE_SLUG = "c-4"
+# 8 CPU, 16 GB RAM + dedicated CPU!
+LARGE_MACHINE_SLUG = "c-8"
 
 def print_and_exit(message):
     print(message)
@@ -40,7 +40,7 @@ else:
     print(f"Unkown machine size: {single_machine_size}")
     sys.exit(1)
 
-test_machine_slug = MEDIUM_MACHINE_SLUG
+test_machine_slug = "s-4vcpu-8gb-amd"
 
 SSH_KEY_FINGERPRINT = "a0:3a:d4:d8:52:4a:8b:34:50:fd:20:c7:19:a1:8a:b4"
 

@@ -20,7 +20,7 @@ public class LoadTest {
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     // Modify these for your custom endpoints to a one host
-    static final String HOST = envValueOrDefault("HOST", "http://46.101.207.179:80");
+    static final String HOST = envValueOrDefault("HOST", "http://64.226.94.120:80");
     static final boolean IN_MEMORY_ENDPOINT = Boolean.parseBoolean(envValueOrDefault("IN_MEMORY_ENDPOINT", "false"));
     static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
     static final Random RANDOM = new Random();
