@@ -11,11 +11,6 @@ echo "Preparing dist dir..."
 rm -r -f dist
 mkdir dist
 
-echo "Building jar..."
-mvn clean package
-
-echo "..."
-
 echo "Building image..."
 
 docker build . -t ${tagged_image}
@@ -30,7 +25,7 @@ echo "Image exported, preparing scripts..."
 
 export app=$app
 export tag=$tag
-export run_cmd="docker run  -d --network host --restart unless-stopped --name $app $tagged_image"
+export run_cmd="docker run -d --network host --restart unless-stopped --name $app $tagged_image"
 
 cd ..
 envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > $app/dist/load_and_run_app.bash

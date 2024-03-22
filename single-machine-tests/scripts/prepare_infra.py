@@ -12,18 +12,17 @@ VOLUMES_RESOURCE = "volumes"
 ID = "id"
 NAME = "name"
 
+# full machine slugs reference: https://slugs.do-api.dev/
+# we start from 2gb because we use Docker and it needs some memory also
 SMALL_MACHINE = "small"
-SMALL_MACHINE_SLUG = "s-1vcpu-1gb-amd"
+SMALL_MACHINE_SLUG = "s-1vcpu-2gb-amd"
 
 MEDIUM_MACHINE = "medium"
-MEDIUM_MACHINE_SLUG = "s-2vcpu-2gb-amd"
+MEDIUM_MACHINE_SLUG = "s-2vcpu-4gb-amd"
 
 LARGE_MACHINE = "large"
-# 4 CPU, 8 GB RAM + dedicated CPU!
+# 4 CPU, 8 GB RAM + dedicated CPU
 LARGE_MACHINE_SLUG = "c-4"
-
-HUGE_MACHINE = "huge"
-HUGE_MACHINE_SLUG = "c-16"
 
 def print_and_exit(message):
     print(message)
@@ -39,24 +38,18 @@ elif single_machine_size == MEDIUM_MACHINE:
     single_machine_slug = MEDIUM_MACHINE_SLUG
 elif single_machine_size == LARGE_MACHINE:
     single_machine_slug = LARGE_MACHINE_SLUG
-elif single_machine_size == HUGE_MACHINE:
-    single_machine_slug = HUGE_MACHINE_SLUG
 else:
     print(f"Unkown machine size: {single_machine_size}")
+    print(f"Supported sizes: {SMALL_MACHINE}, {MEDIUM_MACHINE} and {LARGE_MACHINE}")
     sys.exit(1)
 
 test_machine_slug = "s-2vcpu-2gb-amd"
 
-SSH_KEY_FINGERPRINT = "a0:3a:d4:d8:52:4a:8b:34:50:fd:20:c7:19:a1:8a:b4"
-
 DIGITAL_OCEAN_URL = "https://api.digitalocean.com/v2"
 
 SINGLE_MACHINE_NAME = "single-machine"
-TEST_MACHINE_1_NAME = "test-machine-1"
-TEST_MACHINE_2_NAME = "test-machine-2"
-TEST_MACHINE_3_NAME = "test-machine-3"
-TEST_MACHINE_4_NAME = "test-machine-4"
-test_machine_names = [TEST_MACHINE_1_NAME, TEST_MACHINE_2_NAME, TEST_MACHINE_3_NAME, TEST_MACHINE_4_NAME]
+TEST_MACHINE_INSTANCES = 4
+test_machine_names = [ f"test-machine-{i + 1}" for i in range(TEST_MACHINE_INSTANCES)]
 # single-db volume name needs to be synchronized, if changed!
 SINGLE_MACHINE_VOLUME_NAME = "single-machine-volume"
 FIREWALL_NAME = "single-machine-test-firewall"
@@ -67,6 +60,10 @@ IMAGE = "ubuntu-22-04-x64"
 API_TOKEN = environ.get("DO_API_TOKEN")
 if API_TOKEN is None:
     print_and_exit("DO_API_TOKEN env variable needs to be supplied with valid digital ocean token")
+
+SSH_KEY_FINGERPRINT = environ.get("SSH_KEY_FINGERPRINT")
+if SSH_KEY_FINGERPRINT is None:
+    print_and_exit("SSH_KEY_FINGERPRINT env variable needs to be supplied with ssh key fingerprint that will give you access to droplets!")
 
 
 AUTH_HEADER = {"Authorization": f"Bearer {API_TOKEN}"}
@@ -106,8 +103,6 @@ def test_machine_config(name):
         "user_data": init_test_machine
     }
 
-
-# TODO: describe for what we need this
 volume_config = {
     "name": SINGLE_MACHINE_VOLUME_NAME,
     "size_gigabytes": 25,
@@ -121,6 +116,7 @@ firewall_all_addresses =  {
         "::/0"
     ]
 }
+# Basic firewall so nobody is bothering us during tests
 firewall_config = {
     "name": FIREWALL_NAME,
     "inbound_rules": [
@@ -181,23 +177,21 @@ def create_resource(path, resource, data):
 
 def create_droplets_if_needed():
     droplet_names_ids = {}
-    for d in get_resources(DROPLETS_RESOURCE):
-        if d[NAME] == SINGLE_MACHINE_NAME:
-            droplet_names_ids[SINGLE_MACHINE_NAME] = d[ID]
-        elif d[NAME] == TEST_MACHINE_1_NAME:
-            droplet_names_ids[TEST_MACHINE_1_NAME] = d[ID]
-        elif d[NAME] == TEST_MACHINE_2_NAME:
-            droplet_names_ids[TEST_MACHINE_2_NAME] = d[ID]
-        elif d[NAME] == TEST_MACHINE_3_NAME:
-            droplet_names_ids[TEST_MACHINE_3_NAME] = d[ID]
-        elif d[NAME] == TEST_MACHINE_4_NAME:
-            droplet_names_ids[TEST_MACHINE_4_NAME] = d[ID]
 
-    wait_for_machines_to_become_active = len(droplet_names_ids) < (1 + len(test_machine_names))
+    for d in get_resources(DROPLETS_RESOURCE):
+        d_name = d[NAME]
+        if d_name == SINGLE_MACHINE_NAME:
+            droplet_names_ids[SINGLE_MACHINE_NAME] = d[ID]
+        elif d_name in test_machine_names:
+            droplet_names_ids[d_name] = d[ID]
+
+    # Eventual consistency of Digital Ocean: sometimes new droplets are not visible immediately after creation
+    new_droplet_names = []
 
     if SINGLE_MACHINE_NAME in droplet_names_ids:
         print("Single machine exists, skipping its creation!")
     else:
+        new_droplet_names.append(SINGLE_MACHINE_NAME)
         print(f"Creating {SINGLE_MACHINE_NAME}...")
         created_droplet = create_resource(DROPLETS_RESOURCE, "droplet", single_machine_config)
         droplet_names_ids[SINGLE_MACHINE_NAME] = created_droplet[ID]
@@ -207,30 +201,29 @@ def create_droplets_if_needed():
         if tm in droplet_names_ids:
             print(f"{tm} exists, skipping its creation!")
         else:
+            new_droplet_names.append(tm)
             print(f"Creating {tm}...")
             created_droplet = create_resource(DROPLETS_RESOURCE, "droplet", test_machine_config(tm))
             droplet_names_ids[tm] = created_droplet[ID]
             print(f"{tm} created!")
 
-    if not wait_for_machines_to_become_active:
+    if len(new_droplet_names) == 0:
         return droplet_names_ids
-
-    # Eventual consistency of Digital Ocean: sometimes new droplets are not visible immediately after creation
-    time.sleep(3)
+    
+    print()
 
     while True:
-        new_droplets = []
-
         for d in get_resources(DROPLETS_RESOURCE):
             d_status = d['status']
-            if d_status == 'new':
-                new_droplets.append(d[NAME])
+            d_name = d[NAME]
+            if d_status == 'active' and d_name in new_droplet_names:
+                new_droplet_names.remove(d_name)
 
-        if new_droplets:
-            print(f"Waiting for {new_droplets} droplets to become active...")
-            print("...")
+        if new_droplet_names:
+            print(f"Waiting for {new_droplet_names} droplets to become active...")
             time.sleep(5)
         else:
+            print()
             print("All droplets are active!")
             print()
             break
@@ -254,6 +247,7 @@ def create_and_attach_volume_if_needed(droplet_names_ids):
         print("Creating volume...")
         create_resource(VOLUMES_RESOURCE, "volume", volume_config)
         print("Volume created!")
+        time.sleep(1)
 
     if not volume_attached:
         print("Volume not attached, attaching it!")
@@ -286,8 +280,10 @@ def create_and_assign_firewall_if_needed(droplet_names_ids):
         print("Firewall exists, skipping its creation!")
     else:
         print("Firewall does not exist, creating it..")
-        create_resource(FIREWALLS_RESOURCE, "firewall", firewall_config)
+        created_firewall = create_resource(FIREWALLS_RESOURCE, "firewall", firewall_config)
+        firewall_id = created_firewall[ID]
         print("Firewall created!")
+        time.sleep(1)
 
     droplet_ids = droplet_names_ids.values()
     to_assign_droplet_ids = [did for did in droplet_ids if did not in assigned_droplet_ids]
@@ -310,23 +306,34 @@ def assign_firewall(firewall_id, droplet_ids):
         Body: {response.text}''')
 
 
+print("Needed droplets:")
+print(f"Single machine: {single_machine_slug}")
+print(f"Test machines ({len(test_machine_names)}): {test_machine_slug}")
+print()
+
 print("Creating droplets, if needed...")
 
 droplet_names_ids = create_droplets_if_needed()
+print()
 print("...")
+print()
 time.sleep(1)
 
 print("Droplets prepared, creating and attaching volume if needed...")
 
 create_and_attach_volume_if_needed(droplet_names_ids)
+print()
 print("...")
+print()
 time.sleep(1)
 
 print("Volume created and attached, creating and assigning firewall if needed...")
 
 create_and_assign_firewall_if_needed(droplet_names_ids)
-
+print()
 print("...")
+print()
 
 print("Everything should be ready!")
+print()
 print("Get your machine addresses from DigitalOcean UI and start experimenting!")

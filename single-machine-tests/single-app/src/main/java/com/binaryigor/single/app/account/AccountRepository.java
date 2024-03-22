@@ -28,6 +28,17 @@ public class AccountRepository {
                 .optional();
     }
 
+    public List<UUID> accountIds(int limit, List<UUID> toSkipIds) {
+        if (toSkipIds.isEmpty()) {
+            return jdbcClient.sql("SELECT id FROM account limit " + limit).query(UUID.class).list();
+        }
+        return jdbcClient.sql("SELECT id FROM account WHERE id NOT IN (:ids) LIMIT :limit")
+                .param("ids", toSkipIds)
+                .param("limit", limit)
+                .query(UUID.class)
+                .list();
+    }
+
     public int countByName(String name) {
         return jdbcClient.sql("SELECT COUNT(*) FROM account WHERE name = ?")
                 .param(name)
@@ -48,16 +59,16 @@ public class AccountRepository {
         var batches = toInsertBatches(accounts, batchSize);
 
         for (var batch : batches) {
-            var sqlWithoutArgs = "INSERT INTO account (id, name, email) VALUES ";
+            var sqlWithoutArgs = "INSERT INTO account (id, name, email, version) VALUES ";
 
             var argsPlaceholders = IntStream.range(0, batch.size())
-                    .mapToObj(i -> "(?, ?, ?)")
+                    .mapToObj(i -> "(?, ?, ?, ?)")
                     .collect(Collectors.joining(",\n"));
 
             var sql = sqlWithoutArgs + argsPlaceholders;
 
             var params = batch.stream()
-                    .flatMap(a -> Stream.of(a.id(), a.name(), a.email()))
+                    .flatMap(a -> Stream.of(a.id(), a.name(), a.email(), a.version()))
                     .toList();
 
             jdbcClient.sql(sql).params(params).update();

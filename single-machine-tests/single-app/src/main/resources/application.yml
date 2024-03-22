@@ -24,9 +24,3 @@ management:
     web:
       exposure:
         include: [ "health", "info", "prometheus" ]
-  metrics:
-    distribution:
-#      percentiles[http.server.requests]: 0.5, 0.75, 0.95, 0.99
-#      percentiles[method.timed]: 0.5, 0.75, 0.95, 0.99
-      percentiles-histogram[http.server.requests]: true
-#      percentiles-histogram[method.timed]: true

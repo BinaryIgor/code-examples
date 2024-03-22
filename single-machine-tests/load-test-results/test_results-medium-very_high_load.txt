@@ -1,0 +1,168 @@
+Loading load-test:latest image, this can take a while...
+Loaded image: load-test:latest
+Image loaded, running it...
+Removing previous container....
+load-test
+
+Starting new load-test version...
+
+Starting LoadTest on 4 machines!
+
+About to make 15000 requests with 1000/s rate
+Timeouts are 5000 ms for connect and 5000 ms for request
+Max concurrency is capped at: 10000
+
+Endpoints to test (chosen randomly):
+POST: /accounts/execute-random-write
+GET: /accounts/{id}
+GET: /accounts/{id}
+GET: /accounts/count?name={name}
+GET: /accounts/count?name={name}
+
+...
+
+2024-03-23T18:37:08.555998851, 1000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:09.557667859, 2000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:10.559013741, 3000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:11.560825864, 4000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:12.563499930, 5000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:13.564987722, 6000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:14.566438380, 7000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:15.567675352, 8000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:16.569113752, 9000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:17.571294256, 10000/15000 requests were issued, waiting 1s before sending next batch...
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+java.net.http.HttpTimeoutException: request timed out
+Timeout or another issue during request!
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+Timeout or another issue during request!
+java.net.http.HttpTimeoutException: request timed out
+	at java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:949)
+	at java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)
+	at LoadTest.task(LoadTest.java:231)
+	at LoadTest.lambda$main$2(LoadTest.java:59)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:309)
+2024-03-23T18:37:23.574919767, 11000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:24.578998882, 12000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:25.580724221, 13000/15000 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:37:26.582004933, 14000/15000 requests were issued, waiting 1s before sending next batch...
+
+...
+
+15000 requests with 1000 per second rate, issued on 4 machines, took PT22.588S
+
+...
+
+Tests executed on: 4 machines, in parallel
+Executed requests: 15000, with 1000/s rate
+Requests with connect timeout [5000]: 1896, as percentage: 12
+Requests with request timeout [5000]: 68, as percentage: 0
+
+Min: 0.008 s
+Max: 5.032 s
+Mean: 1.97 s
+
+Percentile 10: 0.21 s
+Percentile 25: 0.437 s
+Percentile 50 (Median): 1.038 s
+Percentile 75: 4.125 s
+Percentile 90: 5.0 s
+Percentile 95: 5.0 s
+Percentile 99: 5.001 s
+Percentile 999: 5.018 s
+
+...
+
+POST: /accounts/execute-random-write
+Requests: 2998, which is 20% of all requests
+Connect timeouts: 348
+Request timeouts: 16
+Requests by status: {200=2634}
+
+...
+
+GET: /accounts/{id}
+Requests: 6019, which is 40% of all requests
+Connect timeouts: 767
+Request timeouts: 28
+Requests by status: {404=2640, 200=2584}
+
+...
+
+GET: /accounts/count?name={name}
+Requests: 5983, which is 40% of all requests
+Connect timeouts: 781
+Request timeouts: 24
+Requests by status: {200=5178}
+
+...
+

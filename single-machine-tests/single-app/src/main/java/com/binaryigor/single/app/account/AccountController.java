@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,10 +22,11 @@ import java.util.stream.Stream;
 public class AccountController {
 
     private static final Logger log = LoggerFactory.getLogger(AccountController.class);
-    private static final int GENERATE_ACCOUNTS_MAX_IN_MEMORY = 100_000;
+    private static final int GENERATE_ACCOUNTS_MAX_IN_MEMORY = 50_000;
     private static final UUID LOAD_TEST_ACCOUNT_ID1 = UUID.fromString("06f40771-6460-479a-a47c-177473e240b5");
     private static final UUID LOAD_TEST_ACCOUNT_ID2 = UUID.fromString("4db7506f-43fe-475e-afbe-842514a6223b");
-    private static final int UNIQUE_NAMES = 500;
+    private static final int UNIQUE_NAMES = 1000;
+    private static final int MAX_VERSION = 10_000;
     private static final Random RANDOM = new Random();
     private final Account inMemoryAccount = randomAccount();
 
@@ -50,7 +53,7 @@ public class AccountController {
     }
 
     @PostMapping("generate-test-data")
-    ResponseEntity<Void> generateTestData(@RequestParam(required = false, defaultValue = "1000000") int size) {
+    ResponseEntity<Void> generateTestData(@RequestParam(required = false, defaultValue = "1250000") int size) {
         Thread.startVirtualThread(() -> {
             var requiredAccountsToCreate = Stream.of(LOAD_TEST_ACCOUNT_ID1, LOAD_TEST_ACCOUNT_ID2)
                     .filter(id -> accountRepository.accountById(id).isEmpty())
@@ -67,6 +70,8 @@ public class AccountController {
     }
 
     private void generateAndCreateRandomAccounts(int size) {
+        var start = Instant.now();
+
         var toCreate = new LinkedList<Account>();
         var created = 0;
 
@@ -90,14 +95,24 @@ public class AccountController {
             log.info("{} left accounts were created!", toCreate.size());
         }
 
-        log.info("All accounts were created!");
+        var duration = Duration.between(start, Instant.now());
+
+        log.info("All accounts were created, it took: {}!", duration);
     }
 
     @PostMapping("execute-random-write")
     void executeRandomWrite() {
-        var account = randomAccount();
-        accountRepository.create(List.of(account));
-        accountRepository.delete(account.id());
+        if (RANDOM.nextBoolean()) {
+            // random insert
+            accountRepository.create(List.of(randomAccount()));
+        } else {
+            // random delete of existing account
+            var accountIds = accountRepository.accountIds(10, List.of(LOAD_TEST_ACCOUNT_ID1, LOAD_TEST_ACCOUNT_ID2));
+            if (!accountIds.isEmpty()) {
+                var toDeleteIdx = RANDOM.nextInt(accountIds.size());
+                accountRepository.delete(accountIds.get(toDeleteIdx));
+            }
+        }
     }
 
     private Account randomAccount() {
@@ -106,7 +121,7 @@ public class AccountController {
 
     private Account randomAccount(UUID id) {
         var name = "name-" + RANDOM.nextInt(UNIQUE_NAMES);
-        return new Account(id, name, "email-" + id + "@email.com", Instant.now());
+        return new Account(id, name, "email-" + id + "@email.com", Instant.now(), RANDOM.nextInt(MAX_VERSION));
     }
 
     @ExceptionHandler

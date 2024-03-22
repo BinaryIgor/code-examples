@@ -25,7 +25,7 @@ echo "Image exported, preparing scripts..."
 
 export app=$app
 export tag=$tag
-export run_cmd="docker run -e TEST_PROFILE -e REQUESTS -e REQUESTS_PER_SECOND -e MAX_CONCURRENCY -e HOST -e IN_MEMORY_ENDPOINT --name $app $tagged_image"
+export run_cmd="docker run -e TEST_PROFILE -e TEST_RESULTS_INSTANCES -e HOST -e MACHINE_NAME -e IN_MEMORY_ENDPOINT -e REQUESTS -e REQUESTS_PER_SECOND -e MAX_CONCURRENCY --name $app $tagged_image"
 
 cd ..
 envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > $app/dist/load_and_run_app.bash

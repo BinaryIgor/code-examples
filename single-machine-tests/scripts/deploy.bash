@@ -10,7 +10,7 @@ latest_deploy_dir="$deploy_dir/latest"
 
 echo "Deploying $app to a $remote_host host, preparing deploy directories.."
 
-ssh ${remote_host} "rm -r -f $previous_deploy_dir;
+ssh -oStrictHostKeyChecking=accept-new ${remote_host} "rm -r -f $previous_deploy_dir;
      mkdir -p $latest_deploy_dir;
      cp -r $latest_deploy_dir $previous_deploy_dir;"
 
