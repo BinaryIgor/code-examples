@@ -1,0 +1,88 @@
+Loading load-test:latest image, this can take a while...
+Loaded image: load-test:latest
+Image loaded, running it...
+Removing previous container....
+load-test
+
+Starting new load-test version...
+
+Starting LoadTest on 4 machines!
+
+About to make 75 requests with 5/s rate
+Timeouts are 5000 ms for connect and 5000 ms for request
+Max concurrency is capped at: 10000
+
+Endpoints to test (chosen randomly):
+POST: /accounts/execute-random-write
+GET: /accounts/{id}
+GET: /accounts/{id}
+GET: /accounts/count?name={name}
+GET: /accounts/count?name={name}
+
+...
+
+2024-03-23T18:44:50.637899358, 5/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:51.639299681, 10/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:52.639963289, 15/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:53.640605353, 20/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:54.641489123, 25/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:55.642318096, 30/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:56.643360167, 35/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:57.644130860, 40/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:58.644974114, 45/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:44:59.645589101, 50/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:45:00.646462952, 55/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:45:01.647448389, 60/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:45:02.648323824, 65/75 requests were issued, waiting 1s before sending next batch...
+2024-03-23T18:45:03.649061988, 70/75 requests were issued, waiting 1s before sending next batch...
+
+...
+
+75 requests with 5 per second rate, issued on 4 machines, took PT15.251S
+
+...
+
+Tests executed on: 4 machines, in parallel
+Executed requests: 75, with 5/s rate
+Requests with connect timeout [5000]: 0, as percentage: 0
+Requests with request timeout [5000]: 0, as percentage: 0
+
+Min: 0.005 s
+Max: 0.184 s
+Mean: 0.01 s
+
+Percentile 10: 0.005 s
+Percentile 25: 0.006 s
+Percentile 50 (Median): 0.007 s
+Percentile 75: 0.008 s
+Percentile 90: 0.011 s
+Percentile 95: 0.014 s
+Percentile 99: 0.184 s
+Percentile 999: 0.184 s
+
+...
+
+POST: /accounts/execute-random-write
+Requests: 15, which is 20% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=15}
+
+...
+
+GET: /accounts/{id}
+Requests: 35, which is 47% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {404=14, 200=21}
+
+...
+
+GET: /accounts/count?name={name}
+Requests: 25, which is 33% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=25}
+
+...
+

@@ -1,0 +1,1 @@
+CREATE DATABASE single_db;

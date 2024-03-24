@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: single-app
+  datasource:
+    url: "${DB_URL:jdbc:postgresql://localhost:5432/single_db}"
+    username: "${DB_USER:postgres}"
+    password: "${DB_PASSWORD:postgres}"
+    hikari:
+      pool-name: single-app-pool
+      minimum-idle: 10
+      maximum-pool-size: 20
+  liquibase:
+    change-log: classpath:liquibase/changelog.xml
+  threads:
+    virtual:
+      enabled:
+        true
+
+server:
+  port: 80
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "health", "info", "prometheus" ]
