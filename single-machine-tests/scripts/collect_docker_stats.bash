@@ -4,7 +4,7 @@ set -euo pipefail
 stats_file=${STATS_FILE:-docker_stats.txt}
 collection_interval=${COLLECTION_INTERVAL:-20}
 
-echo "Removing previous stats file, if exist..."
+echo "Removing previous stats file, if exists..."
 
 rm -f $stats_file
 
