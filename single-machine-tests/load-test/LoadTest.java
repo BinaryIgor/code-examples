@@ -110,10 +110,15 @@ public class LoadTest {
 
         return switch (testProfile) {
             case LOW_LOAD -> TestProfileParams.ofRateFor15Seconds(5);
+            case BETWEEN_LOW_AND_AVERAGE_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(25);
             case AVERAGE_LOAD -> TestProfileParams.ofRateFor15Seconds(50);
-            // 1000 rps for 4 machines
+            case AVERAGE_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(50);
+            case BETWEEN_AVERAGE_AND_HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(150);
             case HIGH_LOAD -> TestProfileParams.ofRateFor15Seconds(250);
+            case HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(250);
+            case BETWEEN_HIGH_AND_VERY_HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(750);
             case VERY_HIGH_LOAD -> TestProfileParams.ofRateFor15Seconds(1000);
+            case VERY_HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(1000);
         };
     }
 
@@ -368,7 +373,13 @@ public class LoadTest {
 
 
     enum TestProfile {
-        LOW_LOAD, AVERAGE_LOAD, HIGH_LOAD, VERY_HIGH_LOAD
+        LOW_LOAD,
+        BETWEEN_LOW_AND_AVERAGE_LONG_LOAD,
+        AVERAGE_LOAD, AVERAGE_LONG_LOAD,
+        BETWEEN_AVERAGE_AND_HIGH_LONG_LOAD,
+        HIGH_LOAD, HIGH_LONG_LOAD,
+        BETWEEN_HIGH_AND_VERY_HIGH_LONG_LOAD,
+        VERY_HIGH_LOAD, VERY_HIGH_LONG_LOAD
     }
 
     record TestProfileParams(int requests, int requestsPerSecond, int maxConcurrency) {
@@ -378,6 +389,10 @@ public class LoadTest {
 
         static TestProfileParams ofRateFor15Seconds(int requestsPerSecond) {
             return new TestProfileParams(requestsPerSecond * 15, requestsPerSecond);
+        }
+
+        static TestProfileParams ofRateFor10Minutes(int requestsPerSecond) {
+            return new TestProfileParams(requestsPerSecond * 600, requestsPerSecond);
         }
     }
 
