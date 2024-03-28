@@ -438,7 +438,13 @@ Requests by status: {200=5978}
 Available test profiles:
 ```
 enum TestProfile {
-  LOW_LOAD, AVERAGE_LOAD, HIGH_LOAD, VERY_HIGH_LOAD
+  LOW_LOAD,
+  BETWEEN_LOW_AND_AVERAGE_LONG_LOAD,
+  AVERAGE_LOAD, AVERAGE_LONG_LOAD,
+  BETWEEN_AVERAGE_AND_HIGH_LONG_LOAD,
+  HIGH_LOAD, HIGH_LONG_LOAD,
+  BETWEEN_HIGH_AND_VERY_HIGH_LONG_LOAD,
+  VERY_HIGH_LOAD, VERY_HIGH_LONG_LOAD
 }
 ```
 For more options and details, check out `load-test` directory.
