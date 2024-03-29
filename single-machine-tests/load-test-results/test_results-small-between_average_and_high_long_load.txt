@@ -8,7 +8,7 @@ Starting new load-test version...
 
 Starting LoadTest on 4 machines!
 
-About to make 90000 requests with 150/s rate
+About to make 90000 requests with 150/s rate, on each machine
 Timeouts are 5000 ms for connect and 5000 ms for request
 Max concurrency is capped at: 10000
 
@@ -623,12 +623,12 @@ GET: /accounts/count?name={name}
 
 ...
 
-90000 requests with 150 per second rate, issued on 4 machines, took PT10M6.658S
+90000 requests with 150 per second rate took PT10M6.658S
 
 ...
 
 Tests executed on: 4 machines, in parallel
-Executed requests: 90000, with 150/s rate
+Executed requests on 1 machine: 90000, with 150/s rate
 Requests with connect timeout [5000]: 0, as percentage: 0
 Requests with request timeout [5000]: 0, as percentage: 0
 

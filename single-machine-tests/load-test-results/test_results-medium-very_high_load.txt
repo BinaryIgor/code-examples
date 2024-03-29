@@ -8,7 +8,7 @@ Starting new load-test version...
 
 Starting LoadTest on 4 machines!
 
-About to make 15000 requests with 1000/s rate
+About to make 15000 requests with 1000/s rate, on each machine
 Timeouts are 5000 ms for connect and 5000 ms for request
 Max concurrency is capped at: 10000
 
@@ -118,12 +118,12 @@ java.net.http.HttpTimeoutException: request timed out
 
 ...
 
-15000 requests with 1000 per second rate, issued on 4 machines, took PT22.588S
+15000 requests with 1000 per second rate took PT22.588S
 
 ...
 
 Tests executed on: 4 machines, in parallel
-Executed requests: 15000, with 1000/s rate
+Executed requests on 1 machine: 15000, with 1000/s rate
 Requests with connect timeout [5000]: 1896, as percentage: 12
 Requests with request timeout [5000]: 68, as percentage: 0
 

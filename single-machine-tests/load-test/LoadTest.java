@@ -36,9 +36,9 @@ public class LoadTest {
         var endpointsStats = ENDPOINT_IDS.stream()
                 .collect(Collectors.toMap(Function.identity(), k -> EndpointStats.empty()));
 
-        System.out.println("Starting LoadTest on %d machines!".formatted(TEST_RESULTS_INSTANCES));
+        System.out.println("Starting LoadTest on %s!".formatted(machinesString()));
         System.out.println();
-        System.out.println("About to make %d requests with %d/s rate".formatted(REQUESTS, REQUESTS_PER_SECOND));
+        System.out.println("About to make %d requests with %d/s rate, on each machine".formatted(REQUESTS, REQUESTS_PER_SECOND));
         System.out.println("Timeouts are %d ms for connect and %d ms for request".formatted(CONNECT_TIMEOUT, REQUEST_TIMEOUT));
         System.out.println("Max concurrency is capped at: " + MAX_CONCURRENCY);
         System.out.println();
@@ -80,8 +80,7 @@ public class LoadTest {
         var duration = Duration.ofMillis(System.currentTimeMillis() - start);
 
         printDelimiter();
-        System.out.println("%d requests with %d per second rate, issued on %s machines, took %s"
-                .formatted(REQUESTS, REQUESTS_PER_SECOND, TEST_RESULTS_INSTANCES, duration));
+        System.out.println("%d requests with %d per second rate took %s".formatted(REQUESTS, REQUESTS_PER_SECOND, duration));
         printDelimiter();
 
         var sortedResults = results.stream().map(EndpointResult::time).sorted().toList();
@@ -126,6 +125,10 @@ public class LoadTest {
         System.out.println();
         System.out.println("...");
         System.out.println();
+    }
+
+    static String machinesString() {
+        return TEST_RESULTS_INSTANCES > 1 ? "%d machines".formatted(TEST_RESULTS_INSTANCES) : "1 machine";
     }
 
     static int envIntValueOrDefault(String key, int defaultValue) {
@@ -282,8 +285,13 @@ public class LoadTest {
                            int requestTimeoutRequests) {
 
         var allRequests = sortedResults.size();
-        System.out.println("Tests executed on: %d machines, in parallel".formatted(TEST_RESULTS_INSTANCES));
-        System.out.println("Executed requests: %d, with %d/s rate".formatted(allRequests, REQUESTS_PER_SECOND));
+
+        var testsExecutedOnMachinesString = "Tests executed on: %s".formatted(machinesString());
+        if (TEST_RESULTS_INSTANCES > 1) {
+            testsExecutedOnMachinesString += ", in parallel";
+        }
+        System.out.println(testsExecutedOnMachinesString);
+        System.out.println("Executed requests on 1 machine: %d, with %d/s rate".formatted(allRequests, REQUESTS_PER_SECOND));
         System.out.println("Requests with connect timeout [%d]: %d, as percentage: %d"
                 .formatted(CONNECT_TIMEOUT, connectTimeoutRequests, (connectTimeoutRequests * 100) / allRequests));
         System.out.println("Requests with request timeout [%d]: %d, as percentage: %d"
