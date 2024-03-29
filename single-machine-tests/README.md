@@ -326,12 +326,12 @@ ssh test-machine@64.225.109.249 cat /home/test-machine/load-test-results/test_re
 
 ...
 
-75 requests with 5 per second rate, issued on 4 machines, took PT15.207S
+75 requests with 5 per second rate took PT15.207S
 
 ...
 
 Tests executed on: 4 machines, in parallel
-Executed requests: 75, with 5/s rate
+Executed requests on 1 machine: 75, with 5/s rate
 Requests with connect timeout [5000]: 0, as percentage: 0
 Requests with request timeout [5000]: 0, as percentage: 0
 
@@ -386,12 +386,12 @@ ssh test-machine@64.225.109.249 cat /home/test-machine/load-test-results/test_re
 
 ...
 
-15000 requests with 1000 per second rate, issued on 4 machines, took PT15.362S
+15000 requests with 1000 per second rate took PT15.362S
 
 ...
 
 Tests executed on: 4 machines, in parallel
-Executed requests: 15000, with 1000/s rate
+Executed requests on 1 machine: 15000, with 1000/s rate
 Requests with connect timeout [5000]: 0, as percentage: 0
 Requests with request timeout [5000]: 0, as percentage: 0
 
