@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: htmx-production-setup-app
+#  datasource:
+#    url: "${DB_URL}"
+#    username: "${DB_USERNAME}"
+#    password: "${DB_PASSWORD}"
+    pool-size: 5
+  liquibase:
+    change-log: classpath:liquibase/changelog.xml
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+      enabled: true
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: "${SERVER_PORT:8080}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "health", "info", "prometheus" ]

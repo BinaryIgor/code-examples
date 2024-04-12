@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .button-like {
+        @apply rounded-md border-slate-300 border-2 px-8 py-2 cursor-pointer;
+    }
+}
