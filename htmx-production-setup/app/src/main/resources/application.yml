@@ -1,10 +1,10 @@
 spring:
   application:
     name: htmx-production-setup-app
-#  datasource:
-#    url: "${DB_URL}"
-#    username: "${DB_USERNAME}"
-#    password: "${DB_PASSWORD}"
+    #  datasource:
+    #    url: "${DB_URL}"
+    #    username: "${DB_USERNAME}"
+    #    password: "${DB_PASSWORD}"
     pool-size: 5
   liquibase:
     change-log: classpath:liquibase/changelog.xml
@@ -25,3 +25,4 @@ management:
     web:
       exposure:
         include: [ "health", "info", "prometheus" ]
+

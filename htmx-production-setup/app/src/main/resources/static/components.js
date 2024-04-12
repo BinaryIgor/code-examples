@@ -24,6 +24,121 @@ export class InputError extends HTMLElement {
 
 customElements.define("input-error", InputError);
 
+
+const inputClassDefault = "rounded p-2 border-2 border-solid border-slate-100 focus:border-slate-300 outline-none";
+
+//Dependencies: registered input-error
+export class InputWithError extends HTMLElement {
+
+    static observedAttributes = ["input:value"];
+
+    constructor() {
+        super();
+
+        const containerAttributes = Components.mappedAttributes(this, "container");
+        const inputAttributes = Components.mappedAttributes(this, "input", {
+            defaultClass: inputClassDefault
+        });
+        const inputErrorAttributes = Components.mappedAttributes(this, "input-error");
+        const errorAttributes = Components.mappedAttributes(this, "error");
+
+        this.innerHTML = `
+        <div ${containerAttributes}>
+            <input ${inputAttributes}></input>
+            <input-error ${inputErrorAttributes} ${errorAttributes}></input-error>
+        </div>
+        `;
+
+        this._input = this.querySelector("input");
+        this._inputError = this.querySelector("input-error");
+
+        this.onInputValidated = (error) => {
+            this._inputError.setAttribute("message", error);
+        };
+
+        this.onInputChanged = (input) => {
+            if (this.inputValidator) {
+                const error = this.inputValidator(input);
+                this.onInputValidated(error);
+            }
+        };
+    }
+
+    connectedCallback() {
+        this._input.addEventListener("input", e => {
+            this.onInputChanged(this._input.value);
+        });
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        this._input.value = newValue;
+        this.onInputChanged(newValue);
+    }
+}
+
+customElements.define("input-with-error", InputWithError);
+
+const genericErrorClassDefault = "text-red-600 text-lg italic mt-4 my-2";
+const hiddenClass = "hidden";
+
+class FormContainer extends HTMLElement {
+
+    constructor() {
+        super();
+
+        const errorAttributes = Components.mappedAttributes(this, "generic-error", {
+            defaultClass: genericErrorClassDefault,
+            toAddClass: hiddenClass
+        });
+        const formAttributes = Components.mappedAttributes(this, "form");
+        const submitAttributes = Components.mappedAttributes(this, "submit", {
+            defaultAttributes: {
+                value: "Submit"
+            }
+        });
+
+        this.innerHTML = `
+        <form ${formAttributes}>
+        ${this.innerHTML}
+        <p ${Components.renderedCustomIdAttribute("generic-error")} ${errorAttributes}></p>
+        <input type="submit" ${submitAttributes}>
+        </form>
+        `;
+
+        this._genericError = Components.queryByCustomId(this, "generic-error");
+        this._form = this.querySelector("form");
+        this._submit = this.querySelector(`input[type="submit"]`);
+
+        this._form.addEventListener("submit", e => {
+            this._submit.disabled = true;
+        });
+    }
+
+    clearInputs() {
+        const inputs = [...this.querySelectorAll(`input:not([type="submit"])`)];
+        inputs.forEach(i => {
+            i.value = "";
+        });
+    }
+
+    afterSubmit({ error = "", alwaysClearInputs = false, showGenericError = false}) {
+        this._submit.disabled = false;
+
+        if (alwaysClearInputs || !error) {
+            this.clearInputs();
+        }
+
+        if (error && showGenericError) {
+            this._genericError.textContent = error;
+            this._genericError.classList.remove(hiddenClass);
+        } else {
+            this._genericError.classList.add(hiddenClass);
+        }
+    }
+}
+
+customElements.define("form-container", FormContainer);
+
 const containerClass = "fixed z-10 left-0 top-0 w-full h-full overflow-auto";
 const containerClassDefault = "bg-black/50";
 const contentClassDefault = "m-auto mt-16 p-4 w-4/5 md:w-3/5 lg:w-2/5 bg-white rounded";
@@ -110,6 +225,3 @@ class InfoModal extends HTMLElement {
 }
 
 customElements.define("info-modal", InfoModal);
-
-
-console.log("Some reusable components...")

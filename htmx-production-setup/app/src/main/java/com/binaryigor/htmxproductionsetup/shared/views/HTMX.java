@@ -1,6 +1,7 @@
-package com.binaryigor.htmxproductionsetup;
+package com.binaryigor.htmxproductionsetup.shared.views;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -50,11 +51,15 @@ public class HTMX {
                        
                 <body>
                     <info-modal id="error-modal" title="Something went wrong..." title:add:class="text-red-500"></info-modal>
-                    <div hx-history="false" id="app" class="p-4">
+                    <div hx-history="false" hx-history-elt id="app" class="p-4">
                          %s
                     </div>
                 </body>
                        
                 </html>""".formatted(CSS_PATH, INDEX_JS_PATH, COMPONENTS_PATH, HTMX_PATH, fragment).strip();
+    }
+
+    public static void addClientReplaceUrlHeader(HttpServletResponse response, String url) {
+        response.addHeader("hx-replace-url", url);
     }
 }
