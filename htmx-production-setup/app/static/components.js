@@ -6,8 +6,7 @@ export class InputError extends HTMLElement {
 
     static observedAttributes = ["message"];
 
-    constructor() {
-        super();
+    connectedCallback() {
         const message = Components.attributeValueOrDefault(this, "message");
         this._render(message);
     }
@@ -22,19 +21,12 @@ export class InputError extends HTMLElement {
     }
 }
 
-customElements.define("input-error", InputError);
-
-
 const inputClassDefault = "rounded p-2 border-2 border-solid border-slate-100 focus:border-slate-300 outline-none";
 
 //Dependencies: registered input-error
 export class InputWithError extends HTMLElement {
 
-    static observedAttributes = ["input:value"];
-
-    constructor() {
-        super();
-
+    connectedCallback() {
         const containerAttributes = Components.mappedAttributes(this, "container");
         const inputAttributes = Components.mappedAttributes(this, "input", {
             defaultClass: inputClassDefault
@@ -62,30 +54,21 @@ export class InputWithError extends HTMLElement {
                 this.onInputValidated(error);
             }
         };
-    }
 
-    connectedCallback() {
+        console.log("InputWithError is ready!");
+
         this._input.addEventListener("input", e => {
             this.onInputChanged(this._input.value);
         });
     }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        this._input.value = newValue;
-        this.onInputChanged(newValue);
-    }
 }
-
-customElements.define("input-with-error", InputWithError);
 
 const genericErrorClassDefault = "text-red-600 text-lg italic mt-4 my-2";
 const hiddenClass = "hidden";
 
 class FormContainer extends HTMLElement {
 
-    constructor() {
-        super();
-
+    connectedCallback() {
         const errorAttributes = Components.mappedAttributes(this, "generic-error", {
             defaultClass: genericErrorClassDefault,
             toAddClass: hiddenClass
@@ -112,6 +95,8 @@ class FormContainer extends HTMLElement {
         this._form.addEventListener("submit", e => {
             this._submit.disabled = true;
         });
+
+        this.dispatchEvent(new Event("form-container-created"));
     }
 
     clearInputs() {
@@ -137,8 +122,6 @@ class FormContainer extends HTMLElement {
     }
 }
 
-customElements.define("form-container", FormContainer);
-
 const containerClass = "fixed z-10 left-0 top-0 w-full h-full overflow-auto";
 const containerClassDefault = "bg-black/50";
 const contentClassDefault = "m-auto mt-16 p-4 w-4/5 md:w-3/5 lg:w-2/5 bg-white rounded";
@@ -152,10 +135,34 @@ const HIDDEN_EVENT = "info-modal-hidden";
 
 class InfoModal extends HTMLElement {
 
-    constructor() {
-        super();
+    connectedCallback() {
         this._render();
+
+        this._showOnEvent = (e) => {
+            const eDetail = e.detail;
+            if (!this.id || this.id == eDetail.targetId) {
+                this.show(eDetail.title, eDetail.message);
+            }
+        }
+
+        // defined here because of the this for window listener issues
+        this.show = ({ title = "", message = "" } = {}) => {
+            this._render(title, message);
+            this._container.style.display = "block";
+            this._close.onclick = () => this._container.style.display = "none";
+        };
+
+        this.hide = e => {
+            if (e.target == this._container) {
+                this._container.style.display = "none";
+                window.dispatchEvent(new CustomEvent(HIDDEN_EVENT, { detail: { id: this.id } }));
+            }
+        };
+
+        window.addEventListener("click", this.hide);
+        window.addEventListener(SHOW_EVENT, this._showOnEvent);
     }
+
 
     _render(title, message) {
         const titleToRender = title ? title : Components.attributeValueOrDefault(this, "title", "Default title");
@@ -192,32 +199,6 @@ class InfoModal extends HTMLElement {
         this._close = this.querySelector("span");
     }
 
-    connectedCallback() {
-        this._showOnEvent = (e) => {
-            const eDetail = e.detail;
-            if (!this.id || this.id == eDetail.targetId) {
-                this.show(eDetail.title, eDetail.message);
-            }
-        }
-
-        // defined here because of the this for window listener issues
-        this.show = ({ title = "", message = "" } = {}) => {
-            this._render(title, message);
-            this._container.style.display = "block";
-            this._close.onclick = () => this._container.style.display = "none";
-        };
-
-        this.hide = e => {
-            if (e.target == this._container) {
-                this._container.style.display = "none";
-                window.dispatchEvent(new CustomEvent(HIDDEN_EVENT, { detail: { id: this.id } }));
-            }
-        };
-
-        window.addEventListener("click", this.hide);
-        window.addEventListener(SHOW_EVENT, this._showOnEvent);
-    }
-
     disconnectedCallback() {
         window.removeEventListener("click", this.hide);
         window.removeEventListener(SHOW_EVENT, this._showOnEvent);
@@ -225,3 +206,6 @@ class InfoModal extends HTMLElement {
 }
 
 customElements.define("info-modal", InfoModal);
+customElements.define("input-error", InputError);
+customElements.define("input-with-error", InputWithError);
+customElements.define("form-container", FormContainer);

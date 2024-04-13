@@ -22,6 +22,10 @@ spring:
       cache:
         period: 0
         use-last-modified: false
+  devtools:
+    restart:
+      poll-interval: "1000ms"
+      quiet-period: "500ms"
 
 server:
   port: "${SERVER_PORT:8080}"
@@ -31,4 +35,7 @@ management:
     web:
       exposure:
         include: [ "health", "info", "prometheus" ]
+
+
+
 

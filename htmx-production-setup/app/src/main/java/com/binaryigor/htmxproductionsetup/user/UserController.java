@@ -38,17 +38,25 @@ public class UserController {
                     form:hx-target='#app'
                     submit:add:class='button-like mt-4'
                     submit:value='%s'>
-                    <input-with-error input:name="email">
+                    <input-with-error id="email-input" input:name="email">
                     </input-with-error>
                     <input-with-error input:type="password" input:name="password">
                     </input-with-error>
                 </form-container>
                 <script>
-                    document.getElementById('%s').addEventListener('htmx:afterRequest',
+                    const formContainer = document.getElementById('%s');
+                    formContainer.addEventListener('htmx:afterRequest',
                         function(e) {
                             const error = e.detail.xhr.response;
                             this.afterSubmit({ error: error });
                         });
+                    formContainer.addEventListener('form-container-created', e => {
+                        console.log("Form container is ready script!");
+                        document.getElementById("email-input").inputValidator = (email) => {
+                            console.log("Validating email...", email);
+                            return "wrong";
+                        };
+                    });
                 </script>
                 """.formatted(Translations.signIn(), signInFormId, Translations.signIn(), signInFormId);
         return HTMX.fragmentOrFullPage(signIn, true);
