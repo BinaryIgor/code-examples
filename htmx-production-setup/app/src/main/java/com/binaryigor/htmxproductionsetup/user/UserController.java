@@ -6,6 +6,7 @@ import com.binaryigor.htmxproductionsetup.shared.views.Translations;
 import com.binaryigor.htmxproductionsetup.shared.web.Cookies;
 import com.binaryigor.htmxproductionsetup.user.domain.SignInRequest;
 import com.binaryigor.htmxproductionsetup.user.domain.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -50,7 +51,7 @@ public class UserController {
                         });
                 </script>
                 """.formatted(Translations.signIn(), signInFormId, Translations.signIn(), signInFormId);
-        return HTMX.fragmentOrFullPage(signIn);
+        return HTMX.fragmentOrFullPage(signIn, true);
     }
 
     @PostMapping(path = "/sign-in")
@@ -63,6 +64,7 @@ public class UserController {
         response.addCookie(cookies.token(token.value(), token.expiresAt()));
 
         HTMX.addClientReplaceUrlHeader(response, "/home");
+        HTMX.addTriggerHeader(response, "top-navigation-show");
 
         return HTMX.fragmentOrFullPage(homePage(signedInUser.name()));
     }
@@ -84,9 +86,20 @@ public class UserController {
     }
 
     @GetMapping("/home")
-    public String home() {
+    String home() {
         var user = userService.userOfId(authUserClient.currentId());
         return homePage(user.name());
     }
 
+    @PostMapping("/sign-out")
+    String signOut(HttpServletRequest request,
+                   HttpServletResponse response) {
+        cookies.tokenValue(request.getCookies())
+                .ifPresent(t -> response.addCookie(cookies.expiredToken()));
+
+        HTMX.addClientReplaceUrlHeader(response, "/sign-in");
+        HTMX.addTriggerHeader(response, "top-navigation-hide");
+
+        return signInPage();
+    }
 }

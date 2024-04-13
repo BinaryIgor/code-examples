@@ -37,6 +37,10 @@ public class Translations {
         return "Sign In";
     }
 
+    public static String signOut() {
+        return "Sign Out";
+    }
+
     public static String homeStart() {
         return "Today";
     }

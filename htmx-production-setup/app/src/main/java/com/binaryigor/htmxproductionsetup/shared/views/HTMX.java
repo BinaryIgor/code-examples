@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public class HTMX {
 
+    private static final String APP_TITLE = "HTMX Production Setup";
     //TODO: prod/non-prod distinction
     private static final String HTMX_PATH = System.getenv().getOrDefault("HTMX_PATH", "lib/htmx.min.1.9.10.js");
     private static final String CSS_PATH = System.getenv().getOrDefault("CSS_PATH", "live-styles.css");
@@ -24,9 +25,13 @@ public class HTMX {
     }
 
     public static String fragmentOrFullPage(String fragment) {
+        return fragmentOrFullPage(fragment, false);
+    }
+
+    public static String fragmentOrFullPage(String fragment, boolean hiddenNavigation) {
         var currentRequest = currentRequest();
         if (currentRequest.isEmpty() || !isHTMXRequest(currentRequest.get())) {
-            return fullPage(fragment);
+            return fullPage(fragment, hiddenNavigation);
         }
         return fragment;
     }
@@ -35,12 +40,12 @@ public class HTMX {
         return request.getHeader("hx-request") != null;
     }
 
-    public static String fullPage(String fragment) {
+    public static String fullPage(String fragment, boolean hiddenNavigation) {
         return """
                 <!DOCTYPE HTML>
                 <html lang="en">
                 <head>
-                    <title>HTMX Production Setup</title>
+                    <title>%s</title>
                     <meta charset="UTF-8" />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                     <link rel="stylesheet" href="%s" />
@@ -50,16 +55,37 @@ public class HTMX {
                 </head>
                        
                 <body>
+                    %s
                     <info-modal id="error-modal" title="Something went wrong..." title:add:class="text-red-500"></info-modal>
                     <div hx-history="false" hx-history-elt id="app" class="p-4">
                          %s
                     </div>
                 </body>
                        
-                </html>""".formatted(CSS_PATH, INDEX_JS_PATH, COMPONENTS_PATH, HTMX_PATH, fragment).strip();
+                </html>""".formatted(APP_TITLE, CSS_PATH, INDEX_JS_PATH, COMPONENTS_PATH, HTMX_PATH,
+                navigationComponent(hiddenNavigation), fragment).strip();
+    }
+
+    private static String navigationComponent(boolean hidden) {
+        return """
+                <div id="app-navigation"
+                    class="%sz-10 sticky flex justify-between top-0 w-full py-4 px-2 border-b-4">
+                    <div class="text-center text-xl">%s</div>
+                    <div class="cursor-pointer text-lg text-right relative w-fit"
+                      hx-post="/sign-out"
+                      hx-trigger="click"
+                      hx-replace-url="true"
+                      hx-swap="innerHTML"
+                      hx-target="#app">%s</div>
+                </div>
+                """.formatted(hidden ? "hidden " : "", APP_TITLE, Translations.signOut());
     }
 
     public static void addClientReplaceUrlHeader(HttpServletResponse response, String url) {
         response.addHeader("hx-replace-url", url);
+    }
+
+    public static void addTriggerHeader(HttpServletResponse response, String trigger) {
+        response.addHeader("hx-trigger", trigger);
     }
 }
