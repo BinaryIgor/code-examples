@@ -16,6 +16,12 @@ spring:
   threads:
     virtual:
       enabled: true
+  web:
+    resources: # Static resources
+      static-locations: [ "file:static" ]
+      cache:
+        period: 0
+        use-last-modified: false
 
 server:
   port: "${SERVER_PORT:8080}"

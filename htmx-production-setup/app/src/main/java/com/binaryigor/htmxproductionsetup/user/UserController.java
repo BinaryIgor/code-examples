@@ -73,7 +73,7 @@ public class UserController {
                 <div class="space-y-4">
                     <button class="button-like block"
                         hx-get="/day" hx-push-url=true hx-target="#app">%s</button>
-                    <button class="button-like block"
+                    <button class="button-like"
                         hx-get="/history" hx-push-url=true hx-target="#app">%s</button>
                 </div>
                 """.formatted(

@@ -4,6 +4,8 @@ const errorModal = document.getElementById("error-modal");
 
 console.log("Have an error modal:", errorModal);
 
+console.log("Testing it out 22!");
+
 document.addEventListener("htmx:afterRequest", e => {
     console.log("After htmx request...", e);
 

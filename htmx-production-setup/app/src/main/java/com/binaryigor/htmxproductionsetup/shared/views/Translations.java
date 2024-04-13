@@ -5,6 +5,7 @@ import com.binaryigor.htmxproductionsetup.shared.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -46,6 +47,14 @@ public class Translations {
 
     public static String hello(String name) {
         return "Hello %s!".formatted(name);
+    }
+
+    public static String day(Instant date) {
+        return "Let's start the day %s".formatted(date);
+    }
+
+    public static String history(Instant date) {
+        return "History as of %s date".formatted(date);
     }
 
     public static String exception(Throwable exception) {

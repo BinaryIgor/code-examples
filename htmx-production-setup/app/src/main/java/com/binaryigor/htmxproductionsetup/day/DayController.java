@@ -1,7 +1,7 @@
-package com.binaryigor.htmxproductionsetup;
+package com.binaryigor.htmxproductionsetup.day;
 
 import com.binaryigor.htmxproductionsetup.shared.views.HTMX;
-import org.intellij.lang.annotations.Language;
+import com.binaryigor.htmxproductionsetup.shared.views.Translations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,10 +13,9 @@ public class DayController {
     //TODO: user scope
     @GetMapping("/day")
     String day() {
-        @Language("HTML")
         var day = """
-                <h1>Let's start the day %s!</h1>
-                """.formatted(Instant.now());
+                <h1>%s</h1>
+                """.formatted(Translations.day(Instant.now()));
         return HTMX.fragmentOrFullPage(day);
     }
 }
