@@ -8,10 +8,7 @@ import com.binaryigor.htmxproductionsetup.user.domain.SignInRequest;
 import com.binaryigor.htmxproductionsetup.user.domain.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -30,39 +27,56 @@ public class UserController {
 
     @GetMapping("/sign-in")
     String signInPage() {
-        var signInFormId = "sign-in-form";
         var signIn = """
                 <h1 class='text-2xl font-bold'>%s</h1>
-                <form-container id="%s"
+                <form-container id='sign-in-form'
                     form:hx-post='/sign-in'
                     form:hx-target='#app'
                     submit:add:class='button-like mt-4'
                     submit:value='%s'>
-                    <input-with-error id="email-input" input:name="email">
-                    </input-with-error>
-                    <input-with-error input:type="password" input:name="password">
-                    </input-with-error>
+                    %s
+                    %s
                 </form-container>
                 <script>
-                    const formContainer = document.getElementById('%s');
+                    const formContainer = document.getElementById('sign-in-form');
                     formContainer.addEventListener('htmx:afterRequest',
                         function(e) {
                             const error = e.detail.xhr.response;
                             this.afterSubmit({ error: error });
                         });
-                    formContainer.addEventListener('form-container-created', e => {
-                        console.log("Form container is ready script!");
-                        document.getElementById("email-input").inputValidator = (email) => {
-                            console.log("Validating email...", email);
-                            return "wrong";
-                        };
-                    });
+                    
+//                    document.getElementById("email-input").inputValidator = (email) => {
+//                        console.log("Validating email...", email);
+//                        return "wrong";
+//                     };
                 </script>
-                """.formatted(Translations.signIn(), signInFormId, Translations.signIn(), signInFormId);
+                """.formatted(Translations.signIn(), Translations.signIn(),
+                inputWithError("email-input", "email", "/sign-in/validate-email"),
+                inputWithError("password-input", "password", "/sign-in/validate-password"));
         return HTMX.fragmentOrFullPage(signIn, true);
     }
 
-    @PostMapping(path = "/sign-in")
+    private String inputWithError(String id, String name, String validateEndpoint) {
+        return """
+        <input-with-error id="%s" input:name="%s"
+            input:hx-trigger='input changed delay:500ms'
+            input:hx-post='%s'
+            input:hx-swap="outerHTML"
+            input:hx-target="next input-error">
+        </input-with-error>""".formatted(id, name, validateEndpoint);
+    }
+
+    @PostMapping("/sign-in/validate-email")
+    String signInValidateEmail(@RequestParam String email) {
+        return "<input-error message='Invalid email: %s'></input-error>".formatted(email);
+    }
+
+    @PostMapping("/sign-in/validate-password")
+    String signInValidatePassword(@RequestParam String password) {
+        return "<input-error message='Invalid password: %s'></input-error>".formatted(password);
+    }
+
+    @PostMapping("/sign-in")
     String signIn(@ModelAttribute SignInRequest request,
                   HttpServletResponse response) {
         var signedInUser = userService.signIn(request);

@@ -55,8 +55,6 @@ export class InputWithError extends HTMLElement {
             }
         };
 
-        console.log("InputWithError is ready!");
-
         this._input.addEventListener("input", e => {
             this.onInputChanged(this._input.value);
         });
@@ -69,28 +67,39 @@ const hiddenClass = "hidden";
 class FormContainer extends HTMLElement {
 
     connectedCallback() {
-        const errorAttributes = Components.mappedAttributes(this, "generic-error", {
+        const formAttributes = Components.mappedAttributesAsObject(this, "form");
+        const errorAttributes = Components.mappedAttributesAsObject(this, "generic-error", {
             defaultClass: genericErrorClassDefault,
             toAddClass: hiddenClass
         });
-        const formAttributes = Components.mappedAttributes(this, "form");
-        const submitAttributes = Components.mappedAttributes(this, "submit", {
+        const submitAttributes = Components.mappedAttributesAsObject(this, "submit", {
             defaultAttributes: {
                 value: "Submit"
             }
         });
 
-        this.innerHTML = `
-        <form ${formAttributes}>
-        ${this.innerHTML}
-        <p ${Components.renderedCustomIdAttribute("generic-error")} ${errorAttributes}></p>
-        <input type="submit" ${submitAttributes}>
-        </form>
-        `;
+        const form = document.createElement("form");
+        Components.setAttributes(form, formAttributes);
 
-        this._genericError = Components.queryByCustomId(this, "generic-error");
-        this._form = this.querySelector("form");
-        this._submit = this.querySelector(`input[type="submit"]`);
+        form.append(...this.children);
+
+        const genericError = document.createElement("p");
+        Components.setAttributes(genericError, errorAttributes);
+        Components.setCustomIdAttribute(genericError, "generic-error");
+
+        form.append(genericError);
+
+        const submit = document.createElement("input");
+        submit.setAttribute("type", "submit");
+        Components.setAttributes(submit, submitAttributes);
+
+        form.append(submit);
+
+        this.append(form);
+
+        this._genericError = genericError;
+        this._form = form;
+        this._submit = submit;
 
         this._form.addEventListener("submit", e => {
             this._submit.disabled = true;
@@ -205,7 +214,7 @@ class InfoModal extends HTMLElement {
     }
 }
 
-customElements.define("info-modal", InfoModal);
 customElements.define("input-error", InputError);
-customElements.define("input-with-error", InputWithError);
 customElements.define("form-container", FormContainer);
+customElements.define("input-with-error", InputWithError);
+customElements.define("info-modal", InfoModal);

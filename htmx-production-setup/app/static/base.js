@@ -1,5 +1,5 @@
 export const Components = {
-    mappedAttributes(element, elementId,
+    mappedAttributesAsObject(element, elementId,
         { defaultAttributes = {},
             defaultClass = "",
             toAddAttributes = {},
@@ -11,9 +11,26 @@ export const Components = {
 
         let mappedAttributes = mappedAttributesWithDefaults(element, elementId, baseAttributes, toSkipAttributes, keepId);
 
-        mappedAttributes = mappedAttributesWithToAddValues(mappedAttributes, toAddAttributes, toAddClass);
+        return mappedAttributesWithToAddValues(mappedAttributes, toAddAttributes, toAddClass);
+    },
 
-        return Object.entries(mappedAttributes).map(e => `${e[0]}="${e[1]}"`).join("\n");
+    mappedAttributes(element, elementId,
+        { defaultAttributes = {},
+            defaultClass = "",
+            toAddAttributes = {},
+            toAddClass = "",
+            toSkipAttributes = [],
+            keepId = false } = {}) {
+        const attributes = this.mappedAttributesAsObject(element, elementId,
+            { defaultAttributes, defaultClass, toAddAttributes, toAddClass, toSkipAttributes, keepId })
+
+        return Object.entries(attributes).map(e => `${e[0]}="${e[1]}"`).join("\n");
+    },
+
+    setAttributes(element, attributes) {
+        for (const [key, value] of Object.entries(attributes)) {
+            element.setAttribute(key, value);
+        }
     },
 
     attributeValueOrDefault(element, attribute, defaultValue = "") {
@@ -27,6 +44,10 @@ export const Components = {
 
     renderedCustomIdAttribute(value) {
         return `data-custom-id="${value}"`;
+    },
+
+    setCustomIdAttribute(element, value) {
+        element.setAttribute('data-custom-id', value);
     }
 };
 
