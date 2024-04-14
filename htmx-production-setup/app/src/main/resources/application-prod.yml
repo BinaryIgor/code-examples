@@ -3,4 +3,5 @@ spring:
     resources:
       static-locations: [ "classpath:static" ]
       cache:
+        # 1 year
         period: 31536000

@@ -12,8 +12,10 @@ rm -r -f dist
 mkdir dist
 mkdir dist/conf
 
-export DOMAIN="htmx-production.binaryigor.com"
+cd ..
+. "config_${ENV}.env"
 
+cd nginx
 . "config_${ENV}.env"
 
 export HTTP_PORT=${HTTP_PORT:-80}

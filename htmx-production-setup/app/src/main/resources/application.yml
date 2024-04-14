@@ -16,8 +16,6 @@ spring:
       static-locations: [ "file:static" ]
       cache:
         period: 0
-         #1 year
-#        period: 31536000
   devtools:
     restart:
       poll-interval: "1000ms"
