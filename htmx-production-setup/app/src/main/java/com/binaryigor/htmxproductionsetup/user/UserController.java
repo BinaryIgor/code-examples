@@ -39,8 +39,7 @@ public class UserController {
                     %s
                 </form-container>
                 <script>
-                    const formContainer = document.getElementById('sign-in-form');
-                    formContainer.addEventListener('htmx:afterRequest',
+                    document.getElementById('sign-in-form').addEventListener('htmx:afterRequest',
                         function(e) {
                             const error = e.detail.xhr.response;
                             this.afterSubmit({ error: error });
