@@ -3,6 +3,7 @@ package com.binaryigor.htmxproductionsetup.user;
 import com.binaryigor.htmxproductionsetup.shared.contracts.AuthUserClient;
 import com.binaryigor.htmxproductionsetup.shared.views.HTMX;
 import com.binaryigor.htmxproductionsetup.shared.views.Translations;
+import com.binaryigor.htmxproductionsetup.shared.views.Views;
 import com.binaryigor.htmxproductionsetup.shared.web.Cookies;
 import com.binaryigor.htmxproductionsetup.user.domain.SignInRequest;
 import com.binaryigor.htmxproductionsetup.user.domain.UserService;
@@ -44,36 +45,33 @@ public class UserController {
                             const error = e.detail.xhr.response;
                             this.afterSubmit({ error: error });
                         });
-                    
-//                    document.getElementById("email-input").inputValidator = (email) => {
-//                        console.log("Validating email...", email);
-//                        return "wrong";
-//                     };
                 </script>
                 """.formatted(Translations.signIn(), Translations.signIn(),
-                inputWithError("email-input", "email", "/sign-in/validate-email"),
-                inputWithError("password-input", "password", "/sign-in/validate-password"));
+                inputWithError("email-input", "email", "text", "/sign-in/validate-email"),
+                inputWithError("password-input", "password", "password", "/sign-in/validate-password"));
         return HTMX.fragmentOrFullPage(signIn, true);
     }
 
-    private String inputWithError(String id, String name, String validateEndpoint) {
+    private String inputWithError(String id, String name, String type, String validateEndpoint) {
         return """
-        <input-with-error id="%s" input:name="%s"
-            input:hx-trigger='input changed delay:500ms'
-            input:hx-post='%s'
-            input:hx-swap="outerHTML"
-            input:hx-target="next input-error">
-        </input-with-error>""".formatted(id, name, validateEndpoint);
+                <input-with-error id="%s" input:name="%s" input:type="%s"
+                    input:hx-trigger='input changed delay:500ms'
+                    input:hx-post='%s'
+                    input:hx-swap="outerHTML"
+                    input:hx-target="next input-error">
+                </input-with-error>""".formatted(id, name, type, validateEndpoint);
     }
 
     @PostMapping("/sign-in/validate-email")
     String signInValidateEmail(@RequestParam String email) {
-        return "<input-error message='Invalid email: %s'></input-error>".formatted(email);
+        var error = Translations.exception(() -> userService.validateEmail(email));
+        return Views.inputError(error);
     }
 
     @PostMapping("/sign-in/validate-password")
     String signInValidatePassword(@RequestParam String password) {
-        return "<input-error message='Invalid password: %s'></input-error>".formatted(password);
+        var error = Translations.exception(() -> userService.validatePassword(password));
+        return Views.inputError(error);
     }
 
     @PostMapping("/sign-in")

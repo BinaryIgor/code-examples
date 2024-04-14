@@ -25,7 +25,8 @@ public class UserService {
     }
 
     public SignedInUser signIn(SignInRequest request) {
-        validateRequest(request);
+        validateEmail(request.email());
+        validatePassword(request.password());
 
         var user = userRepository.ofEmail(request.email())
                 .orElseThrow(() -> new NotFoundException("User"));
@@ -38,11 +39,14 @@ public class UserService {
                 authClient.ofUser(user.id()));
     }
 
-    private void validateRequest(SignInRequest request) {
-        if (!UserValidator.isEmailValid(request.email())) {
-            throw new InvalidEmailException(request.email());
+    public void validateEmail(String email) {
+        if (!UserValidator.isEmailValid(email)) {
+            throw new InvalidEmailException(email);
         }
-        if (!UserValidator.isPasswordValid(request.password())) {
+    }
+
+    public void validatePassword(String password) {
+        if (!UserValidator.isPasswordValid(password)) {
             throw new InvalidPasswordException();
         }
     }

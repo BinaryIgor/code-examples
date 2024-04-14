@@ -14,7 +14,6 @@ import java.util.Optional;
 public class Translations {
 
     private static final Logger logger = LoggerFactory.getLogger(Translations.class);
-
     private static final Map<String, ExceptionTranslator> EXCEPTIONS_TRANSLATIONS = new HashMap<>();
     private static final String UNKNOWN_EXCEPTION_TRANSLATION = "Unknown error has occurred";
 
@@ -59,6 +58,15 @@ public class Translations {
 
     public static String history(Instant date) {
         return "History as of %s date".formatted(date);
+    }
+
+    public static String exception(Runnable runnable) {
+        try {
+            runnable.run();
+            return null;
+        } catch (Exception e) {
+            return exception(e);
+        }
     }
 
     public static String exception(Throwable exception) {

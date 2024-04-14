@@ -13,9 +13,9 @@ public class UserTranslations {
     @PostConstruct
     void registerTranslations() {
         Translations.registerExceptionTranslator(InvalidEmailException.class,
-                (t, l) -> "Valid, non-empty email is required");
+                (t, l) -> "Valid, non-empty email is required. It must contain '@' and a proper domain");
         Translations.registerExceptionTranslator(InvalidPasswordException.class,
-                (t, l) -> "Invalid password");
+                (t, l) -> "Invalid password. It must have at least 8 characters, one uppercase, one lowercase and one digit");
         Translations.registerExceptionTranslator(IncorrectPasswordException.class,
                 (t, l) -> "Incorrect password");
     }
