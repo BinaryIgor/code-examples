@@ -13,11 +13,11 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class ExceptionsHandler {
 
     //TODO: customize, check whether it works on prod
-    @ExceptionHandler
-    ResponseEntity<String> noResourceFoundException(NoResourceFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("<h1>Nothing was found!</h1>");
-    }
+//    @ExceptionHandler
+//    ResponseEntity<String> noResourceFoundException(NoResourceFoundException exception) {
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                .body("<h1>Nothing was found!</h1>");
+//    }
 
     @ExceptionHandler
     ResponseEntity<String> handleNotFoundException(NotFoundException exception) {

@@ -36,7 +36,7 @@ public class SecurityFilter implements Filter {
                           SecurityRules securityRules,
                           Cookies cookies,
                           Clock clock,
-                          @Value("${auth.issue-new-token-before-expiration-duration:PT5M}")
+                          @Value("${auth.issue-new-token-before-expiration-duration}")
                           Duration issueNewTokenBeforeExpirationDuration) {
         this.authTokenAuthenticator = authTokenAuthenticator;
         this.securityRules = securityRules;
@@ -98,9 +98,7 @@ public class SecurityFilter implements Filter {
                        .compareTo(issueNewTokenBeforeExpirationDuration) <= 0;
     }
 
-    // TODO: better abstraction
     private void issueNewToken(HttpServletResponse response, String currentToken) {
-        logger.info("Issuing new token...");
         var authToken = authTokenAuthenticator.refresh(currentToken);
         response.addCookie(cookies.token(authToken.value(), authToken.expiresAt()));
     }

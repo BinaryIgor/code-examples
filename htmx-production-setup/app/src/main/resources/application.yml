@@ -23,6 +23,8 @@ spring:
 
 server:
   port: "${SERVER_PORT:8080}"
+  whitelabel.enabled: false
+
 
 management:
   endpoints:
@@ -30,6 +32,11 @@ management:
       exposure:
         include: [ "health", "info", "prometheus" ]
 
+auth:
+  issuer: htmx-production-setup
+  token-key: "qxg+hQ=="
+  token-duration: "PT48H"
+  issue-new-token-before-expiration-duration: "PT45H"
 
 
 

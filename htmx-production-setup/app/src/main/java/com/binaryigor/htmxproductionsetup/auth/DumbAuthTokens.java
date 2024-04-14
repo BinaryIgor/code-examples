@@ -12,7 +12,8 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
 
-@Component
+//TODO: remove!
+//@Component
 public class DumbAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
 
     private static final String SECRET = "secret";

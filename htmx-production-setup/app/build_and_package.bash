@@ -77,9 +77,9 @@ echo $server_port > "dist/current_port.txt"
 
 server_port_env="SERVER_PORT=$server_port"
 spring_profile_env="SPRING_PROFILES_ACTIVE=prod"
-css_path_env="CSS_PATH=$hashed_css"
-components_path_env="COMPONENTS_PATH=$hashed_components"
-index_js_path_env="INDEX_JS_PATH=$hashed_index_js"
+css_path_env="CSS_PATH=/$hashed_css"
+components_path_env="COMPONENTS_PATH=/$hashed_components"
+index_js_path_env="INDEX_JS_PATH=/$hashed_index_js"
 
 export app=$app
 export tag=$tag

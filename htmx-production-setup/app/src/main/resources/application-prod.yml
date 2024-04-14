@@ -5,3 +5,7 @@ spring:
       cache:
         # 1 year
         period: 31536000
+
+
+auth:
+  token-key: "${AUTH_TOKEN_KEY}"
