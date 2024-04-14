@@ -104,7 +104,7 @@ public class UserController {
         return HTMX.fragmentOrFullPage(home);
     }
 
-    @GetMapping("/home")
+    @GetMapping(path = {"/home", "/"})
     String home() {
         var user = userService.userOfId(authUserClient.currentId());
         return homePage(user.name());

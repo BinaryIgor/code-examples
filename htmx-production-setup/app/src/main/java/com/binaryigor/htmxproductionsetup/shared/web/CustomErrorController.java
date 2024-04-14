@@ -1,6 +1,7 @@
 package com.binaryigor.htmxproductionsetup.shared.web;
 
 import com.binaryigor.htmxproductionsetup.shared.views.HTMX;
+import com.binaryigor.htmxproductionsetup.shared.views.Translations;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -8,21 +9,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 public class CustomErrorController implements ErrorController {
 
-    //TODO: improve!
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request) {
-        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        var status = Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
+                .orElse(500);
 
-        if (status != null) {
-            var statusCode = Integer.parseInt(status.toString());
-            if(statusCode == HttpStatus.NOT_FOUND.value()) {
-                return HTMX.fullPage("<h1>Not Found</h1>", true);
-            }
+        var statusCode = Integer.parseInt(status.toString());
+        if (statusCode == HttpStatus.NOT_FOUND.value()) {
+            var notFoundPath = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
+            return HTMX.fullPage("""
+                    <h1 class="text-xl font-bold mb-4">%s</h1>
+                    <div class="mb-4">%s</div>
+                    <div>%s<div>
+                    """.formatted(Translations.notFoundTitle(),
+                    Translations.notFoundMessage(notFoundPath),
+                    Translations.backToTheMainPage()), true);
         }
 
-        return  HTMX.fullPage("<h1>Unknown error, should never happen</h1>", true);
+        return HTMX.fullPage("""
+                <h1 class="text-xl font-bold mb-4">%s</h1>
+                %s
+                """.formatted(Translations.unknownErrorTitle(),
+                Translations.backToTheMainPage()), true);
     }
 }

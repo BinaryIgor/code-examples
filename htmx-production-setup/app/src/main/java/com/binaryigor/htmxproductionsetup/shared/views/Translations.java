@@ -60,6 +60,22 @@ public class Translations {
         return "History as of %s date".formatted(date);
     }
 
+    public static String notFoundTitle() {
+        return "Not Found";
+    }
+
+    public static String notFoundMessage(String notFoundPath) {
+        return "Unfortunately, the <span class=\"underline\">%s</span> page was not found.".formatted(notFoundPath);
+    }
+
+    public static String backToTheMainPage() {
+        return "Let's get <a class=\"underline\" href=\"/\">back</a> to the main page</a>!";
+    }
+
+    public static String unknownErrorTitle() {
+        return "Unknown Error";
+    }
+
     public static String exception(Runnable runnable) {
         try {
             runnable.run();
