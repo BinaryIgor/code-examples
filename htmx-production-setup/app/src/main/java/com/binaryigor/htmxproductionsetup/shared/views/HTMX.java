@@ -10,7 +10,6 @@ import java.util.Optional;
 public class HTMX {
 
     private static final String APP_TITLE = "HTMX Production Setup";
-    //TODO: prod/non-prod distinction
     private static final String HTMX_PATH = System.getenv().getOrDefault("HTMX_PATH", "lib/htmx.min.1.9.10.js");
     private static final String CSS_PATH = System.getenv().getOrDefault("CSS_PATH", "live-styles.css");
     private static final String INDEX_JS_PATH = System.getenv().getOrDefault("INDEX_JS_PATH", "index.js");

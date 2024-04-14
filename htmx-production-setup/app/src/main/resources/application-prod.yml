@@ -1,4 +1,6 @@
 spring:
   web:
     resources:
-      add-mappings: false
+      static-locations: [ "classpath:static" ]
+      cache:
+        period: 31536000

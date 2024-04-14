@@ -8,11 +8,6 @@ spring:
     pool-size: 5
   liquibase:
     change-log: classpath:liquibase/changelog.xml
-  servlet:
-    multipart:
-      max-file-size: 2MB
-      max-request-size: 2MB
-      enabled: true
   threads:
     virtual:
       enabled: true
@@ -21,7 +16,8 @@ spring:
       static-locations: [ "file:static" ]
       cache:
         period: 0
-        use-last-modified: false
+         #1 year
+#        period: 31536000
   devtools:
     restart:
       poll-interval: "1000ms"

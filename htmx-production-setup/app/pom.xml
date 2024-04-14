@@ -6,8 +6,9 @@
 
     <parent>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
+        <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.4</version>
+        <relativePath></relativePath>
     </parent>
 
     <groupId>com.binaryigor</groupId>
