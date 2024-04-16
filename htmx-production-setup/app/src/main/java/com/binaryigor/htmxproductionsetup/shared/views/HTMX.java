@@ -69,7 +69,11 @@ public class HTMX {
         return """
                 <div id="app-navigation"
                     class="%sz-10 sticky flex justify-between top-0 w-full py-4 px-2 border-b-4">
-                    <div class="text-center text-xl">%s</div>
+                    <div class="text-center text-xl cursor-pointer"
+                        hx-get="/"
+                        onclick="pushHomeIfNotAtHome(this)"
+                        hx-trigger="render-home"
+                        hx-target="#app">%s</div>
                     <div class="cursor-pointer text-lg text-right relative w-fit"
                       hx-post="/sign-out"
                       hx-trigger="click"

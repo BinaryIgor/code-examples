@@ -82,7 +82,7 @@ public class UserController {
 
         response.addCookie(cookies.token(token.value(), token.expiresAt()));
 
-        HTMX.addClientReplaceUrlHeader(response, "/home");
+        HTMX.addClientReplaceUrlHeader(response, "/");
         HTMX.addTriggerHeader(response, "top-navigation-show");
 
         return HTMX.fragmentOrFullPage(homePage(signedInUser.name()));
@@ -104,7 +104,7 @@ public class UserController {
         return HTMX.fragmentOrFullPage(home);
     }
 
-    @GetMapping(path = {"/home", "/"})
+    @GetMapping("/")
     String home() {
         var user = userService.userOfId(authUserApi.currentId());
         return homePage(user.name());
