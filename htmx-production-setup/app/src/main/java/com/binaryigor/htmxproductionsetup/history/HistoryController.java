@@ -4,6 +4,8 @@ import com.binaryigor.htmxproductionsetup.shared.contracts.AuthUserApi;
 import com.binaryigor.htmxproductionsetup.shared.views.HTMX;
 import com.binaryigor.htmxproductionsetup.shared.views.Translations;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Clock;
@@ -11,6 +13,7 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/history")
 public class HistoryController {
 
     private final HistoryRepository historyRepository;
@@ -25,12 +28,15 @@ public class HistoryController {
         this.clock = clock;
     }
 
-    @GetMapping("/history")
+    @GetMapping
     String history() {
         var days = historyRepository.days(authUserApi.currentId());
 
         var daysHtml = days.stream()
-                .map("<div class='rounded-md border-slate-300 border-2 px-8 py-2 cursor-pointer w-fit'>%s</div>"::formatted)
+                .map(d ->
+                        "<div class='rounded-md border-slate-300 border-2 px-8 py-2 cursor-pointer w-fit' "
+                        + "hx-get='/history/%s' hx-push-url='true' hx-target='#app'>".formatted(d)
+                        + "%s</div>".formatted(d))
                 .collect(Collectors.joining("\n"));
 
         var html = """
@@ -40,6 +46,15 @@ public class HistoryController {
                 </div>
                 """.formatted(Translations.history(LocalDate.now(clock)),
                 daysHtml);
+
+        return HTMX.fragmentOrFullPage(html);
+    }
+
+    @GetMapping("/{day}")
+    String historyDay(@PathVariable LocalDate day) {
+        var html = """
+                <div>Some history of the day %s</div>
+                """.formatted(day);
 
         return HTMX.fragmentOrFullPage(html);
     }
