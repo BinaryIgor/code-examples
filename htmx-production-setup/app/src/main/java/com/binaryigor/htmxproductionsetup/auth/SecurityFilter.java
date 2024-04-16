@@ -57,8 +57,8 @@ public class SecurityFilter implements Filter {
             var token = cookies.tokenValue(request.getCookies());
 
             var authResult = token.map(authTokenAuthenticator::authenticate);
-            authResult.ifPresent(r -> AuthenticatedUserRequestHolder.set(r.user()));
-
+            authResult.ifPresent(r ->
+                    AuthenticatedUserRequestHolder.set(r.user()));
             logger.info("Auth result: {}", authResult);
 
             securityRules.validateAccess(endpoint,

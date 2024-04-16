@@ -19,7 +19,7 @@ public class TheUserApi implements UserApi {
     @Override
     public UserData userOfId(UUID id) {
         return userRepository.ofId(id)
-                .map(u -> new UserData(u.id(), u.email(), u.name()))
+                .map(u -> new UserData(u.id(), u.email(), u.name(), u.language()))
                 .orElseThrow(() -> new NotFoundException("User"));
     }
 }

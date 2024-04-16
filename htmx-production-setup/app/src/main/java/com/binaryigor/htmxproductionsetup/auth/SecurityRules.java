@@ -1,7 +1,6 @@
 package com.binaryigor.htmxproductionsetup.auth;
 
-
-import com.binaryigor.htmxproductionsetup.shared.AuthenticatedUser;
+import com.binaryigor.htmxproductionsetup.shared.contracts.UserData;
 import com.binaryigor.htmxproductionsetup.shared.exception.UnauthenticatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +28,7 @@ public class SecurityRules {
 
     public void validateAccess(SecurityEndpoint endpoint,
                                boolean privateNetworkClient,
-                               Optional<AuthenticatedUser> user) {
+                               Optional<UserData> user) {
         if (predicates.publicEndpoint.test(endpoint)) {
             return;
         }

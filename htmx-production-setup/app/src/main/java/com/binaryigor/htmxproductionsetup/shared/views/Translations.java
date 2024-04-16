@@ -1,5 +1,6 @@
 package com.binaryigor.htmxproductionsetup.shared.views;
 
+import com.binaryigor.htmxproductionsetup.shared.Language;
 import com.binaryigor.htmxproductionsetup.shared.exception.AppException;
 import com.binaryigor.htmxproductionsetup.shared.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 public class Translations {
 
+    //TODO: language
     private static final Logger logger = LoggerFactory.getLogger(Translations.class);
     private static final Map<String, ExceptionTranslator> EXCEPTIONS_TRANSLATIONS = new HashMap<>();
     private static final String UNKNOWN_EXCEPTION_TRANSLATION = "Unknown error has occurred";
@@ -87,8 +89,9 @@ public class Translations {
 
     public static String exception(Throwable exception) {
         try {
+            //TODO: locale
             return Optional.ofNullable(EXCEPTIONS_TRANSLATIONS.get(exceptionKey(exception.getClass())))
-                    .map(t -> t.translate(exception, Locale.ENGLISH))
+                    .map(t -> t.translate(exception, Language.EN))
                     .orElse(UNKNOWN_EXCEPTION_TRANSLATION);
         } catch (Exception e) {
             logger.error("Problem while translating {} exception...", exception.getClass(), e);
@@ -97,6 +100,6 @@ public class Translations {
     }
 
     public interface ExceptionTranslator<T extends Throwable> {
-        String translate(T exception, Locale locale);
+        String translate(T exception, Language language);
     }
 }

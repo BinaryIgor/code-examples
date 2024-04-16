@@ -3,9 +3,10 @@ package com.binaryigor.htmxproductionsetup.auth;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.binaryigor.htmxproductionsetup.shared.contracts.AuthToken;
-import com.binaryigor.htmxproductionsetup.shared.AuthenticatedUser;
 import com.binaryigor.htmxproductionsetup.shared.PropertiesConverter;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthToken;
+import com.binaryigor.htmxproductionsetup.shared.contracts.UserApi;
+import com.binaryigor.htmxproductionsetup.shared.contracts.UserData;
 import com.binaryigor.htmxproductionsetup.shared.exception.InvalidAuthTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,15 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
     private final String issuer;
     private final Algorithm algorithm;
     private final Duration tokenDuration;
+    private final UserApi userApi;
 
-    public JWTAuthTokens(Clock clock, String issuer, Algorithm algorithm, Duration tokenDuration) {
+    public JWTAuthTokens(Clock clock, String issuer, Algorithm algorithm, Duration tokenDuration,
+                         UserApi userApi) {
         this.clock = clock;
         this.issuer = issuer;
         this.algorithm = algorithm;
         this.tokenDuration = tokenDuration;
+        this.userApi = userApi;
     }
 
     /*
@@ -47,10 +51,11 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
     Note that newer x86 processors also contain SHA-1 and SHA-256 accelerator hardware, so that may shift the speed advantage back into SHA-256's favor compared to SHA-512.
     */
     @Autowired
-    public JWTAuthTokens(Clock clock, AuthConfig config) {
+    public JWTAuthTokens(Clock clock, AuthConfig config, UserApi userApi) {
         this(clock, config.issuer(),
                 Algorithm.HMAC512(PropertiesConverter.bytesFromString(config.tokenKey())),
-                config.tokenDuration());
+                config.tokenDuration(),
+                userApi);
     }
 
     private String newToken(String issuer,
@@ -72,20 +77,21 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
     }
 
     private AuthenticationResult validateToken(String token) {
-        UUID userId;
+        UserData user;
         Instant expiresAt;
 
         try {
             var decodedToken = tokenVerifier().verify(token);
-            userId = UUID.fromString(decodedToken.getSubject());
+            var userId = UUID.fromString(decodedToken.getSubject());
             expiresAt = decodedToken.getExpiresAtAsInstant();
+
+            user = userApi.userOfId(userId);
         } catch (Exception e) {
             logger.warn("Invalid token", e);
             throw InvalidAuthTokenException.invalidToken();
         }
 
-        // If needed, get user + their additional data from the database
-        return new AuthenticationResult(new AuthenticatedUser(userId), expiresAt);
+        return new AuthenticationResult(user, expiresAt);
     }
 
     private JWTVerifier tokenVerifier() {

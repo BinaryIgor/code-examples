@@ -1,7 +1,9 @@
 package com.binaryigor.htmxproductionsetup.auth;
 
-import com.binaryigor.htmxproductionsetup.shared.AuthenticatedUser;
-import com.binaryigor.htmxproductionsetup.shared.contracts.*;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthApi;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthToken;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthUserApi;
+import com.binaryigor.htmxproductionsetup.shared.contracts.UserData;
 import com.binaryigor.htmxproductionsetup.shared.exception.UnauthenticatedException;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +13,9 @@ import java.util.UUID;
 public class TheAuthApi implements AuthApi, AuthUserApi {
 
     private final AuthTokenCreator authTokenCreator;
-    private final UserApi userApi;
 
-    public TheAuthApi(AuthTokenCreator authTokenCreator,
-                      UserApi userApi) {
+    public TheAuthApi(AuthTokenCreator authTokenCreator) {
         this.authTokenCreator = authTokenCreator;
-        this.userApi = userApi;
     }
 
     @Override
@@ -26,13 +25,12 @@ public class TheAuthApi implements AuthApi, AuthUserApi {
 
     @Override
     public UUID currentId() {
-        return AuthenticatedUserRequestHolder.get()
-                .map(AuthenticatedUser::id)
-                .orElseThrow(UnauthenticatedException::new);
+        return currentUserData().id();
     }
 
     @Override
     public UserData currentUserData() {
-        return userApi.userOfId(currentId());
+        return AuthenticatedUserRequestHolder.get()
+                .orElseThrow(UnauthenticatedException::new);
     }
 }
