@@ -17,7 +17,7 @@ public class InMemoryUserRepository implements UserRepository {
     private final Map<UUID, User> db = new ConcurrentHashMap<>();
 
     public InMemoryUserRepository() {
-        var user1 = new User(DemoData.USER1_ID, "igor.thebinary@gmail.com", "Igor", "ComplexPassword12",
+        var user1 = new User(DemoData.USER1_ID, "igor@gmail.com", "Igor", "ComplexPassword12",
                 Language.EN);
         db.put(user1.id(), user1);
     }
