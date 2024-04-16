@@ -1,9 +1,8 @@
 package com.binaryigor.htmxproductionsetup.auth;
 
-import com.binaryigor.htmxproductionsetup.shared.AuthToken;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthToken;
 import com.binaryigor.htmxproductionsetup.shared.AuthenticatedUser;
 import com.binaryigor.htmxproductionsetup.shared.exception.InvalidAuthTokenException;
-import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;

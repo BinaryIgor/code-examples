@@ -3,7 +3,7 @@ package com.binaryigor.htmxproductionsetup.auth;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.binaryigor.htmxproductionsetup.shared.AuthToken;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthToken;
 import com.binaryigor.htmxproductionsetup.shared.AuthenticatedUser;
 import com.binaryigor.htmxproductionsetup.shared.PropertiesConverter;
 import com.binaryigor.htmxproductionsetup.shared.exception.InvalidAuthTokenException;

@@ -1,6 +1,6 @@
 package com.binaryigor.htmxproductionsetup.user.domain;
 
-import com.binaryigor.htmxproductionsetup.shared.AuthToken;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthToken;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.binaryigor.htmxproductionsetup.shared;
+package com.binaryigor.htmxproductionsetup.shared.contracts;
 
 import java.time.Instant;
 

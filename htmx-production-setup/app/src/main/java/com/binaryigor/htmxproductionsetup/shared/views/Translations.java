@@ -5,7 +5,7 @@ import com.binaryigor.htmxproductionsetup.shared.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -52,11 +52,11 @@ public class Translations {
         return "Hello %s!".formatted(name);
     }
 
-    public static String day(Instant date) {
-        return "Let's start the day %s".formatted(date);
+    public static String dayStart(String user, LocalDate date) {
+        return "Hello %s! Let's start the day %s".formatted(user, date);
     }
 
-    public static String history(Instant date) {
+    public static String history(LocalDate date) {
         return "History as of %s date".formatted(date);
     }
 

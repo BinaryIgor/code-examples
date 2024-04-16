@@ -5,8 +5,6 @@ const HIDDEN_CLASS = "hidden";
 const errorModal = document.getElementById("error-modal");
 const navigation = document.getElementById("app-navigation");
 
-console.log("Have an error modal:", errorModal);
-
 document.addEventListener("htmx:afterRequest", e => {
     console.log("After htmx request...", e);
 

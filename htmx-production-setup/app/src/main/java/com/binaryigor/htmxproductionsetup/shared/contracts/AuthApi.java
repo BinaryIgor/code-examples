@@ -1,9 +1,7 @@
 package com.binaryigor.htmxproductionsetup.shared.contracts;
 
-import com.binaryigor.htmxproductionsetup.shared.AuthToken;
-
 import java.util.UUID;
 
-public interface AuthClient {
+public interface AuthApi {
     AuthToken ofUser(UUID id);
 }

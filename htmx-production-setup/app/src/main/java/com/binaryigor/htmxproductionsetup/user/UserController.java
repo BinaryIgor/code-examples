@@ -1,6 +1,6 @@
 package com.binaryigor.htmxproductionsetup.user;
 
-import com.binaryigor.htmxproductionsetup.shared.contracts.AuthUserClient;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthUserApi;
 import com.binaryigor.htmxproductionsetup.shared.views.HTMX;
 import com.binaryigor.htmxproductionsetup.shared.views.Translations;
 import com.binaryigor.htmxproductionsetup.shared.views.Views;
@@ -16,14 +16,14 @@ public class UserController {
 
     private final UserService userService;
     private final Cookies cookies;
-    private final AuthUserClient authUserClient;
+    private final AuthUserApi authUserApi;
 
     public UserController(UserService userService,
                           Cookies cookies,
-                          AuthUserClient authUserClient) {
+                          AuthUserApi authUserApi) {
         this.userService = userService;
         this.cookies = cookies;
-        this.authUserClient = authUserClient;
+        this.authUserApi = authUserApi;
     }
 
     @GetMapping("/sign-in")
@@ -106,7 +106,7 @@ public class UserController {
 
     @GetMapping(path = {"/home", "/"})
     String home() {
-        var user = userService.userOfId(authUserClient.currentId());
+        var user = userService.userOfId(authUserApi.currentId());
         return homePage(user.name());
     }
 

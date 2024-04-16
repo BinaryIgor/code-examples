@@ -1,5 +1,6 @@
 package com.binaryigor.htmxproductionsetup.user.db;
 
+import com.binaryigor.htmxproductionsetup.shared.DemoData;
 import com.binaryigor.htmxproductionsetup.user.domain.User;
 import com.binaryigor.htmxproductionsetup.user.domain.UserRepository;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,7 @@ public class InMemoryUserRepository implements UserRepository {
     private final Map<UUID, User> db = new ConcurrentHashMap<>();
 
     public InMemoryUserRepository() {
-        var user1 = new User(UUID.fromString("bdcdc153-3865-42b2-9f7d-4c380aa13c80"), "igor.thebinary@gmail.com", "Igor", "ComplexPassword12");
+        var user1 = new User(DemoData.USER1_ID, "igor.thebinary@gmail.com", "Igor", "ComplexPassword12");
         db.put(user1.id(), user1);
     }
 

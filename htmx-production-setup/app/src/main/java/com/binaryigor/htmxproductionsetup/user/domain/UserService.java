@@ -1,6 +1,6 @@
 package com.binaryigor.htmxproductionsetup.user.domain;
 
-import com.binaryigor.htmxproductionsetup.shared.contracts.AuthClient;
+import com.binaryigor.htmxproductionsetup.shared.contracts.AuthApi;
 import com.binaryigor.htmxproductionsetup.shared.exception.NotFoundException;
 import com.binaryigor.htmxproductionsetup.user.domain.exception.IncorrectPasswordException;
 import com.binaryigor.htmxproductionsetup.user.domain.exception.InvalidEmailException;
@@ -14,14 +14,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
-    private final AuthClient authClient;
+    private final AuthApi authApi;
 
     public UserService(UserRepository userRepository,
                        PasswordHasher passwordHasher,
-                       AuthClient authClient) {
+                       AuthApi authApi) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
-        this.authClient = authClient;
+        this.authApi = authApi;
     }
 
     public SignedInUser signIn(SignInRequest request) {
@@ -36,7 +36,7 @@ public class UserService {
         }
 
         return new SignedInUser(user.id(), user.email(), user.name(),
-                authClient.ofUser(user.id()));
+                authApi.ofUser(user.id()));
     }
 
     public void validateEmail(String email) {
