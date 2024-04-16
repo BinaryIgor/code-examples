@@ -1,0 +1,16 @@
+spring:
+  web:
+    resources: # for live reload from local, but outside dir
+      static-locations: [ "file:static" ]
+      cache:
+        period: 0
+  devtools:
+    restart:
+      poll-interval: "1000ms"
+      quiet-period: "500ms"
+
+auth:
+  token-key: "qxg+hQ=="
+
+
+

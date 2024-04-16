@@ -76,15 +76,18 @@ echo $app_url > "dist/current_url.txt"
 echo $server_port > "dist/current_port.txt"
 
 server_port_env="SERVER_PORT=$server_port"
-spring_profile_env="SPRING_PROFILES_ACTIVE=prod"
+spring_profile_env="SPRING_PROFILES_ACTIVE=$ENV"
 css_path_env="CSS_PATH=/$hashed_css"
 components_path_env="COMPONENTS_PATH=/$hashed_components"
 index_js_path_env="INDEX_JS_PATH=/$hashed_index_js"
 
 export app=$app
 export tag=$tag
-export run_cmd="docker run -d --network host -e $server_port_env \\
+export run_cmd="export AUTH_TOKEN_KEY=\$(cat $SECRETS_PATH/auth-token-key.txt)
+
+docker run -d --network host -e $server_port_env \\
 -e $spring_profile_env -e $css_path_env -e $components_path_env -e $index_js_path_env \\
+-e AUTH_TOKEN_KEY \\
 --restart ${DOCKER_RESTART} --name $app $tagged_image"
 
 export upstream_nginx_dir=$UPSTREAM_NGINX_DIR
