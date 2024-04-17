@@ -8,8 +8,7 @@ import java.util.Optional;
 
 public class HttpRequestAttributes {
     public static final String USER_ATTRIBUTE = "com.binaryigor.user";
-    public static final String USER_ID_ATTRIBUTE = "com.binaryigor.user.id";
-    public static final String REQUEST_LOCALE_ATTRIBUTE = "com.binaryigor.request.locale";
+    public static final String REQUEST_LANGUAGE_ATTRIBUTE = "com.binaryigor.request.language";
 
     public static void set(String key, Object value) {
         var requestAttributes = RequestContextHolder.getRequestAttributes();

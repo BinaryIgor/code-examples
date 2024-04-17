@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import java.time.Clock;
 
 //TODO: scan less of a classpath
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.binaryigor.htmxproductionsetup")
 @EnableConfigurationProperties(AuthConfig.class)
 public class HtmxProductionSetupApp {
     public static void main(String[] args) {

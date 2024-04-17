@@ -1,4 +1,6 @@
 spring:
+  datasource:
+    password: "htmx_db_password"
   web:
     resources: # for live reload from local, but outside dir
       static-locations: [ "file:static" ]

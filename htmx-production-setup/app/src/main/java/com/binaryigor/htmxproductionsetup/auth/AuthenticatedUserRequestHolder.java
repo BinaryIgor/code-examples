@@ -4,6 +4,7 @@ import com.binaryigor.htmxproductionsetup.shared.contracts.UserData;
 import com.binaryigor.htmxproductionsetup.shared.web.HttpRequestAttributes;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class AuthenticatedUserRequestHolder {
 

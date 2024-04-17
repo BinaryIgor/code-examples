@@ -5,6 +5,8 @@ import java.util.UUID;
 
 public interface UserRepository {
 
+    void save(User user);
+
     Optional<User> ofEmail(String email);
 
     Optional<User> ofId(UUID id);

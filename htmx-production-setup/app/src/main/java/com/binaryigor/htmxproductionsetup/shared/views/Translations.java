@@ -3,12 +3,12 @@ package com.binaryigor.htmxproductionsetup.shared.views;
 import com.binaryigor.htmxproductionsetup.shared.Language;
 import com.binaryigor.htmxproductionsetup.shared.exception.AppException;
 import com.binaryigor.htmxproductionsetup.shared.exception.NotFoundException;
+import com.binaryigor.htmxproductionsetup.shared.web.HttpRequestAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,6 +24,11 @@ public class Translations {
         registerExceptionTranslator(NotFoundException.class, (t, l) -> "%s was not found".formatted(t.resource));
     }
 
+    public static Language currentLanguage() {
+        return HttpRequestAttributes.get(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, Language.class)
+                .orElseThrow(() -> new IllegalStateException("Request must have language set"));
+    }
+
     public static <T extends Throwable> void registerExceptionTranslator(
             Class<T> exception,
             ExceptionTranslator<T> translator) {
@@ -35,47 +40,82 @@ public class Translations {
     }
 
     public static String signIn() {
-        return "Sign In";
+        return switch (currentLanguage()) {
+            case EN -> "Sign In";
+        };
     }
 
     public static String signOut() {
-        return "Sign Out";
+        return switch (currentLanguage()) {
+            case EN -> "Sign Out";
+        };
     }
 
     public static String homeStart() {
-        return "Today";
+        return switch (currentLanguage()) {
+            case EN -> "Today";
+        };
     }
 
     public static String homeHistory() {
-        return "History";
+        return switch (currentLanguage()) {
+            case EN -> "History";
+        };
     }
 
     public static String hello(String name) {
-        return "Hello %s!".formatted(name);
+        return switch (currentLanguage()) {
+            case EN -> "Hello %s!".formatted(name);
+        };
     }
 
     public static String dayStart(String user, LocalDate date) {
-        return "Hello %s! Let's start the day %s".formatted(user, date);
+        return switch (currentLanguage()) {
+            case EN -> "Hello %s! Let's start the day %s".formatted(user, date);
+        };
     }
 
     public static String history(LocalDate date) {
-        return "History as of %s date".formatted(date);
+        return switch (currentLanguage()) {
+            case EN -> "History as of %s date".formatted(date);
+        };
+    }
+
+    public static String historyOfDay(LocalDate date) {
+        return switch (currentLanguage()) {
+            case EN -> "Some history of the day %s".formatted(date);
+        };
+    }
+
+    public static String dayDescription() {
+        return switch (currentLanguage()) {
+            case EN -> "Description";
+        };
     }
 
     public static String notFoundTitle() {
-        return "Not Found";
+        return switch (currentLanguage()) {
+            case EN -> "Not Found";
+        };
     }
 
     public static String notFoundMessage(String notFoundPath) {
-        return "Unfortunately, the <span class=\"underline\">%s</span> page was not found.".formatted(notFoundPath);
+        return switch (currentLanguage()) {
+            case EN ->
+                    "Unfortunately, the <span class=\"underline\">%s</span> page was not found.".formatted(notFoundPath);
+        };
     }
 
     public static String backToTheMainPage() {
-        return "Let's get <a class=\"underline\" href=\"/\">back</a> to the main page</a>!";
+        return switch (currentLanguage()) {
+            case EN -> "Let's get <a class=\"underline\" href=\"/\">back</a> to the main page</a>!";
+        };
     }
 
     public static String unknownErrorTitle() {
-        return "Unknown Error";
+        return switch (currentLanguage()) {
+            case EN -> "Unknown Error";
+        };
     }
 
     public static String exception(Runnable runnable) {
@@ -89,9 +129,8 @@ public class Translations {
 
     public static String exception(Throwable exception) {
         try {
-            //TODO: locale
             return Optional.ofNullable(EXCEPTIONS_TRANSLATIONS.get(exceptionKey(exception.getClass())))
-                    .map(t -> t.translate(exception, Language.EN))
+                    .map(t -> t.translate(exception, currentLanguage()))
                     .orElse(UNKNOWN_EXCEPTION_TRANSLATION);
         } catch (Exception e) {
             logger.error("Problem while translating {} exception...", exception.getClass(), e);

@@ -1,9 +1,10 @@
 package com.binaryigor.htmxproductionsetup.auth;
 
 import com.binaryigor.htmxproductionsetup.shared.exception.AccessForbiddenException;
-import com.binaryigor.htmxproductionsetup.shared.web.Cookies;
 import com.binaryigor.htmxproductionsetup.shared.exception.InvalidAuthTokenException;
 import com.binaryigor.htmxproductionsetup.shared.exception.UnauthenticatedException;
+import com.binaryigor.htmxproductionsetup.shared.web.Cookies;
+import com.binaryigor.htmxproductionsetup.shared.web.HttpRequestAttributes;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +24,6 @@ public class SecurityFilter implements Filter {
 
     static final String REAL_IP_HEADER = "x-real-ip";
     private static final String REDIRECT_ON_FAILED_AUTH_PAGE = "/sign-in";
-
     private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
     private final AuthTokenAuthenticator authTokenAuthenticator;
@@ -57,9 +57,10 @@ public class SecurityFilter implements Filter {
             var token = cookies.tokenValue(request.getCookies());
 
             var authResult = token.map(authTokenAuthenticator::authenticate);
-            authResult.ifPresent(r ->
-                    AuthenticatedUserRequestHolder.set(r.user()));
-            logger.info("Auth result: {}", authResult);
+            authResult.ifPresent(r -> {
+                AuthenticatedUserRequestHolder.set(r.user());
+                HttpRequestAttributes.set(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, r.user().language());
+            });
 
             securityRules.validateAccess(endpoint,
                     isAllowedPrivateClientRequest(request),
@@ -82,9 +83,6 @@ public class SecurityFilter implements Filter {
     private boolean isAllowedPrivateClientRequest(HttpServletRequest request) {
         var clientIp = Optional.ofNullable(request.getHeader(REAL_IP_HEADER))
                 .orElseGet(request::getRemoteAddr);
-
-        logger.info("Client ip: {}", clientIp);
-
         return isLocalhost(clientIp);
     }
 

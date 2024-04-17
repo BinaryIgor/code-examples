@@ -91,6 +91,10 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
             throw InvalidAuthTokenException.invalidToken();
         }
 
+        if (clock.instant().isAfter(expiresAt)) {
+            throw InvalidAuthTokenException.expiredToken();
+        }
+
         return new AuthenticationResult(user, expiresAt);
     }
 
