@@ -22,7 +22,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jwt.version>4.0.0</jwt.version>
-        <spring.openapi.version>2.2.0</spring.openapi.version>
+<!--        <spring.openapi.version>2.2.0</spring.openapi.version>-->
+        <jsoup.version>1.17.2</jsoup.version>
         <postresql.driver.version>42.6.0</postresql.driver.version>
         <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
@@ -90,6 +91,13 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,5 +1,6 @@
 package com.binaryigor.htmxproductionsetup.auth;
 
+import com.binaryigor.htmxproductionsetup.shared.Language;
 import com.binaryigor.htmxproductionsetup.shared.exception.AccessForbiddenException;
 import com.binaryigor.htmxproductionsetup.shared.exception.InvalidAuthTokenException;
 import com.binaryigor.htmxproductionsetup.shared.exception.UnauthenticatedException;
@@ -57,10 +58,10 @@ public class SecurityFilter implements Filter {
             var token = cookies.tokenValue(request.getCookies());
 
             var authResult = token.map(authTokenAuthenticator::authenticate);
-            authResult.ifPresent(r -> {
+            authResult.ifPresentOrElse(r -> {
                 AuthenticatedUserRequestHolder.set(r.user());
                 HttpRequestAttributes.set(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, r.user().language());
-            });
+            }, () -> HttpRequestAttributes.set(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, Language.EN));
 
             securityRules.validateAccess(endpoint,
                     isAllowedPrivateClientRequest(request),

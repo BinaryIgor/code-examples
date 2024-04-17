@@ -1,6 +1,6 @@
 package com.binaryigor.htmxproductionsetup;
 
-import org.junit.jupiter.api.Tag;
+import com.binaryigor.htmxproductionsetup.user.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -36,7 +36,8 @@ public abstract class IntegrationTest {
 
     @Autowired
     protected TestRestTemplate restTemplate;
-
+    @Autowired
+    protected UserTestFixture userTestFixture;
     @Autowired
     private JdbcClient jdbcClient;
 
@@ -51,8 +52,9 @@ public abstract class IntegrationTest {
     static class TestConfig {
 
         @Bean
-        ServerPortListener serverPortListener() {
-            return new ServerPortListener();
+        UserTestFixture userTestFixture(UserRepository userRepository,
+                                        TestRestTemplate restTemplate) {
+            return new UserTestFixture(userRepository, restTemplate);
         }
 
     }

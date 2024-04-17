@@ -18,15 +18,32 @@ public class Translations {
     private static final Logger logger = LoggerFactory.getLogger(Translations.class);
     private static final Map<String, ExceptionTranslator> EXCEPTIONS_TRANSLATIONS = new HashMap<>();
     private static final String UNKNOWN_EXCEPTION_TRANSLATION = "Unknown error has occurred";
+    private static Language language;
 
     static {
-        registerExceptionTranslator(AppException.class, (t, l) -> "Bad request, should not happen!");
-        registerExceptionTranslator(NotFoundException.class, (t, l) -> "%s was not found".formatted(t.resource));
+        registerExceptionTranslator(AppException.class, (t, l) -> appException(l));
+        registerExceptionTranslator(NotFoundException.class, (t, l) -> notFoundException(l, t.resource));
+    }
+
+    public static String appException(Language language) {
+        return "Bad request, should not happen!";
+    }
+
+    public static String notFoundException(Language language, String resource) {
+        return "%s was not found".formatted(resource);
     }
 
     public static Language currentLanguage() {
-        return HttpRequestAttributes.get(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, Language.class)
-                .orElseThrow(() -> new IllegalStateException("Request must have language set"));
+        if (language == null) {
+            return HttpRequestAttributes.get(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, Language.class)
+                    .orElseThrow(() -> new IllegalStateException("Request must have language set"));
+        }
+        return language;
+    }
+
+    // Only for tests
+    public static void setCurrentLanguage(Language language) {
+        Translations.language = language;
     }
 
     public static <T extends Throwable> void registerExceptionTranslator(
