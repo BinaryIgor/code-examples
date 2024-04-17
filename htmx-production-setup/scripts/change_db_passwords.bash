@@ -8,11 +8,11 @@ cd scripts
 
 script_to_execute="
 export SECRETS_PATH=$SECRETS_PATH
-bash /tmp/init_prod_db.bash"
+bash /tmp/change_prod_db_passwords.bash"
 
 echo "$script_to_execute"
 
 remote_host="$DEPLOY_USER@$DEPLOY_HOST"
 
-scp ../db/init_prod_db.bash $remote_host:/tmp/init_prod_db.bash
+scp ../db/change_prod_db_passwords.bash $remote_host:/tmp/change_prod_db_passwords.bash
 ssh $remote_host $script_to_execute

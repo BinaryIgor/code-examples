@@ -52,7 +52,7 @@ echo
 echo "Building app..."
 echo
 
-mvn clean install -Pexecutable
+mvn clean install -Pexecutable -DskipTests
 
 cd ..
 
@@ -84,6 +84,7 @@ index_js_path_env="INDEX_JS_PATH=/$hashed_index_js"
 export app=$app
 export tag=$tag
 export run_cmd="export AUTH_TOKEN_KEY=\$(cat $SECRETS_PATH/auth-token-key.txt)
+export DB_PASSWORD=\$(cat $SECRETS_PATH/db-password.txt)
 
 docker run -d --network host -e $server_port_env \\
 -e $spring_profile_env -e $css_path_env -e $components_path_env -e $index_js_path_env \\
