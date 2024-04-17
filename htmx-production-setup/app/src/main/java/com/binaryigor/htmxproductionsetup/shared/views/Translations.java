@@ -14,7 +14,6 @@ import java.util.Optional;
 
 public class Translations {
 
-    //TODO: language
     private static final Logger logger = LoggerFactory.getLogger(Translations.class);
     private static final Map<String, ExceptionTranslator> EXCEPTIONS_TRANSLATIONS = new HashMap<>();
     private static final String UNKNOWN_EXCEPTION_TRANSLATION = "Unknown error has occurred";
@@ -26,11 +25,15 @@ public class Translations {
     }
 
     public static String appException(Language language) {
-        return "Bad request, should not happen!";
+        return switch (language) {
+            case EN -> "Bad request, should not happen!";
+        };
     }
 
     public static String notFoundException(Language language, String resource) {
-        return "%s was not found".formatted(resource);
+        return switch (language) {
+            case EN -> "%s was not found".formatted(resource);
+        };
     }
 
     public static Language currentLanguage() {

@@ -102,7 +102,6 @@ public class SecurityFilter implements Filter {
         response.addCookie(cookies.token(authToken.value(), authToken.expiresAt()));
     }
 
-    //TODO: sth better with exception?
     private void sendExceptionResponse(HttpServletRequest request,
                                        HttpServletResponse response,
                                        int status,
@@ -112,8 +111,8 @@ public class SecurityFilter implements Filter {
         try {
             response.setStatus(302);
             response.setHeader("Location", REDIRECT_ON_FAILED_AUTH_PAGE);
-            // TODO: maybe only if exists
-            response.addCookie(cookies.expiredToken());
+            cookies.tokenValue(request.getCookies())
+                    .ifPresent(t -> response.addCookie(cookies.expiredToken()));
         } catch (Exception e) {
             logger.error("Problem while writing response body to HttpServletResponse", e);
         }

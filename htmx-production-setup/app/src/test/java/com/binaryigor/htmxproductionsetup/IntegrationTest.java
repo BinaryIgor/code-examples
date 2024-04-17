@@ -1,5 +1,6 @@
 package com.binaryigor.htmxproductionsetup;
 
+import com.binaryigor.htmxproductionsetup.user.domain.PasswordHasher;
 import com.binaryigor.htmxproductionsetup.user.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,8 +54,9 @@ public abstract class IntegrationTest {
 
         @Bean
         UserTestFixture userTestFixture(UserRepository userRepository,
+                                        PasswordHasher passwordHasher,
                                         TestRestTemplate restTemplate) {
-            return new UserTestFixture(userRepository, restTemplate);
+            return new UserTestFixture(userRepository, passwordHasher, restTemplate);
         }
 
     }

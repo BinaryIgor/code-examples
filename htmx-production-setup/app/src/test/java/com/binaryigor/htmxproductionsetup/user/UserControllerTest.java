@@ -6,6 +6,7 @@ import com.binaryigor.htmxproductionsetup.shared.Language;
 import com.binaryigor.htmxproductionsetup.shared.contracts.UserData;
 import com.binaryigor.htmxproductionsetup.shared.views.Translations;
 import org.assertj.core.api.Assertions;
+import org.jsoup.Jsoup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -40,5 +41,19 @@ public class UserControllerTest extends IntegrationTest {
         var user = new UserData(UUID.randomUUID(), "email@gmail.com",
                 "some-name", Language.EN);
         var password = "ComplexPassword12";
+
+        userTestFixture.createUser(user, password);
+
+        var signInResponse = userTestFixture.signIn(user.email(), password);
+
+        Assertions.assertThat(signInResponse.getStatusCode())
+                .isEqualTo(HttpStatus.OK);
+
+        var page = Jsoup.parse(signInResponse.getBody());
+        var homeHello = page.getElementsByTag("h1").first();
+        Assertions.assertThat(homeHello.text())
+                .isEqualTo(Translations.hello(user.name()));
+
+
     }
 }

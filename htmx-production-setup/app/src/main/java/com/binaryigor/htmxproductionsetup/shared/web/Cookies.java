@@ -21,7 +21,6 @@ public class Cookies {
 
     public Cookie token(String token, int maxAge) {
         var cookie = new Cookie(TOKEN_KEY, token);
-        // TODO: dev, should be true!
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
