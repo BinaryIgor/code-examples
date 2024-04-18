@@ -19,10 +19,7 @@ cd app
 
 echo "Building static resources..."
 
-cp -r src dist/src
-cp pom.xml dist/pom.xml
-
-package_static_resources=dist/src/main/resources/static
+package_static_resources=dist/static
 bundle_hash=$(openssl rand -hex 8)
 
 input_css_path=static/styles.css
@@ -46,15 +43,6 @@ echo "$components_with_hashed_base_import" > $package_static_resources/$hashed_c
 
 hashed_index_js="index_$bundle_hash.js"
 cp static/index.js $package_static_resources/$hashed_index_js
-
-cd dist
-echo
-echo "Building app..."
-echo
-
-mvn clean install -Pexecutable -DskipTests
-
-cd ..
 
 echo
 echo "Building image..."

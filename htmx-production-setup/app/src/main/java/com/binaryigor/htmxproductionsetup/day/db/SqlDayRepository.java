@@ -23,15 +23,15 @@ public class SqlDayRepository implements DayRepository {
     @Override
     public void save(Day day) {
         jdbcClient.sql("""
-                        INSERT INTO %s (user_id, date, description)
-                        VALUES (:user_id, :date, :description)
+                        INSERT INTO %s (user_id, date, note)
+                        VALUES (:user_id, :date, :note)
                         ON CONFLICT (user_id, date)
                         DO UPDATE
-                        SET description = EXCLUDED.description
+                        SET note = EXCLUDED.note
                         """.formatted(DAY_TABLE))
                 .param("user_id", day.userId())
                 .param("date", day.date())
-                .param("description", day.description())
+                .param("note", day.note())
                 .update();
     }
 

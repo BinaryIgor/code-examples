@@ -48,13 +48,13 @@ public class DemoDataInitializer {
         var day = LocalDate.now();
 
         var user1Days = List.of(
-                new Day(user1.id(), day.minusDays(1), "Some description 1"),
-                new Day(user1.id(), day.minusDays(2), "Some description 2"),
-                new Day(user1.id(), day.minusDays(3), "Some description 3"),
-                new Day(user1.id(), day.minusDays(7), "Some description 7"));
+                new Day(user1.id(), day.minusDays(1), "Some note 1"),
+                new Day(user1.id(), day.minusDays(2), "Some note 2"),
+                new Day(user1.id(), day.minusDays(3), "Some note 3"),
+                new Day(user1.id(), day.minusDays(7), "Some note 7"));
         var user2Days = List.of(
-                new Day(user2.id(), day.minusDays(1), "Another description 1"),
-                new Day(user2.id(), day.minusDays(2), "Another description 2"));
+                new Day(user2.id(), day.minusDays(1), "Another note 1"),
+                new Day(user2.id(), day.minusDays(2), "Another note 2"));
 
         user1Days.forEach(dayRepository::save);
         user2Days.forEach(dayRepository::save);

@@ -31,7 +31,7 @@ public class DayController {
     String day() {
         var user = authUserApi.currentUserData();
         var day = """
-                <h1>%s</h1>
+                <h1 class="text-xl">%s</h1>
                 """.formatted(Translations.dayStart(user.name(), LocalDate.now(clock)));
         return HTMX.fragmentOrFullPage(day);
     }
@@ -42,7 +42,7 @@ public class DayController {
 
         var daysHtml = days.stream()
                 .map(d ->
-                        "<div class='rounded-md border-slate-300 border-2 px-8 py-2 cursor-pointer w-fit' "
+                        "<div class='button-like w-fit' "
                         + "hx-get='/history/%s' hx-push-url='true' hx-target='#app'>".formatted(d)
                         + "%s</div>".formatted(d))
                 .collect(Collectors.joining("\n"));
@@ -68,8 +68,8 @@ public class DayController {
                 <div class='mb-2'>%s:</div>
                 <div>%s</div>
                 """.formatted(Translations.historyOfDay(day),
-                Translations.dayDescription(),
-                dayFromDb.description());
+                Translations.dayNote(),
+                dayFromDb.note());
 
         return HTMX.fragmentOrFullPage(html);
     }

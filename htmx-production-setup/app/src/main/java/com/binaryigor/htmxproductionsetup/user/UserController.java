@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 public class UserController {
 
@@ -29,11 +31,12 @@ public class UserController {
     @GetMapping("/sign-in")
     String signInPage() {
         var signIn = """
-                <h1 class='text-2xl font-bold'>%s</h1>
+                <h1 class='text-3xl font-bold mb-4'>%s</h1>
                 <form-container id='sign-in-form'
+                    form:add:class="max-w-80"
                     form:hx-post='/sign-in'
                     form:hx-target='#app'
-                    submit:add:class='button-like mt-4'
+                    submit:add:class='button-like mt-4 w-full'
                     submit:value='%s'>
                     %s
                     %s
@@ -54,6 +57,7 @@ public class UserController {
     private String inputWithError(String id, String name, String type, String validateEndpoint) {
         return """
                 <input-with-error id="%s" input:name="%s" input:type="%s"
+                    input:add:class="mt-2 w-full"
                     input:hx-trigger='input changed delay:500ms'
                     input:hx-post='%s'
                     input:hx-swap="outerHTML"
@@ -90,16 +94,16 @@ public class UserController {
 
     private String homePage(String userName) {
         var home = """
-                <h1 class="mb-4 text-xl">%s</h1>
-                <div class="space-y-4">
-                    <button class="button-like block"
+                <h1 class="my-8 text-2xl">%s</h1>
+                <div class="space-y-4 max-w-80">
+                    <button class="button-like w-full block"
                         hx-get="/day" hx-push-url=true hx-target="#app">%s</button>
-                    <button class="button-like"
+                    <button class="button-like w-full"
                         hx-get="/history" hx-push-url=true hx-target="#app">%s</button>
                 </div>
                 """.formatted(
                 Translations.hello(userName),
-                Translations.homeStart(),
+                Translations.homeToday(),
                 Translations.homeHistory());
         return HTMX.fragmentOrFullPage(home);
     }

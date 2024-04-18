@@ -21,7 +21,7 @@ export class InputError extends HTMLElement {
     }
 }
 
-const inputClassDefault = "rounded p-2 border-2 border-solid border-slate-100 focus:border-slate-300 outline-none";
+const inputClassDefault = "bg-white rounded p-2 border-2 border-solid border-slate-200 focus:border-slate-300 outline-none";
 
 //Dependencies: registered input-error
 export class InputWithError extends HTMLElement {

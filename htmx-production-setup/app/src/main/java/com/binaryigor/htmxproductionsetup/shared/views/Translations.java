@@ -71,7 +71,7 @@ public class Translations {
         };
     }
 
-    public static String homeStart() {
+    public static String homeToday() {
         return switch (currentLanguage()) {
             case EN -> "Today";
         };
@@ -107,9 +107,9 @@ public class Translations {
         };
     }
 
-    public static String dayDescription() {
+    public static String dayNote() {
         return switch (currentLanguage()) {
-            case EN -> "Description";
+            case EN -> "Note";
         };
     }
 

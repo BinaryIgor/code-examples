@@ -53,7 +53,7 @@ public class HTMX {
                     <script src="%s"></script>
                 </head>
                        
-                <body>
+                <body class='bg-slate-50 text-slate-700'>
                     %s
                     <info-modal id="error-modal" title="Something went wrong..." title:add:class="text-red-500"></info-modal>
                     <div hx-history="false" hx-history-elt id="app" class="p-4">
@@ -68,7 +68,7 @@ public class HTMX {
     private static String navigationComponent(boolean hidden) {
         return """
                 <div id="app-navigation"
-                    class="%sz-10 sticky flex justify-between top-0 w-full py-4 px-2 border-b-4">
+                    class="%sz-10 sticky flex justify-between top-0 w-full py-4 px-2 border-b-2 border-slate-300">
                     <div class="text-center text-xl cursor-pointer"
                         hx-get="/"
                         onclick="pushHomeIfNotAtHome(this)"

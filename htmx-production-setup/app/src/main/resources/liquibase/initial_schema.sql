@@ -14,7 +14,7 @@ CREATE SCHEMA day;
 CREATE TABLE day.day (
     user_id UUID NOT NULL,
     date DATE NOT NULL,
-    description TEXT,
+    note TEXT,
 
     PRIMARY KEY(user_id, date)
 );
