@@ -2,10 +2,9 @@ spring:
   datasource:
     password: "htmx_db_password"
   web:
-    resources: # for live reload from local, but outside dir
+    resources: # for live reload from local, but outside the classpath dir
       static-locations: [ "file:static" ]
       cache:
         period: 0
-
 auth:
   token-key: "qxg+hQ=="

@@ -1,8 +1,2 @@
 auth:
   token-key: "qxg+hQ=="
-
-#web:
-#  resources:
-#    static-locations: [ "file:static" ]
-#    cache:
-#      period: 0

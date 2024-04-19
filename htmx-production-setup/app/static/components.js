@@ -23,7 +23,7 @@ export class InputError extends HTMLElement {
 
 const inputClassDefault = "bg-white rounded p-2 border-2 border-solid border-slate-200 focus:border-slate-300 outline-none";
 
-//Dependencies: registered input-error
+// Dependencies: registered input-error
 export class InputWithError extends HTMLElement {
 
     connectedCallback() {
@@ -61,7 +61,7 @@ export class InputWithError extends HTMLElement {
     }
 }
 
-const genericErrorClassDefault = "text-red-600 text-lg italic mt-4 my-2";
+const genericErrorClassDefault = "text-red-500 text-lg italic mt-4 my-2";
 const hiddenClass = "hidden";
 
 class FormContainer extends HTMLElement {
@@ -85,7 +85,6 @@ class FormContainer extends HTMLElement {
 
         const genericError = document.createElement("p");
         Components.setAttributes(genericError, errorAttributes);
-        Components.setCustomIdAttribute(genericError, "generic-error");
 
         form.append(genericError);
 
@@ -104,8 +103,6 @@ class FormContainer extends HTMLElement {
         this._form.addEventListener("submit", e => {
             this._submit.disabled = true;
         });
-
-        this.dispatchEvent(new Event("form-container-created"));
     }
 
     clearInputs() {
@@ -214,7 +211,9 @@ class InfoModal extends HTMLElement {
     }
 }
 
-customElements.define("input-error", InputError);
 customElements.define("form-container", FormContainer);
+
+customElements.define("input-error", InputError);
 customElements.define("input-with-error", InputWithError);
+
 customElements.define("info-modal", InfoModal);

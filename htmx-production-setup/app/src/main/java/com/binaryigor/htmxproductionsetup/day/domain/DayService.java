@@ -37,6 +37,6 @@ public class DayService {
 
     public Day historicalDayOfUser(UUID userId, LocalDate date) {
         return dayRepository.dayOfUser(userId, date)
-                .orElseThrow(() -> new NotFoundException("Day"));
+                .orElseThrow(() -> new NotFoundException(date + " day"));
     }
 }

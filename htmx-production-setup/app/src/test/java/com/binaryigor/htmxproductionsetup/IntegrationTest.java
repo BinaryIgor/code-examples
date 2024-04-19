@@ -60,17 +60,4 @@ public abstract class IntegrationTest {
         }
 
     }
-
-    static class ServerPortListener {
-        private int port;
-
-        public int port() {
-            return port;
-        }
-
-        @EventListener
-        public void onApplicationEvent(ServletWebServerInitializedEvent event) {
-            port = event.getWebServer().getPort();
-        }
-    }
 }

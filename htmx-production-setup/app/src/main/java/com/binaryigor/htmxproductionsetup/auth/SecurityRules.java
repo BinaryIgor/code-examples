@@ -22,7 +22,8 @@ public class SecurityRules {
         this(new Predicates(e ->
                 e.url().contains("sign-in")
                 || e.url().endsWith(".js")
-                || e.url().endsWith(".css"),
+                || e.url().endsWith(".css")
+                || e.url().endsWith(".ico"),
                 e -> e.url().contains("actuator")));
     }
 

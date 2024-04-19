@@ -1,6 +1,7 @@
 package com.binaryigor.htmxproductionsetup;
 
 import com.binaryigor.htmxproductionsetup.shared.contracts.UserData;
+import com.binaryigor.htmxproductionsetup.shared.views.HTMX;
 import com.binaryigor.htmxproductionsetup.user.domain.PasswordHasher;
 import com.binaryigor.htmxproductionsetup.user.domain.User;
 import com.binaryigor.htmxproductionsetup.user.domain.UserRepository;
@@ -35,6 +36,7 @@ public class UserTestFixture {
     public ResponseEntity<String> signIn(String email, String password) {
         return HttpTests.postForm(restTemplate, "/sign-in",
                 Map.of("email", email,
-                        "password", password));
+                        "password", password),
+                Map.of(HTMX.HTMX_REQUEST_HEADER, "true"));
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 
 public class HttpRequestAttributes {
+
     public static final String USER_ATTRIBUTE = "com.binaryigor.user";
     public static final String REQUEST_LANGUAGE_ATTRIBUTE = "com.binaryigor.request.language";
 

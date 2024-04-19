@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public interface AuthUserApi {
 
-    UUID currentId();
+    UUID currentUserId();
 
-    UserData currentUserData();
+    UserData currentUser();
 }

@@ -45,7 +45,7 @@ public class SqlDayRepository implements DayRepository {
 
     @Override
     public Optional<Day> dayOfUser(UUID userId, LocalDate date) {
-        return jdbcClient.sql("SELECT * FROM %s WHERE user_id = ?  AND date = ?".formatted(DAY_TABLE))
+        return jdbcClient.sql("SELECT * FROM %s WHERE user_id = ? AND date = ?".formatted(DAY_TABLE))
                 .param(userId)
                 .param(date)
                 .query(Day.class)

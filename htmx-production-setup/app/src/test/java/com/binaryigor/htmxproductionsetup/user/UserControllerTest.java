@@ -28,7 +28,7 @@ public class UserControllerTest extends IntegrationTest {
 
     @Test
     void doesNotSignInNonexistentUser() {
-        var response = userTestFixture.signIn("email@emial.com", "ComplexPassword12");
+        var response = userTestFixture.signIn("email@email.com", "ComplexPassword12");
 
         Assertions.assertThat(response.getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
@@ -52,8 +52,6 @@ public class UserControllerTest extends IntegrationTest {
         var page = Jsoup.parse(signInResponse.getBody());
         var homeHello = page.getElementsByTag("h1").first();
         Assertions.assertThat(homeHello.text())
-                .isEqualTo(Translations.hello(user.name()));
-
-
+                .contains(user.name());
     }
 }

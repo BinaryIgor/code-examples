@@ -7,8 +7,6 @@ import com.binaryigor.htmxproductionsetup.user.domain.exception.InvalidEmailExce
 import com.binaryigor.htmxproductionsetup.user.domain.exception.InvalidPasswordException;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class UserService {
 
@@ -36,7 +34,7 @@ public class UserService {
         }
 
         return new SignedInUser(user.id(), user.email(), user.name(),
-                authApi.ofUser(user.id()));
+                authApi.tokenOfUser(user.id()));
     }
 
     public void validateEmail(String email) {
@@ -51,7 +49,4 @@ public class UserService {
         }
     }
 
-    public User userOfId(UUID id) {
-        return userRepository.ofId(id).orElseThrow(() -> new NotFoundException("User"));
-    }
 }

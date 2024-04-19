@@ -1,8 +1,6 @@
 package com.binaryigor.htmxproductionsetup.user.domain;
 
 import com.binaryigor.htmxproductionsetup.shared.FieldValidator;
-import com.binaryigor.htmxproductionsetup.user.domain.exception.InvalidEmailException;
-import com.binaryigor.htmxproductionsetup.user.domain.exception.InvalidPasswordException;
 
 public class UserValidator {
 
@@ -34,12 +32,6 @@ public class UserValidator {
         return dotIndex > 0 && dotIndex < (domain.length() - 1);
     }
 
-    public static void validateEmail(String email) {
-        if (!isEmailValid(email)) {
-            throw new InvalidEmailException(email);
-        }
-    }
-
     public static boolean isPasswordValid(String password) {
         if (password == null || password.length() < MIN_PASSWORD_LENGTH || password.length() > MAX_PASSWORD_LENGTH) {
             return false;
@@ -66,11 +58,4 @@ public class UserValidator {
 
         return alpha && digit && upper && lower;
     }
-
-    public static void validatePassword(String password) {
-        if (!isPasswordValid(password)) {
-            throw new InvalidPasswordException();
-        }
-    }
-
 }

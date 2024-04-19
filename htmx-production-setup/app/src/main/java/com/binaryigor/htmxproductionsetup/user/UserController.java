@@ -11,8 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
 @RestController
 public class UserController {
 
@@ -30,7 +28,7 @@ public class UserController {
 
     @GetMapping("/sign-in")
     String signInPage() {
-        var signIn = """
+        var html = """
                 <h1 class='text-3xl font-bold mb-4'>%s</h1>
                 <form-container id='sign-in-form'
                     form:add:class="max-w-80"
@@ -40,46 +38,52 @@ public class UserController {
                     submit:value='%s'>
                     %s
                     %s
-                </form-container>
-                <script>
-                    document.getElementById('sign-in-form').addEventListener('htmx:afterRequest',
+                </form-container>""".formatted(Translations.signIn(), Translations.signIn(),
+                inputWithError("email-input", "email", "text", Translations.emailPlaceholder(),
+                        "/sign-in/validate-email"),
+                inputWithError("password-input", "password", "password", Translations.passwordPlaceholder(),
+                        "/sign-in/validate-password"));
+
+        var script = HTMX.inlineScript("""
+                document.getElementById('sign-in-form').addEventListener('htmx:afterRequest',
                         function(e) {
                             const error = e.detail.xhr.response;
                             this.afterSubmit({ error: error });
                         });
-                </script>
-                """.formatted(Translations.signIn(), Translations.signIn(),
-                inputWithError("email-input", "email", "text", "/sign-in/validate-email"),
-                inputWithError("password-input", "password", "password", "/sign-in/validate-password"));
-        return HTMX.fragmentOrFullPage(signIn, true);
+                """);
+
+        return HTMX.fragmentOrFullPage(html + "\n" + script, true);
     }
 
-    private String inputWithError(String id, String name, String type, String validateEndpoint) {
+    private String inputWithError(String id,
+                                  String name,
+                                  String type,
+                                  String placeholder,
+                                  String validateEndpoint) {
         return """
-                <input-with-error id="%s" input:name="%s" input:type="%s"
+                <input-with-error id="%s" input:name="%s" input:type="%s" input:placeholder="%s"
                     input:add:class="mt-2 w-full"
                     input:hx-trigger='input changed delay:500ms'
                     input:hx-post='%s'
                     input:hx-swap="outerHTML"
                     input:hx-target="next input-error">
-                </input-with-error>""".formatted(id, name, type, validateEndpoint);
+                </input-with-error>""".formatted(id, name, type, placeholder, validateEndpoint);
     }
 
     @PostMapping("/sign-in/validate-email")
     String signInValidateEmail(@RequestParam String email) {
-        var error = Translations.exception(() -> userService.validateEmail(email));
+        var error = Translations.exceptionIfThrown(() -> userService.validateEmail(email));
         return Views.inputError(error);
     }
 
     @PostMapping("/sign-in/validate-password")
     String signInValidatePassword(@RequestParam String password) {
-        var error = Translations.exception(() -> userService.validatePassword(password));
+        var error = Translations.exceptionIfThrown(() -> userService.validatePassword(password));
         return Views.inputError(error);
     }
 
     @PostMapping("/sign-in")
-    String signIn(@ModelAttribute SignInRequest request,
-                  HttpServletResponse response) {
+    String signIn(@ModelAttribute SignInRequest request, HttpServletResponse response) {
         var signedInUser = userService.signIn(request);
 
         var token = signedInUser.authToken();
@@ -93,7 +97,7 @@ public class UserController {
     }
 
     private String homePage(String userName) {
-        var home = """
+        var html = """
                 <h1 class="my-8 text-2xl">%s</h1>
                 <div class="space-y-4 max-w-80">
                     <button class="button-like w-full block"
@@ -105,18 +109,17 @@ public class UserController {
                 Translations.hello(userName),
                 Translations.homeToday(),
                 Translations.homeHistory());
-        return HTMX.fragmentOrFullPage(home);
+        return HTMX.fragmentOrFullPage(html);
     }
 
     @GetMapping("/")
     String home() {
-        var user = userService.userOfId(authUserApi.currentId());
+        var user = authUserApi.currentUser();
         return homePage(user.name());
     }
 
     @PostMapping("/sign-out")
-    String signOut(HttpServletRequest request,
-                   HttpServletResponse response) {
+    String signOut(HttpServletRequest request, HttpServletResponse response) {
         cookies.tokenValue(request.getCookies())
                 .ifPresent(t -> response.addCookie(cookies.expiredToken()));
 

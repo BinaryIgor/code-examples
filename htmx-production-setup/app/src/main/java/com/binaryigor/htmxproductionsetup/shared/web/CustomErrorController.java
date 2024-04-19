@@ -14,6 +14,17 @@ import java.util.Optional;
 @RestController
 public class CustomErrorController implements ErrorController {
 
+    public static String notFoundErrorPage(String notFoundMessage) {
+        return HTMX.fullPage("""
+                        <h1 class="text-xl font-bold mb-4">%s</h1>
+                        <div class="mb-4">%s</div>
+                        <div>%s<div>
+                        """.formatted(Translations.notFoundTitle(),
+                        notFoundMessage,
+                        Translations.backToTheMainPage()),
+                true);
+    }
+
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request) {
         var status = Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
@@ -22,19 +33,14 @@ public class CustomErrorController implements ErrorController {
         var statusCode = Integer.parseInt(status.toString());
         if (statusCode == HttpStatus.NOT_FOUND.value()) {
             var notFoundPath = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
-            return HTMX.fullPage("""
-                    <h1 class="text-xl font-bold mb-4">%s</h1>
-                    <div class="mb-4">%s</div>
-                    <div>%s<div>
-                    """.formatted(Translations.notFoundTitle(),
-                    Translations.notFoundMessage(notFoundPath),
-                    Translations.backToTheMainPage()), true);
+            return notFoundErrorPage(Translations.notFoundMessage(notFoundPath));
         }
 
         return HTMX.fullPage("""
-                <h1 class="text-xl font-bold mb-4">%s</h1>
-                %s
-                """.formatted(Translations.unknownErrorTitle(),
-                Translations.backToTheMainPage()), true);
+                        <h1 class="text-xl font-bold mb-4">%s</h1>
+                        %s
+                        """.formatted(Translations.unknownErrorTitle(),
+                        Translations.backToTheMainPage()),
+                true);
     }
 }

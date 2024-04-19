@@ -15,13 +15,13 @@ import java.util.Optional;
 public class Translations {
 
     private static final Logger logger = LoggerFactory.getLogger(Translations.class);
-    private static final Map<String, ExceptionTranslator> EXCEPTIONS_TRANSLATIONS = new HashMap<>();
-    private static final String UNKNOWN_EXCEPTION_TRANSLATION = "Unknown error has occurred";
-    private static Language language;
+    @SuppressWarnings("rawtypes")
+    private static final Map<String, ExceptionTranslation> EXCEPTIONS_TRANSLATIONS = new HashMap<>();
+    private static final ThreadLocal<Language> currentLanguage = new ThreadLocal<>();
 
     static {
-        registerExceptionTranslator(AppException.class, (t, l) -> appException(l));
-        registerExceptionTranslator(NotFoundException.class, (t, l) -> notFoundException(l, t.resource));
+        registerExceptionTranslation(AppException.class, (t, l) -> appException(l));
+        registerExceptionTranslation(NotFoundException.class, (t, l) -> notFoundException(l, t.resource));
     }
 
     public static String appException(Language language) {
@@ -32,31 +32,48 @@ public class Translations {
 
     public static String notFoundException(Language language, String resource) {
         return switch (language) {
-            case EN -> "%s was not found".formatted(resource);
+            case EN -> "%s was not found.".formatted(resource);
+        };
+    }
+
+    public static String unknownException() {
+        return switch (currentLanguage()) {
+            case EN -> "Unknown error has occurred";
         };
     }
 
     public static Language currentLanguage() {
+        var language = currentLanguage.get();
+
         if (language == null) {
-            return HttpRequestAttributes.get(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, Language.class)
+            language = HttpRequestAttributes.get(HttpRequestAttributes.REQUEST_LANGUAGE_ATTRIBUTE, Language.class)
                     .orElseThrow(() -> new IllegalStateException("Request must have language set"));
+
+            currentLanguage.set(language);
         }
+
         return language;
     }
 
     // Only for tests
     public static void setCurrentLanguage(Language language) {
-        Translations.language = language;
+        currentLanguage.set(language);
     }
 
-    public static <T extends Throwable> void registerExceptionTranslator(
+    public static <T extends Throwable> void registerExceptionTranslation(
             Class<T> exception,
-            ExceptionTranslator<T> translator) {
-        EXCEPTIONS_TRANSLATIONS.put(exceptionKey(exception), translator);
+            ExceptionTranslation<T> translation) {
+        EXCEPTIONS_TRANSLATIONS.put(exceptionKey(exception), translation);
     }
 
     private static String exceptionKey(Class<? extends Throwable> exception) {
         return exception.getSimpleName();
+    }
+
+    public static String appTitle() {
+        return switch (currentLanguage()) {
+            case EN -> "HTMX Production Setup";
+        };
     }
 
     public static String errorModalTitle() {
@@ -68,6 +85,18 @@ public class Translations {
     public static String signIn() {
         return switch (currentLanguage()) {
             case EN -> "Sign In";
+        };
+    }
+
+    public static String emailPlaceholder() {
+        return switch (currentLanguage()) {
+            case EN -> "Email";
+        };
+    }
+
+    public static String passwordPlaceholder() {
+        return switch (currentLanguage()) {
+            case EN -> "Password";
         };
     }
 
@@ -168,7 +197,7 @@ public class Translations {
         };
     }
 
-    public static String exception(Runnable runnable) {
+    public static String exceptionIfThrown(Runnable runnable) {
         try {
             runnable.run();
             return null;
@@ -177,18 +206,19 @@ public class Translations {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static String exception(Throwable exception) {
         try {
             return Optional.ofNullable(EXCEPTIONS_TRANSLATIONS.get(exceptionKey(exception.getClass())))
-                    .map(t -> t.translate(exception, currentLanguage()))
-                    .orElse(UNKNOWN_EXCEPTION_TRANSLATION);
+                    .map(t -> t.translated(exception, currentLanguage()))
+                    .orElse(unknownException());
         } catch (Exception e) {
             logger.error("Problem while translating {} exception...", exception.getClass(), e);
-            return UNKNOWN_EXCEPTION_TRANSLATION;
+            return unknownException();
         }
     }
 
-    public interface ExceptionTranslator<T extends Throwable> {
-        String translate(T exception, Language language);
+    public interface ExceptionTranslation<T extends Throwable> {
+        String translated(T exception, Language language);
     }
 }

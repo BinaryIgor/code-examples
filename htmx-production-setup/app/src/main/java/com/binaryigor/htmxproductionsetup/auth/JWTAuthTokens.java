@@ -3,6 +3,7 @@ package com.binaryigor.htmxproductionsetup.auth;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.binaryigor.htmxproductionsetup.shared.PropertiesConverter;
 import com.binaryigor.htmxproductionsetup.shared.contracts.AuthToken;
 import com.binaryigor.htmxproductionsetup.shared.contracts.UserApi;
@@ -51,24 +52,11 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
     Note that newer x86 processors also contain SHA-1 and SHA-256 accelerator hardware, so that may shift the speed advantage back into SHA-256's favor compared to SHA-512.
     */
     @Autowired
-    public JWTAuthTokens(Clock clock, AuthConfig config, UserApi userApi) {
-        this(clock, config.issuer(),
-                Algorithm.HMAC512(PropertiesConverter.bytesFromString(config.tokenKey())),
-                config.tokenDuration(),
+    public JWTAuthTokens(Clock clock, AuthProperties properties, UserApi userApi) {
+        this(clock, properties.issuer(),
+                Algorithm.HMAC512(PropertiesConverter.bytesFromBase64String(properties.tokenKey())),
+                properties.tokenDuration(),
                 userApi);
-    }
-
-    private String newToken(String issuer,
-                            UUID subject,
-                            Instant issuedAt,
-                            Instant expiresAt,
-                            Algorithm algorithm) {
-        return JWT.create()
-                .withIssuer(issuer)
-                .withSubject(subject.toString())
-                .withIssuedAt(issuedAt)
-                .withExpiresAt(expiresAt)
-                .sign(algorithm);
     }
 
     @Override
@@ -86,13 +74,11 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
             expiresAt = decodedToken.getExpiresAtAsInstant();
 
             user = userApi.userOfId(userId);
+        } catch (TokenExpiredException e) {
+            throw InvalidAuthTokenException.expiredToken();
         } catch (Exception e) {
             logger.warn("Invalid token", e);
             throw InvalidAuthTokenException.invalidToken();
-        }
-
-        if (clock.instant().isAfter(expiresAt)) {
-            throw InvalidAuthTokenException.expiredToken();
         }
 
         return new AuthenticationResult(user, expiresAt);
@@ -118,12 +104,17 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
 
     @Override
     public AuthToken ofUser(UUID id) {
-        return token(id, clock.instant());
-    }
-
-    private AuthToken token(UUID id, Instant issuedAt) {
+        var issuedAt = clock.instant();
         var expiresAt = issuedAt.plus(tokenDuration);
-        var token = newToken(issuer, id, issuedAt, expiresAt, algorithm);
+
+        var token = JWT.create()
+                .withIssuer(issuer)
+                .withSubject(id.toString())
+                .withIssuedAt(issuedAt)
+                .withExpiresAt(expiresAt)
+                .sign(algorithm);
+
         return new AuthToken(token, expiresAt);
     }
+
 }

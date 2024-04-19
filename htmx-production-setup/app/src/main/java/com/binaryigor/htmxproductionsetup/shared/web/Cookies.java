@@ -11,7 +11,7 @@ import java.util.Optional;
 @Component
 public class Cookies {
 
-    public static final String TOKEN_KEY = "token";
+    private static final String TOKEN_KEY = "token";
 
     private final Clock clock;
 

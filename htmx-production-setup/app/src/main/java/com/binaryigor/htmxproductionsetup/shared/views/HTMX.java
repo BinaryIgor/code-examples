@@ -9,11 +9,12 @@ import java.util.Optional;
 
 public class HTMX {
 
-    private static final String APP_TITLE = "HTMX Production Setup";
+    // Defaults are for local development, when the app is running with dev Spring profile & start_tailwindcss_watch.bash script is on
     private static final String HTMX_PATH = System.getenv().getOrDefault("HTMX_PATH", "/lib/htmx.min.1.9.10.js");
     private static final String CSS_PATH = System.getenv().getOrDefault("CSS_PATH", "/live-styles.css");
     private static final String INDEX_JS_PATH = System.getenv().getOrDefault("INDEX_JS_PATH", "/index.js");
     private static final String COMPONENTS_PATH = System.getenv().getOrDefault("COMPONENTS_PATH", "/components.js");
+    public static String HTMX_REQUEST_HEADER = "hx-request";
 
     private static Optional<HttpServletRequest> currentRequest() {
         var ra = RequestContextHolder.getRequestAttributes();
@@ -28,15 +29,19 @@ public class HTMX {
     }
 
     public static String fragmentOrFullPage(String fragment, boolean hiddenNavigation) {
-        var currentRequest = currentRequest();
-        if (currentRequest.isEmpty() || !isHTMXRequest(currentRequest.get())) {
-            return fullPage(fragment, hiddenNavigation);
+        if (isHTMXRequest()) {
+            return fragment;
         }
-        return fragment;
+        return fullPage(fragment, hiddenNavigation);
+    }
+
+    public static boolean isHTMXRequest() {
+        var currentRequest = currentRequest();
+        return currentRequest.isPresent() && isHTMXRequest(currentRequest.get());
     }
 
     public static boolean isHTMXRequest(HttpServletRequest request) {
-        return request.getHeader("hx-request") != null;
+        return request.getHeader(HTMX_REQUEST_HEADER) != null;
     }
 
     public static String fullPage(String fragment, boolean hiddenNavigation) {
@@ -61,7 +66,7 @@ public class HTMX {
                     </div>
                 </body>
                        
-                </html>""".formatted(APP_TITLE, CSS_PATH, INDEX_JS_PATH, COMPONENTS_PATH, HTMX_PATH,
+                </html>""".formatted(Translations.appTitle(), CSS_PATH, INDEX_JS_PATH, COMPONENTS_PATH, HTMX_PATH,
                 navigationComponent(hiddenNavigation), Translations.errorModalTitle(), fragment).strip();
     }
 
@@ -69,7 +74,7 @@ public class HTMX {
         return """
                 <div id="app-navigation"
                     class="%sz-10 sticky flex justify-between top-0 w-full py-4 px-2 border-b-2 border-slate-300">
-                    <div class="text-center text-xl cursor-pointer"
+                    <div class="text-center text-xl cursor-pointer italic"
                         hx-get="/"
                         onclick="pushHomeIfNotAtHome(this)"
                         hx-trigger="render-home"
@@ -81,7 +86,7 @@ public class HTMX {
                       hx-swap="innerHTML"
                       hx-target="#app">%s</div>
                 </div>
-                """.formatted(hidden ? "hidden " : "", APP_TITLE, Translations.signOut());
+                """.formatted(hidden ? "hidden " : "", Translations.appTitle(), Translations.signOut());
     }
 
     public static void addClientReplaceUrlHeader(HttpServletResponse response, String url) {
@@ -94,10 +99,10 @@ public class HTMX {
 
     public static String inlineScript(String script) {
         return """
-        <script>
-        (function(){
-            %s
-        })();
-        </script>""".formatted(script);
+                <script>
+                (function(){
+                    %s
+                })();
+                </script>""".formatted(script);
     }
 }

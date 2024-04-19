@@ -4,6 +4,7 @@ set -euo pipefail
 app="htmx-production-setup-app"
 tag="${TAG:-latest}"
 tagged_image="${app}:${tag}"
+build_in_docker=${BUILD_IN_DOCKER:-false}
 
 echo "Creating package in dist directory for $tagged_image image..."
 echo "Preparing dist dir..."
@@ -47,7 +48,28 @@ cp static/index.js $package_static_resources/$hashed_index_js
 echo
 echo "Building image..."
 
-docker build . -t ${tagged_image}
+if [ $build_in_docker = 'true' ]; then
+  echo "Building jar inside Docker, it might take a little bit longer..."
+  docker build -f DockerfileWithBuild -t ${tagged_image} .
+else
+  echo "Building jar locally first..."
+  cp pom.xml dist/pom.xml
+  cp -r src dist/src
+  mv dist/static dist/src/main/resources
+
+  cd dist
+  mvn clean package
+  cd ..
+
+  echo
+  echo "Jar built! packing it in Docker..."
+  echo
+
+  docker build -t ${tagged_image} .
+fi
+
+rm -r dist/target dist/src
+rm dist/pom.xml
 
 gzipped_image_path="dist/$app.tar.gz"
 
@@ -61,7 +83,6 @@ server_port=$(shuf -i 10000-20000 -n 1)
 
 app_url="http://0.0.0.0:$server_port"
 echo $app_url > "dist/current_url.txt"
-echo $server_port > "dist/current_port.txt"
 
 server_port_env="SERVER_PORT=$server_port"
 spring_profile_env="SPRING_PROFILES_ACTIVE=$ENV"
@@ -76,7 +97,7 @@ export DB_PASSWORD=\$(cat $SECRETS_PATH/db-password.txt)
 
 docker run -d --network host -e $server_port_env \\
 -e $spring_profile_env -e $css_path_env -e $components_path_env -e $index_js_path_env \\
--e AUTH_TOKEN_KEY \\
+-e AUTH_TOKEN_KEY -e DB_PASSWORD \\
 --restart ${DOCKER_RESTART} --name $app $tagged_image"
 
 export upstream_nginx_dir=$UPSTREAM_NGINX_DIR
@@ -86,6 +107,6 @@ export app_health_check_url="$app_url/actuator/health"
 cd ..
 
 envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > app/dist/load_and_run_app.bash
-envsubst '${app} ${run_cmd} ${app_health_check_url} ${upstream_nginx_dir} ${app_url}' < scripts/template_run_zero_downtime_app.bash  > app/dist/run_app.bash
+envsubst '${app} ${run_cmd} ${app_url} ${app_health_check_url} ${upstream_nginx_dir}' < scripts/template_run_zero_downtime_app.bash  > app/dist/run_app.bash
 
 echo "Package prepared."

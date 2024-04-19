@@ -2,7 +2,7 @@ spring:
   application:
     name: htmx-production-setup-app
   datasource:
-    url: "${DB_URL:jdbc:postgresql://localhost:5432/htmx_db}"
+    url: "${DB_URL:jdbc:postgresql://localhost:5432/htmx_app}"
     username: "${DB_USER:htmx_app}"
     password: "${DB_PASSWORD}"
     hikari:
@@ -31,9 +31,8 @@ management:
       exposure:
         include: [ "health", "info", "prometheus" ]
 
-
 auth:
-  issuer: htmx-production-setup
+  issuer: htmx-production-setup-app
   token-key: "${AUTH_TOKEN_KEY}"
   token-duration: "PT48H"
-  issue-new-token-before-expiration-duration: "PT45H"
+  issue-new-token-before-expiration-duration: "PT47H"

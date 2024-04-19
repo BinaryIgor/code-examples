@@ -29,10 +29,10 @@ public class DayController {
 
     @GetMapping("/day")
     String day() {
-        var currentDay = dayService.currentDayOfUser(authUserApi.currentId());
+        var currentDay = dayService.currentDayOfUser(authUserApi.currentUserId());
         var dayNote = currentDay.map(Day::note).orElse("");
 
-        var day = """
+        var html = """
                 <h1 class="text-xl my-4">%s</h1>
                 <form id='day-form' hx-post="/day" hx-swap=none>
                     <span id="note-changes-span" class="opacity-80 italic hidden"
@@ -40,7 +40,7 @@ public class DayController {
                         data-message-saved-changes='%s'></span>
                     <textarea id='note-textarea'
                         class='bg-white rounded p-2 border-2 border-solid border-slate-200 focus:border-slate-300 outline-none
-                        h-24 w-full max-w-3xl resize-none block'
+                        h-36 w-full max-w-3xl resize-none block'
                         name='note'
                         placeholder='%s'>%s</textarea>
                     <input type="submit" class='button-like mt-4' value="%s">
@@ -55,14 +55,14 @@ public class DayController {
                 const hiddenClass = 'hidden';
                                 
                 const noteTextarea = document.getElementById('note-textarea');
-                const initialNote = noteTextarea.value;
+                let savedNote = noteTextarea.value;
                                 
                 const noteChangesSpan = document.getElementById('note-changes-span');
                 const notSavedChangesMessage = noteChangesSpan.getAttribute('data-message-not-saved-changes');
                 const savedChangesMessage = noteChangesSpan.getAttribute('data-message-saved-changes');
                                 
                 noteTextarea.addEventListener("input", e => {
-                    if (noteTextarea.value == initialNote) {
+                    if (noteTextarea.value == savedNote) {
                         noteChangesSpan.classList.add(hiddenClass);
                     } else {
                         noteChangesSpan.textContent = notSavedChangesMessage;
@@ -74,21 +74,22 @@ public class DayController {
                     if (e.detail.successful) {
                        noteChangesSpan.textContent = savedChangesMessage;
                        noteChangesSpan.classList.remove(hiddenClass);
+                       savedNote = noteTextarea.value;
                     }
                 });
                 """);
 
-        return HTMX.fragmentOrFullPage(day + "\n" + script);
+        return HTMX.fragmentOrFullPage(html + "\n" + script);
     }
 
     @PostMapping("/day")
     void saveCurrentDay(@ModelAttribute SaveCurrentDayRequest request) {
-        dayService.saveCurrentDay(authUserApi.currentId(), request.note());
+        dayService.saveCurrentDay(authUserApi.currentUserId(), request.note());
     }
 
     @GetMapping("/history")
     String history() {
-        var daysHtml = dayService.daysOfUser(authUserApi.currentId()).stream()
+        var daysHtml = dayService.daysOfUser(authUserApi.currentUserId()).stream()
                 .map(d ->
                         "<div class='button-like w-fit' "
                         + "hx-get='/history/%s' hx-push-url='true' hx-target='#app'>".formatted(d)
@@ -108,15 +109,15 @@ public class DayController {
 
     @GetMapping("/history/{day}")
     String historyDay(@PathVariable LocalDate day) {
-        var dayFromDb = dayService.historicalDayOfUser(authUserApi.currentId(), day);
+        var historicalDay = dayService.historicalDayOfUser(authUserApi.currentUserId(), day);
 
         var html = """
                 <h1 class='text-xl mb-4'>%s</h1>
                 <div class='mb-2 font-bold'>%s:</div>
-                <div class='italic'>%s</div>
+                <div class='italic whitespace-pre-wrap max-w-3xl'>%s</div>
                 """.formatted(Translations.historyOfDay(day),
                 Translations.dayNote(),
-                dayFromDb.note());
+                historicalDay.note());
 
         return HTMX.fragmentOrFullPage(html);
     }

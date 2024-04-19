@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-export app="htmx-nginx"
+export app="htmx-production-setup-nginx"
 export tag="${TAG:-latest}"
 tagged_image="${app}:${tag}"
 
@@ -25,7 +25,7 @@ export APP_URL="${APP_URL:-http://0.0.0.0:8080}"
 envsubst '${HTTP_PORT} ${HTTPS_PORT} ${DOMAIN} ${APP_URL}' < template_nginx.conf > dist/conf/default.conf
 envsubst '${HTTP_PORT} ${HTTPS_PORT} ${DOMAIN}' < template_nginx.conf > dist/template_nginx_app.conf
 
-export nginx_container="htmx-nginx"
+export nginx_container=$app
 # check if both proxying and proxied app are working properly
 export app_health_check_url="http://0.0.0.0:${HTTP_PORT}/actuator/health"
 
@@ -48,27 +48,29 @@ echo "Image built, exporting it to $gzipped_image_path, this can take a while...
 docker save ${tagged_image} | gzip > ${gzipped_image_path}
 
 if [ $ENV = 'local' ]; then
-    cp -r fake-certs dist/fake-certs
-    CERTS_VOLUME="-v $PWD/dist/fake-certs/fullchain.pem:/etc/certs/live/${DOMAIN}/fullchain.pem  -v $PWD/dist/fake-certs/privkey.pem:/etc/certs/live/${DOMAIN}/privkey.pem"
+  cp -r fake-certs dist/fake-certs
+  CERTS_VOLUME="-v $PWD/dist/fake-certs/fullchain.pem:/etc/certs/live/${DOMAIN}/fullchain.pem  -v $PWD/dist/fake-certs/privkey.pem:/etc/certs/live/${DOMAIN}/privkey.pem"
 else
-    CERTS_VOLUME="-v ${CERTS_VOLUME}"
+  CERTS_VOLUME="-v ${CERTS_VOLUME}"
 fi
+STATIC_RESOURCES_VOLUME="${STATIC_PATH}:/usr/share/nginx/site:ro"
 
 pre_run="bash update_app_url_pre_start.bash $APP_URL_FILE_PATH"
 if [ $ENV = 'prod' ]; then
-    pre_run_action="chmod -x reload_nginx_config.sh
-sudo cp reload_nginx_config.sh /etc/letsencrypt/renewal-hooks/post/reload_nginx_config.sh"
+  pre_run_action="sudo cp reload_nginx_config.sh /etc/letsencrypt/renewal-hooks/post/reload_nginx_config.sh
+sudo chmod +x /etc/letsencrypt/renewal-hooks/post/reload_nginx_config.sh"
 else
-    pre_run_action=""
+  pre_run_action=""
 fi
 
 export pre_run_cmd="$pre_run_action
 bash update_app_url_pre_start.bash $APP_URL_FILE_PATH"
 
 export docker_run_params="--network host \\
-    -v ${CONFIG_VOLUME} \\
-    ${CERTS_VOLUME} \\
-    --restart ${DOCKER_RESTART}"
+-v ${CONFIG_VOLUME} \\
+${CERTS_VOLUME} \\
+-v ${STATIC_RESOURCES_VOLUME} \\
+--restart ${DOCKER_RESTART}"
     
 export post_run_cmd="bash check_proxied_app.bash"
 

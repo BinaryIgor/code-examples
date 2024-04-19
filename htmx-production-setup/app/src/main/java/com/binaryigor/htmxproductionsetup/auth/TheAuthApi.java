@@ -19,17 +19,17 @@ public class TheAuthApi implements AuthApi, AuthUserApi {
     }
 
     @Override
-    public AuthToken ofUser(UUID id) {
+    public AuthToken tokenOfUser(UUID id) {
         return authTokenCreator.ofUser(id);
     }
 
     @Override
-    public UUID currentId() {
-        return currentUserData().id();
+    public UUID currentUserId() {
+        return currentUser().id();
     }
 
     @Override
-    public UserData currentUserData() {
+    public UserData currentUser() {
         return AuthenticatedUserRequestHolder.get()
                 .orElseThrow(UnauthenticatedException::new);
     }

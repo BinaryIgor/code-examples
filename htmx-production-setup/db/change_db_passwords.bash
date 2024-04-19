@@ -1,10 +1,10 @@
 #!/bin/bash
 set -eu
 
-new_root_db_password=${NEW_ROOT_DB_PASSWORD}
+new_root_db_password=$(cat db-root-password.txt)
 app_db_user="htmx_app"
-app_db_name="htmx_db"
-app_db_password=${DB_PASSWORD}
+app_db_name="htmx_app"
+app_db_password=$(cat db-password.txt)
 
 connect_to_db="docker exec -it htmx-production-setup-db psql -U postgres -d postgres -c"
 $connect_to_db "ALTER USER postgres WITH password '$new_root_db_password'"

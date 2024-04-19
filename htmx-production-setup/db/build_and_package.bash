@@ -4,6 +4,7 @@ set -euo pipefail
 app="htmx-production-setup-db"
 tag="latest"
 tagged_image="${app}:${tag}"
+skip_image_export="${SKIP_IMAGE_EXPORT:-false}"
 
 echo "Building $app..."
 
@@ -20,13 +21,17 @@ echo "Building image..."
 
 docker build . -t ${tagged_image}
 
-gzipped_image_path="dist/$app.tar.gz"
+if [ $skip_image_export = 'true' ]; then
+  echo "Image export skipped, preparing scripts..."
+else
+  gzipped_image_path="dist/$app.tar.gz"
 
-echo "Image built, exporting it to $gzipped_image_path, this can take a while..."
+  echo "Image built, exporting it to $gzipped_image_path, this can take a while..."
 
-docker save ${tagged_image} | gzip > ${gzipped_image_path}
+  docker save ${tagged_image} | gzip > ${gzipped_image_path}
 
-echo "Image exported, preparing scripts..."
+  echo "Image exported, preparing scripts..."
+fi
 
 cd ..
 
