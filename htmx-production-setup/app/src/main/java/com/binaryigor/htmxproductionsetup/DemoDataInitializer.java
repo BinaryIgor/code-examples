@@ -1,7 +1,7 @@
 package com.binaryigor.htmxproductionsetup;
 
-import com.binaryigor.htmxproductionsetup.day.Day;
-import com.binaryigor.htmxproductionsetup.day.DayRepository;
+import com.binaryigor.htmxproductionsetup.day.domain.Day;
+import com.binaryigor.htmxproductionsetup.day.domain.DayRepository;
 import com.binaryigor.htmxproductionsetup.shared.Language;
 import com.binaryigor.htmxproductionsetup.user.domain.PasswordHasher;
 import com.binaryigor.htmxproductionsetup.user.domain.User;

@@ -1,7 +1,7 @@
 package com.binaryigor.htmxproductionsetup.day.db;
 
-import com.binaryigor.htmxproductionsetup.day.Day;
-import com.binaryigor.htmxproductionsetup.day.DayRepository;
+import com.binaryigor.htmxproductionsetup.day.domain.Day;
+import com.binaryigor.htmxproductionsetup.day.domain.DayRepository;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 

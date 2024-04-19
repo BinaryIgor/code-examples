@@ -59,6 +59,12 @@ public class Translations {
         return exception.getSimpleName();
     }
 
+    public static String errorModalTitle() {
+        return switch (currentLanguage()) {
+            case EN -> "Something went wrong...";
+        };
+    }
+
     public static String signIn() {
         return switch (currentLanguage()) {
             case EN -> "Sign In";
@@ -85,25 +91,49 @@ public class Translations {
 
     public static String hello(String name) {
         return switch (currentLanguage()) {
-            case EN -> "Hello %s!".formatted(name);
+            case EN -> "Hello <em>%s</em>!".formatted(name);
         };
     }
 
-    public static String dayStart(String user, LocalDate date) {
+    public static String dayStart(LocalDate date) {
         return switch (currentLanguage()) {
-            case EN -> "Hello %s! Let's start the day %s".formatted(user, date);
+            case EN -> "Glorious <strong>%s</strong> day".formatted(date);
+        };
+    }
+
+    public static String dayNotePlaceholder() {
+        return switch (currentLanguage()) {
+            case EN -> "Note...";
+        };
+    }
+
+    public static String notSavedDayChanges() {
+        return switch (currentLanguage()) {
+            case EN -> "There are some not saved changes...";
+        };
+    }
+
+    public static String savedDayChanges() {
+        return switch (currentLanguage()) {
+            case EN -> "Changes saved.";
+        };
+    }
+
+    public static String saveDay() {
+        return switch (currentLanguage()) {
+            case EN -> "Save";
         };
     }
 
     public static String history(LocalDate date) {
         return switch (currentLanguage()) {
-            case EN -> "History as of %s date".formatted(date);
+            case EN -> "History as of <strong>%s<strong> date".formatted(date);
         };
     }
 
     public static String historyOfDay(LocalDate date) {
         return switch (currentLanguage()) {
-            case EN -> "Some history of the day %s".formatted(date);
+            case EN -> "Some history of the day <strong>%s</strong>".formatted(date);
         };
     }
 

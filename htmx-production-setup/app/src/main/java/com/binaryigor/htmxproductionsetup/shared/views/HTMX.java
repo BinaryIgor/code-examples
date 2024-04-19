@@ -55,14 +55,14 @@ public class HTMX {
                        
                 <body class='bg-slate-50 text-slate-700'>
                     %s
-                    <info-modal id="error-modal" title="Something went wrong..." title:add:class="text-red-500"></info-modal>
+                    <info-modal id="error-modal" title="%s" title:add:class="text-red-500"></info-modal>
                     <div hx-history="false" hx-history-elt id="app" class="p-4">
                          %s
                     </div>
                 </body>
                        
                 </html>""".formatted(APP_TITLE, CSS_PATH, INDEX_JS_PATH, COMPONENTS_PATH, HTMX_PATH,
-                navigationComponent(hiddenNavigation), fragment).strip();
+                navigationComponent(hiddenNavigation), Translations.errorModalTitle(), fragment).strip();
     }
 
     private static String navigationComponent(boolean hidden) {
@@ -90,5 +90,14 @@ public class HTMX {
 
     public static void addTriggerHeader(HttpServletResponse response, String trigger) {
         response.addHeader("hx-trigger", trigger);
+    }
+
+    public static String inlineScript(String script) {
+        return """
+        <script>
+        (function(){
+            %s
+        })();
+        </script>""".formatted(script);
     }
 }

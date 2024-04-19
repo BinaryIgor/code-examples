@@ -1,4 +1,4 @@
-package com.binaryigor.htmxproductionsetup.day;
+package com.binaryigor.htmxproductionsetup.day.domain;
 
 import java.time.LocalDate;
 import java.util.UUID;
