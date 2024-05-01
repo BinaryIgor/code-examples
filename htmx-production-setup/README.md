@@ -308,7 +308,7 @@ echo "vlVJToutakyNOYALfM3LYJwTusvVQAYRHrWqmQjqQb44XlvQ" > db-root-password.txt
 echo "qJSfLXBTosfmnj0DndQaBXRMJvSPvD8hVxoFeQexOgWGEUrv" > db-password.txt
 ```
 
-As our output is saying, we need to be in the desired directory and just copy-paste these command there.
+As our output is saying, we need to be in the desired directory and just copy-paste these commands there.
 Let's prepare the directory on our remote machine:
 ```
 ssh deploy@<your domain>
@@ -317,7 +317,7 @@ ssh deploy@<your domain>
 mkdir /home/deploy/.secrets
 cd /home/deploy/.secrets
 
-<copy paste commands from the generate_secrets.py output>
+<copy-paste commands from the generate_secrets.py output>
 
 ls -l
 total 12
@@ -328,7 +328,7 @@ total 12
 
 Now, as we have secrets, let's change db passwords by running `db/change_db_passwords.bash` on our remote machine:
 ```
-# just copy paste these commands and run them from /home/deploy/.secrets dir
+# just copy-paste these commands and run them from /home/deploy/.secrets dir
 
 new_root_db_password=$(cat db-root-password.txt)
 app_db_user="htmx_app"
@@ -464,7 +464,7 @@ In case of problems you can rollback to the previous deployment: /home/deploy/de
 ```
 
 You might notice random port number - this is intentional and allows for zero downtime deployments.
-For now, go to *https://<your-domain>* and experiment with the app. You can sign in as (*DemoDataInitializer.java*):
+For now, go to *https://<your-domain\>* and experiment with the app. You can sign in as (*DemoDataInitializer.java*):
 ```
 igor@gmail.com:ComplexPassword12
 other@gmail.com:ComplexOtherPassword12
