@@ -220,18 +220,18 @@ template_nginx_app.conf                                                         
 update_app_url.bash                                                                                                                              100%  756    26.0KB/s   00:00    
 update_app_url_pre_start.bash                                                                                                                    100%  388    13.2KB/s   00:00    
 
-Package copied, loading and running app, this can take a while..
+Package copied, loading and running app, this can take a while...
 Loading htmx-production-setup-nginx:latest image, this can take a while...
 Loaded image: htmx-production-setup-nginx:latest
 Image loaded, running it...
-Removing previous container....
+Removing previous container...
 Error response from daemon: No such container: htmx-production-setup-nginx
 
 Starting new htmx-production-setup-nginx version...
 
 Current app url file doesn't exist, skipping!
 4b96b1240562b3e05dea6a304a71788a18be02e8f43eca3335250d79e941895c
-Checking proxied app connection..
+Checking proxied app connection...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
@@ -395,11 +395,11 @@ htmx-production-setup-app app is healthy!
 
 Replacing config with new app url: http://0.0.0.0:13307...
 Config updated!
-Reloading nginx config..
+Reloading nginx config...
 100    15    0    15    0     0     26      0 --:--:-- --:--:-- --:--:--    26
 2024/04/20 19:07:10 [notice] 34#34: signal process started
 Nginx is running with new app url (http://0.0.0.0:13307)!
-Checking proxied app connection..
+Checking proxied app connection...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent   {"status":"UP"}
 Proxied app is healthy!
@@ -410,11 +410,11 @@ Nginx updated and running with new app version, cleaning previous after a few se
 
 Stopping previous htmx-production-setup-app-backup container...
 htmx-production-setup-app-backup
-Removing previous container....
+Removing previous container...
 htmx-production-setup-app-backup
 New htmx-production-setup-app container is up and running!
 
-App loaded, checking its logs and status after 5s..
+App loaded, checking its logs and status after 5s...
 
 
   .   ____          _            __ _ _

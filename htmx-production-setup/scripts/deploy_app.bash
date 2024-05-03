@@ -14,7 +14,7 @@ deploy_dir="$DEPLOY_DIR/$app"
 previous_deploy_dir="$deploy_dir/previous"
 latest_deploy_dir="$deploy_dir/latest"
 
-echo "Deploying $app to a $remote_host host, preparing deploy directories.."
+echo "Deploying $app to a $remote_host host, preparing deploy directories..."
 
 ssh ${remote_host} "rm -rf $previous_deploy_dir
 mkdir -p $latest_deploy_dir
@@ -29,12 +29,12 @@ cd ..
 scp -r $app_dir/dist/* ${remote_host}:${latest_deploy_dir}
 
 echo
-echo "Package copied, loading and running app, this can take a while.."
+echo "Package copied, loading and running app, this can take a while..."
 
 ssh ${remote_host} "cd $latest_deploy_dir; bash load_and_run_app.bash"
 
 echo
-echo "App loaded, checking its logs and status after 5s.."
+echo "App loaded, checking its logs and status after 5s..."
 sleep 5
 echo
 

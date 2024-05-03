@@ -7,7 +7,7 @@ if [ "$found_container" ]; then
   docker stop ${app} --time ${stop_timeout}
 fi
 
-echo "Removing previous container...."
+echo "Removing previous container..."
 docker rm ${app}
 
 echo

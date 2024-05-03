@@ -90,7 +90,7 @@ if [ "$found_container" ]; then
   stop_backup_container
 fi
 
-echo "Removing previous container...."
+echo "Removing previous container..."
 docker rm ${app_backup}
 
 echo "New ${app} container is up and running!"
