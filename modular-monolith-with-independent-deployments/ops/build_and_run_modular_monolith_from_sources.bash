@@ -30,4 +30,4 @@ source ops/modular_monolith_db.env
 cd application
 mvn clean install
 
-exec java -jar target/modular-app.jar
+exec java -jar target/modular-monolith-app.jar
