@@ -55,44 +55,6 @@
         <finalName>modular-monolith-app</finalName>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <!-- we need this to have all application-{app-name}.yml config files available by the application module that aggregates them all -->
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.binaryigor</groupId>
-                                    <artifactId>modular-monolith-with-independent-deployments-budget</artifactId>
-                                    <version>${project.version}</version>
-                                    <includes>**/*budget.yml</includes>
-                                    <includes>**/*budget.yaml</includes>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.binaryigor</groupId>
-                                    <artifactId>modular-monolith-with-independent-deployments-campaign</artifactId>
-                                    <version>${project.version}</version>
-                                    <includes>**/*campaign.yml</includes>
-                                    <includes>**/*campaign.yaml</includes>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.binaryigor</groupId>
-                                    <artifactId>modular-monolith-with-independent-deployments-inventory</artifactId>
-                                    <version>${project.version}</version>
-                                    <includes>**/*campaign.yml</includes>
-                                    <includes>**/*campaign.yaml</includes>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}/classes/BOOT-INF/</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>

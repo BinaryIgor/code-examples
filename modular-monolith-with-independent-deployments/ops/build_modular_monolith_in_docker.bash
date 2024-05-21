@@ -16,5 +16,5 @@ docker run -it --network=host -v "maven-repo:/root/.m2" \
   -v "modular-monolith-with-independent-deployments-build-volume:/build" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --name modular-monolith-with-independent-deployments-build modular-monolith-with-independent-deployments-build \
-  mvn clean package
+  /bin/bash -c "mvn clean install -f parent-pom.xml; mvn clean package"
 

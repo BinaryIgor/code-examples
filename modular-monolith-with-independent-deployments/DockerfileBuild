@@ -2,5 +2,8 @@ FROM maven:3-eclipse-temurin-21-alpine
 
 COPY maven_settings.xml /usr/share/maven/ref/settings.xml
 COPY /application/ /build/
+# parent-pom has metadata about dependencies and the remote repo (Nexus) config;
+# we need to install it locally before using remote Nexus
+COPY /commons/spring-parent/pom.xml /build/parent-pom.xml
 
 WORKDIR /build/
