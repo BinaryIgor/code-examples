@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS "user" (
+    id UUID PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS outbox_message (
+    id UUID PRIMARY KEY,
+    message JSONB NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    user:
+      url: jdbc:postgresql://localhost:5432/user
+      username: user_module
+      password: user_module

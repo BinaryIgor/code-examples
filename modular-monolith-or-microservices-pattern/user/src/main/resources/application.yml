@@ -1,0 +1,7 @@
+spring:
+  application: user-service
+  profiles:
+    active: user
+  threads:
+    virtual:
+      enabled: true
