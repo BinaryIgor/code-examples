@@ -1,8 +1,8 @@
-package com.binaryigor.modularpattern.user;
+package com.binaryigor.modularpattern.user.app;
 
 import com.binaryigor.modularpattern.shared.contracts.UserChangedEvent;
 import com.binaryigor.modularpattern.shared.outbox.OutboxMessage;
-import com.binaryigor.modularpattern.user.app.UpdateUserRequest;
+import com.binaryigor.modularpattern.user.IntegrationTest;
 import com.binaryigor.modularpattern.user.domain.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -8,6 +8,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public class ModularMonolithApplicationTest {
 
     static final PostgreSQLContainer<?> USER_POSTGRESQL_CONTAINER = startDbContainerAndSetupProperties("USER");
+    static final PostgreSQLContainer<?> PROJECT_POSTGRESQL_CONTAINER = startDbContainerAndSetupProperties("PROJECT");
 
     private static PostgreSQLContainer<?> startDbContainerAndSetupProperties(String propertiesPrefix) {
         var dbContainer = new PostgreSQLContainer<>("postgres:16");

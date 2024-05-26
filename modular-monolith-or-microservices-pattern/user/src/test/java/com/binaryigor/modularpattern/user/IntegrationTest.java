@@ -22,10 +22,10 @@ public abstract class IntegrationTest {
     }
 
     @Autowired
-    TestRestTemplate restTemplate;
+    protected TestRestTemplate restTemplate;
 
     @Autowired
-    OutboxRepository userOutboxRepository;
+    protected OutboxRepository userOutboxRepository;
 
     @TestConfiguration
     static class TestConfig {

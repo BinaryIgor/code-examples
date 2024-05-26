@@ -23,6 +23,7 @@ public class InMemoryAppEventsTest {
         var exception = new RuntimeException("The only exception");
 
         events.subscribe(TestEvent.class, e -> {
+            await(100);
             firstData.set(e);
             throw exception;
         });
@@ -46,10 +47,12 @@ public class InMemoryAppEventsTest {
         var secondException = new RuntimeException("Second subscriber error");
 
         events.subscribe(String.class, e -> {
+            await(50);
             firstData.set(e);
             throw firstException;
         });
         events.subscribe(String.class, e -> {
+            await(250);
             secondData.set(e);
             throw secondException;
         });
@@ -62,6 +65,14 @@ public class InMemoryAppEventsTest {
 
         Assertions.assertThat(firstData.get()).isEqualTo(data);
         Assertions.assertThat(secondData.get()).isEqualTo(data);
+    }
+
+    private void await(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (Exception ignored) {
+
+        }
     }
 
     private record TestEvent(long id, String name) {

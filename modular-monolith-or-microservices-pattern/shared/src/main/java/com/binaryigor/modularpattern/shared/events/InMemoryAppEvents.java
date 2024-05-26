@@ -4,12 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class InMemoryAppEvents implements AppEvents {
 
     private static final Logger log = LoggerFactory.getLogger(InMemoryAppEvents.class);
-    private final Map<Class<?>, Collection<EvenSubscriber<Object>>> eventsSubscribers = new HashMap<>();
+    private final Map<Class<?>, List<EvenSubscriber<Object>>> eventsSubscribers = new HashMap<>();
     private final Supplier<AppEventsPublisher> publisher = new Supplier<>() {
 
         private AppEventsPublisher publisher;
@@ -28,17 +30,30 @@ public class InMemoryAppEvents implements AppEvents {
 
             @Override
             public <T> void publish(T event) {
-                var exceptions = new ArrayList<RuntimeException>();
+                var subscribers = eventsSubscribers.getOrDefault(event.getClass(), List.of());
+                if (subscribers.isEmpty()) {
+                    return;
+                }
 
-                eventsSubscribers.getOrDefault(event.getClass(), List.of())
-                        .forEach(s -> handleSubscriber(s, event, exceptions));
+                Collection<RuntimeException> exceptions;
+                if (subscribers.size() == 1) {
+                    exceptions = new ArrayList<>();
+                    handleSubscriber(subscribers.getFirst(), event, exceptions);
+                } else {
+                    exceptions = Collections.newSetFromMap(new ConcurrentHashMap<>());
+                    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                        subscribers.forEach(s -> executor.submit(() -> {
+                            handleSubscriber(s, event, exceptions);
+                        }));
+                    }
+                }
 
                 throwExceptionIf(exceptions, event);
             }
 
             private <T> void handleSubscriber(EvenSubscriber<Object> subscriber,
                                               T event,
-                                              List<RuntimeException> exceptions) {
+                                              Collection<RuntimeException> exceptions) {
                 try {
                     subscriber.handle(event);
                 } catch (Exception e) {
@@ -47,12 +62,12 @@ public class InMemoryAppEvents implements AppEvents {
                 }
             }
 
-            private <T> void throwExceptionIf(List<RuntimeException> exceptions, T event) {
+            private <T> void throwExceptionIf(Collection<RuntimeException> exceptions, T event) {
                 if (exceptions.size() == 1) {
-                    throw exceptions.getFirst();
+                    throw exceptions.iterator().next();
                 } else if (exceptions.size() > 1) {
                     var combinedException = new RuntimeException(
-                            "There were problems while handling %s message".formatted(event.getClass()));
+                        "There were problems while handling %s message".formatted(event.getClass()));
 
                     exceptions.forEach(combinedException::addSuppressed);
 
@@ -71,7 +86,7 @@ public class InMemoryAppEvents implements AppEvents {
     @SuppressWarnings("unchecked")
     public <T> void subscribe(Class<T> event, EvenSubscriber<T> subscriber) {
         eventsSubscribers.computeIfAbsent(event, k -> new ArrayList<>())
-                .add((EvenSubscriber<Object>) subscriber);
+            .add((EvenSubscriber<Object>) subscriber);
     }
 
 

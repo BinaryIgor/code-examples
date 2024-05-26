@@ -1,0 +1,11 @@
+spring:
+  application: project-service
+  profiles:
+    active: project
+  threads:
+    virtual:
+      enabled: true
+  jackson.deserialization.fail-on-missing-creator-properties: true
+
+server:
+  port: 8082

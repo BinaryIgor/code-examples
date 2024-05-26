@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.binaryigor</groupId>
-    <artifactId>modular-monolith</artifactId>
+    <artifactId>modular-pattern-project</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -21,18 +21,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spring.openapi.version>2.2.0</spring.openapi.version>
+        <postresql.driver.version>42.6.0</postresql.driver.version>
         <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.binaryigor</groupId>
-            <artifactId>modular-pattern-user</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.binaryigor</groupId>
-            <artifactId>modular-pattern-project</artifactId>
+            <artifactId>modular-pattern-shared</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -42,9 +38,20 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${spring.openapi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postresql.driver.version}</version>
         </dependency>
 
         <dependency>
@@ -81,4 +88,5 @@
             </build>
         </profile>
     </profiles>
+
 </project>
