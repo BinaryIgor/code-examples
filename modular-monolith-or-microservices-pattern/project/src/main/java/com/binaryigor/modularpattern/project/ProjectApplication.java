@@ -4,6 +4,7 @@ import com.binaryigor.modularpattern.project.domain.ProjectRepository;
 import com.binaryigor.modularpattern.project.domain.ProjectService;
 import com.binaryigor.modularpattern.project.domain.ProjectUserRepository;
 import com.binaryigor.modularpattern.project.domain.ProjectUsersSync;
+import com.binaryigor.modularpattern.project.infra.HttpUserClient;
 import com.binaryigor.modularpattern.project.infra.SqlProjectRepository;
 import com.binaryigor.modularpattern.project.infra.SqlProjectUserRepository;
 import com.binaryigor.modularpattern.shared.contracts.UserClient;
@@ -12,10 +13,11 @@ import com.binaryigor.modularpattern.shared.db.Transactions;
 import com.binaryigor.modularpattern.shared.events.AppEvents;
 import com.binaryigor.modularpattern.shared.events.AppEventsPublisher;
 import com.binaryigor.modularpattern.shared.events.InMemoryAppEvents;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +30,8 @@ import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
+import java.net.http.HttpClient;
+import java.time.Duration;
 
 @SpringBootApplication
 public class ProjectApplication {
@@ -109,5 +113,19 @@ public class ProjectApplication {
                                       UserClient userClient,
                                       AppEvents appEvents) {
         return new ProjectUsersSync(projectUserRepository, userClient, appEvents);
+    }
+
+    @Profile("!monolith")
+    @Bean
+    HttpUserClient httpUserClient(@Value("${http-user-client.host}") String host,
+                                  ObjectMapper objectMapper) {
+        var connectTimeout = Duration.ofSeconds(1);
+        var readTimeout = Duration.ofSeconds(10);
+
+        var httpClient = HttpClient.newBuilder()
+            .connectTimeout(connectTimeout)
+            .build();
+
+        return new HttpUserClient(httpClient, host, readTimeout, objectMapper);
     }
 }

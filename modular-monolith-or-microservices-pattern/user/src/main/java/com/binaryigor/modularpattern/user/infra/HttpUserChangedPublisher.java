@@ -38,6 +38,7 @@ public class HttpUserChangedPublisher {
             var request = HttpRequest.newBuilder()
                 .uri(new URI(host + "/events/" + event.getClass().getSimpleName()))
                 .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(event)))
+                .header("content-type", "application/json")
                 .timeout(publishTimeout)
                 .build();
 

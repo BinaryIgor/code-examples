@@ -6,9 +6,9 @@ import com.binaryigor.modularpattern.project.domain.ProjectWithUsers;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
+@ProjectControllerTag
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -39,8 +39,4 @@ public class ProjectController {
         return service.ofId(id);
     }
 
-    @GetMapping
-    List<ProjectWithUsers> allOfNamespaceWithUsers(@RequestParam("namespace") String namespace) {
-        return service.allOfNamespace(namespace);
-    }
 }

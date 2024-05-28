@@ -1,6 +1,7 @@
 package com.binaryigor.modularpattern.project.app;
 
 import com.binaryigor.modularpattern.project.IntegrationTest;
+import com.binaryigor.modularpattern.project.TestObjects;
 import com.binaryigor.modularpattern.project.domain.ProjectUser;
 import com.binaryigor.modularpattern.project.domain.ProjectUserRepository;
 import com.binaryigor.modularpattern.project.domain.ProjectUsersSync;
@@ -33,7 +34,7 @@ public class ProjectEventsControllerTest extends IntegrationTest {
 
     @Test
     void ignoresValidUserChangedEventWithUnknownType() {
-        var user = randomUserView();
+        var user = TestObjects.randomUserView();
 
         Assertions.assertThat(savedUserOfId(user.id())).isEmpty();
 
@@ -46,39 +47,39 @@ public class ProjectEventsControllerTest extends IntegrationTest {
     }
 
     @Test
-    void savesUsersOnExpectedUserChangedEvent() {
-        var user1 = randomUserView();
-        var user2 = randomUserView();
-        var user1Changed = new UserView(user1.id(), user1.email() + "_", user1.name() + "_");
+    void savesUsersOnExpectedUserChangedEventIfNewUserOrVersionIsGreaterOrEqualThanTheCurrentOne() {
+        var user1Id = UUID.randomUUID();
+        var user1 = TestObjects.randomUserView(user1Id, 1);
+        var user1Changed = TestObjects.randomUserView(user1Id, 3);
+        var user1ChangedToIgnoreVersion = TestObjects.randomUserView(user1Id, 2);
 
-        assertUserSaved(new UserChangedEvent(user1));
-        assertUserSaved(new UserChangedEvent(user2));
-        assertUserSaved(new UserChangedEvent(user1Changed));
+        var user2Id = UUID.randomUUID();
+        var user2 = TestObjects.randomUserView(user2Id, 2);
+
+        assertUserSaved(new UserChangedEvent(user1), user1);
+        assertUserSaved(new UserChangedEvent(user1Changed), user1Changed);
+        assertUserSaved(new UserChangedEvent(user1ChangedToIgnoreVersion), user1Changed);
+
+        assertUserSaved(new UserChangedEvent(user2), user2);
     }
 
     private ResponseEntity<Void> postEvent(String type, Object event) {
         return restTemplate.postForEntity("/events/" + type, event, Void.class);
     }
 
-    private UserView randomUserView() {
-        var id = UUID.randomUUID();
-        return new UserView(id, id + "-email@email.com", id + "-name");
-    }
-
     private Optional<ProjectUser> savedUserOfId(UUID id) {
         return Optional.ofNullable(userRepository.ofIds(List.of(id)).get(id));
     }
 
-    private void assertUserSaved(UserChangedEvent eventToSend) {
-        var response = postEvent(UserChangedEvent.class.getSimpleName(), eventToSend);
-
+    private void assertUserSaved(UserChangedEvent toSendEvent, UserView expectedUser) {
+        var response = postEvent(UserChangedEvent.class.getSimpleName(), toSendEvent);
         Assertions.assertThat(response.getStatusCode())
             .isEqualTo(HttpStatus.OK);
 
-        Assertions.assertThat(savedUserOfId(eventToSend.user().id()))
+        Assertions.assertThat(savedUserOfId(expectedUser.id()))
             .isNotEmpty()
             .get()
-            .isEqualTo(ProjectUser.fromUserView(eventToSend.user()));
+            .isEqualTo(ProjectUser.fromUserView(expectedUser));
     }
 
 }

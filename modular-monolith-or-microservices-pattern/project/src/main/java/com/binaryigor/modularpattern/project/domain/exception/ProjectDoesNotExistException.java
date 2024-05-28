@@ -1,4 +1,4 @@
-package com.binaryigor.modularpattern.project.domain;
+package com.binaryigor.modularpattern.project.domain.exception;
 
 import java.util.UUID;
 

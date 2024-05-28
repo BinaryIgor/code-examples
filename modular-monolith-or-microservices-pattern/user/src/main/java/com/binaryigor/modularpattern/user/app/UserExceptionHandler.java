@@ -1,6 +1,9 @@
 package com.binaryigor.modularpattern.user.app;
 
-import com.binaryigor.modularpattern.user.domain.UserDoesNotExistException;
+import com.binaryigor.modularpattern.user.domain.exception.OptimisticLockException;
+import com.binaryigor.modularpattern.user.domain.exception.UserDoesNotExistException;
+import com.binaryigor.modularpattern.user.domain.exception.UserEmailTakenException;
+import com.binaryigor.modularpattern.user.domain.exception.UserIdTakenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,8 +16,23 @@ import java.net.URI;
 public class UserExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
+    ProblemDetail handleUserIdTakenException(UserIdTakenException e) {
+        return fromException(HttpStatus.CONFLICT, e);
+    }
+
+    @ExceptionHandler
+    ProblemDetail handleUserEmailTakenException(UserEmailTakenException e) {
+        return fromException(HttpStatus.CONFLICT, e);
+    }
+
+    @ExceptionHandler
     ProblemDetail handleUserDoesNotExistException(UserDoesNotExistException e) {
         return fromException(HttpStatus.NOT_FOUND, e);
+    }
+
+    @ExceptionHandler
+    ProblemDetail handleOptimisticLockException(OptimisticLockException e) {
+        return fromException(HttpStatus.CONFLICT, e);
     }
 
     private ProblemDetail fromException(HttpStatus status, Throwable throwable) {

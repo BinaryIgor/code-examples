@@ -20,6 +20,10 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <shared.module.version>1.0-SNAPSHOT</shared.module.version>
+        <user.module.version>1.0-SNAPSHOT</user.module.version>
+        <project.module.version>1.0-SNAPSHOT</project.module.version>
+
         <spring.openapi.version>2.2.0</spring.openapi.version>
         <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
@@ -27,13 +31,8 @@
     <dependencies>
         <dependency>
             <groupId>com.binaryigor</groupId>
-            <artifactId>modular-pattern-user</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.binaryigor</groupId>
-            <artifactId>modular-pattern-project</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>modular-pattern-shared</artifactId>
+            <version>${shared.module.version}</version>
         </dependency>
 
         <dependency>
@@ -63,8 +62,37 @@
 
     <profiles>
         <profile>
+            <id>allModules</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.binaryigor</groupId>
+                    <artifactId>modular-pattern-user</artifactId>
+                    <version>${project.module.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.binaryigor</groupId>
+                    <artifactId>modular-pattern-project</artifactId>
+                    <version>${project.module.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>userModule</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.binaryigor</groupId>
+                    <artifactId>modular-pattern-user</artifactId>
+                    <version>${project.module.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>executable</id>
             <build>
+                <finalName>modular-monolith</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>

@@ -5,10 +5,10 @@ import com.binaryigor.modularpattern.shared.contracts.UserView;
 
 import java.util.UUID;
 
-public record User(UUID id, String email, String name) {
+public record User(UUID id, String email, String name, Long version) {
 
     public UserView toView() {
-        return new UserView(id, email, name);
+        return new UserView(id, email, name, version == null ? 1 : version);
     }
 
     public UserChangedEvent toUserChangedEvent() {

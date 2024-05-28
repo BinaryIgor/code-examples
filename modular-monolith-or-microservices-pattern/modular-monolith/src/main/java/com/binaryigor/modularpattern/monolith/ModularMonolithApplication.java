@@ -5,8 +5,8 @@ import com.binaryigor.modularpattern.shared.events.InMemoryAppEvents;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
+
+import java.time.Clock;
 
 @SpringBootApplication(scanBasePackages = {"com.binaryigor.modularpattern"})
 public class ModularMonolithApplication {
@@ -22,5 +22,10 @@ public class ModularMonolithApplication {
     @Bean
     AppEventsPublisher appEventsPublisher(InMemoryAppEvents appEvents) {
         return appEvents.publisher();
+    }
+
+    @Bean
+    Clock clock() {
+        return Clock.systemUTC();
     }
 }

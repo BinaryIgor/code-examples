@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +33,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 import java.net.http.HttpClient;
+import java.time.Clock;
 import java.time.Duration;
 
 @SpringBootApplication
@@ -104,6 +104,12 @@ public class UserApplication {
 
     @Profile("!monolith")
     @Bean
+    Clock clock() {
+        return Clock.systemUTC();
+    }
+
+    @Profile("!monolith")
+    @Bean
     InMemoryAppEvents appEvents() {
         return new InMemoryAppEvents();
     }
@@ -117,17 +123,17 @@ public class UserApplication {
     @Profile("!integration")
     @Bean
     ScheduledOutboxProcessor userScheduledOutboxProcessor(OutboxRepository userOutboxRepository,
-                                                          AppEventsPublisher appEventsPublisher) {
-        var processor = new OutboxProcessor(userOutboxRepository, appEventsPublisher, 100);
+                                                          AppEventsPublisher appEventsPublisher,
+                                                          Clock clock) {
+        var processor = new OutboxProcessor(userOutboxRepository, appEventsPublisher, clock, 100);
         return new ScheduledOutboxProcessor(processor, new SingleInstanceLeaderAwareness());
     }
 
-    @ConditionalOnProperty(name = "http-user-changed-publisher.host")
+    @Profile("!monolith")
     @Bean
     HttpUserChangedPublisher httpUserChangedPublisher(@Value("${http-user-changed-publisher.host}") String host,
                                                       ObjectMapper objectMapper,
                                                       AppEvents appEvents) {
-        // TODO: maybe properties
         var connectTimeout = Duration.ofSeconds(1);
         var publishTimeout = Duration.ofSeconds(1);
 

@@ -5,10 +5,7 @@ import com.binaryigor.modularpattern.project.domain.ProjectUserRepository;
 import com.binaryigor.modularpattern.shared.db.JdbcOperations;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,16 +22,17 @@ public class SqlProjectUserRepository implements ProjectUserRepository {
     @Override
     public void save(Collection<ProjectUser> users) {
         var sql = JdbcOperations.bulkInsertSql(TABLE,
-            List.of("id", "email", "name"),
+            List.of("id", "email", "name", "version"),
             users.size()) + """
                       ON CONFLICT (id)
                       DO UPDATE
                       SET email = EXCLUDED.email,
-                          name = EXCLUDED.name
+                          name = EXCLUDED.name,
+                          version = EXCLUDED.version
                       """;
 
         var values = users.stream()
-            .flatMap(u -> Stream.of(u.id(), u.email(), u.name()))
+            .flatMap(u -> Stream.of(u.id(), u.email(), u.name(), u.version()))
             .toList();
 
         jdbcClient.sql(sql)
@@ -53,5 +51,20 @@ public class SqlProjectUserRepository implements ProjectUserRepository {
             .list()
             .stream()
             .collect(Collectors.toMap(ProjectUser::id, p -> p));
+    }
+
+    @Override
+    public Optional<ProjectUser> ofId(UUID id) {
+        return jdbcClient.sql("SELECT * FROM %s WHERE id = ?".formatted(TABLE))
+            .param(id)
+            .query(ProjectUser.class)
+            .optional();
+    }
+
+    @Override
+    public Stream<ProjectUser> allUsers() {
+        return jdbcClient.sql("SELECT * FROM %s".formatted(TABLE))
+            .query(ProjectUser.class)
+            .stream();
     }
 }

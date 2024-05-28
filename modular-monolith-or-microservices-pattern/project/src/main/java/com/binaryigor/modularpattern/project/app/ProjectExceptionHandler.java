@@ -1,6 +1,8 @@
 package com.binaryigor.modularpattern.project.app;
 
-import com.binaryigor.modularpattern.project.domain.ProjectDoesNotExistException;
+import com.binaryigor.modularpattern.project.domain.exception.ProjectDoesNotExistException;
+import com.binaryigor.modularpattern.project.domain.exception.ProjectIdTakenException;
+import com.binaryigor.modularpattern.project.domain.exception.ProjectUsersDoNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +15,17 @@ import java.net.URI;
 public class ProjectExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
+    ProblemDetail handleProjectIdTakenException(ProjectIdTakenException e) {
+        return fromException(HttpStatus.CONFLICT, e);
+    }
+
+    @ExceptionHandler
     ProblemDetail handleProjectDoesNotExistException(ProjectDoesNotExistException e) {
+        return fromException(HttpStatus.NOT_FOUND, e);
+    }
+
+    @ExceptionHandler
+    ProblemDetail handleProjectUsersDoesNotExistException(ProjectUsersDoNotExistException e) {
         return fromException(HttpStatus.NOT_FOUND, e);
     }
 

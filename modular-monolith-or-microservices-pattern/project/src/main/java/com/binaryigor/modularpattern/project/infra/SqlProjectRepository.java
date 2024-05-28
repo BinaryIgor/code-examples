@@ -25,13 +25,12 @@ public class SqlProjectRepository implements ProjectRepository {
     public void save(Project project) {
         transactions.execute(() -> {
             jdbcClient.sql("""
-                    INSERT INTO project (id, namespace, name, description) VALUES (?, ?, ?, ?)
+                    INSERT INTO project (id, name, description) VALUES (?, ?, ?)
                     ON CONFLICT (id) DO UPDATE
-                      SET namespace = EXCLUDED.namespace,
-                          name = EXCLUDED.name,
+                      SET name = EXCLUDED.name,
                           description = EXCLUDED.description
                     """)
-                .params(project.id(), project.namespace(), project.name(), project.description())
+                .params(project.id(), project.name(), project.description())
                 .update();
 
             jdbcClient.sql("DELETE FROM project_user WHERE project_id = ?")
@@ -69,16 +68,10 @@ public class SqlProjectRepository implements ProjectRepository {
             });
     }
 
-    @Override
-    public List<Project> allOfNamespace(String namespace) {
-        // TODO: implement!
-        return List.of();
-    }
-
-    record ProjectWithoutUsersProjection(UUID id, String namespace, String name, String description) {
+    record ProjectWithoutUsersProjection(UUID id, String name, String description) {
 
         public Project toProject(List<UUID> userIds) {
-            return new Project(id, namespace, name, description, userIds);
+            return new Project(id, name, description, userIds);
         }
     }
 }

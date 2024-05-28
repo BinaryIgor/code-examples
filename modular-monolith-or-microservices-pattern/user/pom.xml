@@ -23,6 +23,7 @@
         <spring.openapi.version>2.2.0</spring.openapi.version>
         <postresql.driver.version>42.6.0</postresql.driver.version>
         <testcontainers.version>1.17.6</testcontainers.version>
+        <spring.cloud.contract.stub.runner.version>4.1.2</spring.cloud.contract.stub.runner.version>
     </properties>
 
     <dependencies>
@@ -66,12 +67,20 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!--wiremock auto config-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
+            <version>${spring.cloud.contract.stub.runner.version}</version>
+        </dependency>
     </dependencies>
 
     <profiles>
         <profile>
             <id>executable</id>
             <build>
+                <finalName>user-service</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>

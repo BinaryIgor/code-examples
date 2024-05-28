@@ -6,6 +6,7 @@ import com.binaryigor.modularpattern.shared.contracts.UserClient;
 import com.binaryigor.modularpattern.shared.events.AppEvents;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ProjectUsersSync {
 
@@ -22,7 +23,11 @@ public class ProjectUsersSync {
     }
 
     public void onUserChangedEvent(UserChangedEvent event) {
-        projectUserRepository.save(List.of(ProjectUser.fromUserView(event.user())));
+        var eventUser = event.user();
+        var currentUser = projectUserRepository.ofId(eventUser.id());
+        if (currentUser.isEmpty() || eventUser.version() >= currentUser.get().version()) {
+            projectUserRepository.save(List.of(ProjectUser.fromUserView(event.user())));
+        }
     }
 
     public void syncAll(int chunkSize) {
@@ -32,5 +37,9 @@ public class ProjectUsersSync {
                 projectUserRepository.save(projectUsers);
             });
         }
+    }
+
+    public Stream<ProjectUser> allAvailable() {
+        return projectUserRepository.allUsers();
     }
 }
