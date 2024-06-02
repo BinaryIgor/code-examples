@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <groupId>com.binaryigor</groupId>
+    <artifactId>modular-monolith</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <shared.module.version>1.0-SNAPSHOT</shared.module.version>
+        <user.module.version>1.0-SNAPSHOT</user.module.version>
+        <project.module.version>1.0-SNAPSHOT</project.module.version>
+
+        <spring.openapi.version>2.2.0</spring.openapi.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.binaryigor</groupId>
+            <artifactId>modular-pattern-shared</artifactId>
+            <version>${shared.module.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${spring.openapi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>allModules</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.binaryigor</groupId>
+                    <artifactId>modular-pattern-user</artifactId>
+                    <version>${project.module.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.binaryigor</groupId>
+                    <artifactId>modular-pattern-project</artifactId>
+                    <version>${project.module.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>userModule</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.binaryigor</groupId>
+                    <artifactId>modular-pattern-user</artifactId>
+                    <version>${project.module.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>executable</id>
+            <build>
+                <finalName>modular-monolith</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

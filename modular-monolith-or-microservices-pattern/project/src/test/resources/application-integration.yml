@@ -1,0 +1,2 @@
+http-user-client.host: http://localhost:${wiremock.server.port}
+wiremock.reset-mappings-after-each-test: true

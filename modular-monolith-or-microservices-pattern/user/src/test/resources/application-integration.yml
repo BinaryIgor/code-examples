@@ -1,0 +1,2 @@
+http-user-changed-publisher.host: http://localhost:${wiremock.server.port}
+wiremock.reset-mappings-after-each-test: true

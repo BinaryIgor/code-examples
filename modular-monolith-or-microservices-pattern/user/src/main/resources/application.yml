@@ -1,0 +1,18 @@
+spring:
+  application: user-service
+  profiles:
+    active: user
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8081
+
+http-user-changed-publisher.host: http://localhost:8082
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

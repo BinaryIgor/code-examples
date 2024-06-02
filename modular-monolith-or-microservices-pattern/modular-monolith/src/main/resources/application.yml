@@ -1,0 +1,15 @@
+spring:
+  application: modular-monolith
+  # This is a mechanism that we use to have application-user.yml, application-{module}.yml... config files be used in this module.
+  # It allows each module to be configured independently
+  profiles:
+    active: [ monolith, user, project ]
+  threads:
+    virtual:
+      enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
