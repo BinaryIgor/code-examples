@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-container_name="cdn-nginx"
+container_name="static-app"
 
-rm -rf target
-mkdir -p target
+rm -rf dist
+mkdir -p dist
 
-export DOMAIN=localhost
-envsubst '${DOMAIN}' < template_nginx.conf > target/nginx.conf
+export domain=localhost
+envsubst '${domain}' < template_nginx.conf > target/nginx.conf
 
 docker build . -t $container_name
 

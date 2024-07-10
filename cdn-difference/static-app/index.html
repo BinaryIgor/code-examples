@@ -7,60 +7,86 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body class="limited-width">
     <h1>CDN - what difference does it make?</h1>
     <div>Let's check exactly, what difference, performance-wise, CDN can make.</div>
-    <!--TODO: definitely some images-->
-    <h2>Chat GPT CDN description to have more content</h2>
-    <div>A CDN, or Content Delivery Network, is a system of distributed servers that deliver web content to users based on their geographic location. The primary purpose of a CDN is to reduce latency and improve the speed and performance of websites by caching content at various edge locations around the world. Here’s a more detailed explanation</div>
-    <img src="cdn.png">
+    <h2>ChatGPT CDN description to have more content.</h2>
+    <div>A CDN, or Content Delivery Network, is a system of distributed servers that deliver web content to users based
+        on their geographic location. The primary purpose of a CDN is to reduce latency and improve the speed and
+        performance of websites by caching content at various edge locations around the world. Here’s a more detailed
+        explanation.</div>
+    <img src="cdn.png" alt="CDN">
 
-
-<h2>Key Components and Concepts</h2>
-<h3>Edge Servers</h3>
-<div>
-    These are servers located in various geographical locations (edge locations). They cache copies of content from the origin server to be closer to users.
-</div>
-
-<h3>Origin Server</h3>
-
-<div>
-This is the primary server where the website’s content is originally hosted. When content is updated, it is first updated on the origin server.
-</div>
-Caching:
-
-This involves storing copies of files such as HTML pages, images, videos, CSS, and JavaScript on edge servers. Caching reduces the distance data must travel to reach the user, thereby speeding up content delivery.
-Latency:
-
-This is the delay before a transfer of data begins following an instruction for its transfer. CDNs minimize latency by serving content from servers closest to the user.
-How a CDN Works
-User Request:
-
-When a user requests a webpage, the request is routed to the nearest CDN edge server rather than the origin server.
-Content Delivery:
-
-If the edge server has the requested content cached, it delivers it directly to the user. If not, the edge server requests the content from the origin server, caches it for future requests, and then delivers it to the user.
-Dynamic and Static Content:
-
-Static content (unchanging content like images and videos) is cached on edge servers. Dynamic content (content that changes frequently, like personalized data) may still need to be fetched from the origin server, but CDNs can optimize this process as well.
-Benefits of a CDN
-Improved Load Times:
-
-By serving content from the nearest server, CDNs significantly reduce load times.
-Reduced Bandwidth Costs:
-
-CDNs reduce the amount of data that must be transmitted from the origin server, thereby lowering bandwidth consumption and costs.
-Increased Availability and Redundancy:
-
-Distributed nature of CDNs ensures content availability even if some servers are down.
-Enhanced Security:
-
-CDNs provide DDoS protection, secure access to content, and can include features like SSL/TLS encryption to enhance security.
-Scalability:
-
-CDNs can handle high traffic volumes, making them ideal for sites with fluctuating or high traffic.
+    <h2>Key Components and Concepts</h2>
+    <h3>Edge Servers</h3>
+    <div>
+        These are servers located in various geographical locations (edge locations).
+        They cache copies of content from the origin server to be closer to users.
     </div>
-    <script src="index.js"></script>
+    <h3>Origin Server</h3>
+    <div>
+        This is the primary server where the website’s content is originally hosted. When content is updated, it is
+        first updated on the origin server.
+    </div>
+    <h3>Caching</h3>
+    <div>
+        This involves storing copies of files such as HTML pages, images, videos, CSS, and JavaScript on edge servers.
+        Caching reduces the distance data must travel to reach the user, thereby speeding up content delivery.
+    </div>
+    <h3>
+        Latency
+    </h3>
+    <div>
+        This is the delay before a transfer of data begins following an instruction for its transfer. CDNs minimize
+        latency
+        by serving content from servers closest to the user.
+        How a CDN Works
+    </div>
+    <h3>User Request</h3>
+    <div>
+        When a user requests a webpage, the request is routed to the nearest CDN edge server rather than the origin
+        server.
+    </div>
+    <h3>Content Delivery</h3>
+    <div>
+        If the edge server has the requested content cached, it delivers it directly to the user. If not, the edge
+        server
+        requests the content from the origin server, caches it for future requests, and then delivers it to the user.
+    </div>
+    <h3> Dynamic and Static Content</h3>
+    <div>
+        Static content (unchanging content like images and videos) is cached on edge servers. Dynamic content (content
+        that
+        changes frequently, like personalized data) may still need to be fetched from the origin server, but CDNs can
+        optimize this process as well.
+    </div>
+    <h2>Benefits of a CDN</h2>
+    <h3>Improved Load Times</h3>
+    <div>
+        By serving content from the nearest server, CDNs significantly reduce load times.
+    </div>
+    <h3>Reduced Bandwidth Costs</h3>
+    <div>
+        CDNs reduce the amount of data that must be transmitted from the origin server, thereby lowering bandwidth
+        consumption and costs.
+    </div>
+    <h3>Increased Availability and Redundancy</h3>
+    <div>
+        Distributed nature of CDNs ensures content availability even if some servers are down.
+    </div>
+    <h3>Enhanced Security</h3>
+    <div>
+        CDNs provide DDoS protection, secure access to content, and can include features like SSL/TLS encryption to
+        enhance
+        security.
+    </div>
+    <h3>Scalability</h3>
+    <div>
+        CDNs can handle high traffic volumes, making them ideal for sites with fluctuating or high traffic.
+    </div>
+    <script>
+        console.log("Some js...");
+    </script>
 </body>
 
 </html>

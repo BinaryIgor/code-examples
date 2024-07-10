@@ -15,12 +15,9 @@ It's true in theory, but curiosity naturally draws to ask the question:
 We are about to deploy a simple frontend application with a few assets to multiple regions. We will use DigitalOcean as
 our infrastructure provider, but obviously you can also use something else.
 We will have the following regions:
-
 * FRA - Frankfurt, Germany
 * LON - London, England
-* NYC - New York, USA
 * SYD - Sydney, Australia
-* AMS - Amsterdam, Netherlands
 
 Then, in every region we will have two droplets (virtual machines).
 We will test the best and the worst cases for CDN and compare the results!
@@ -32,15 +29,11 @@ The cases will be:
 * make requests from FRA to LON, from LON to NYC etc. - all kinds of combinations to compare different possible
   cases, based on different distances between data centers and check latency difference
 
-Approximate distances between some locations, in a straight line:
+Approximate distances locations, in a straight line:
 
-* Frankfurt - London: 635 km
-* Frankfurt - New York: 11 000 km
-* Frankfurt - Sydney: 16 000 km
-* Frankfurt - Amsterdam: 360 km
-* London - New York: 5 000 km
-* London - Sydney: 17 000 km
-* New York - Sydney: 15 000 km
+* Frankfurt - Frankfurt: ~ as close as it gets on the public Internet
+* Frankfurt - London: ~ 637 km
+* Frankfurt - Sydney: ~ 16 500 km
 
 ## How we are about to do it
 
