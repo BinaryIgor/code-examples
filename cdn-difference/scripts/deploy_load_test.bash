@@ -25,4 +25,4 @@ cd ..
 scp -r $app/dist/* ${remote_host}:${deploy_dir}
 
 echo
-echo "Load test deployed, go and run it!"
+echo "$app deployed, go and run it!"

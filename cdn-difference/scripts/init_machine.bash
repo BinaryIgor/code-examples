@@ -13,7 +13,7 @@ chmod 0700 "$home_directory/.ssh"
 chmod 0600 "$home_directory/.ssh/authorized_keys"
 chown --recursive "_user_placeholder_":"_user_placeholder_" "$home_directory/.ssh"
 
-# Disable root SSH login with password
+# Disable root SSH login and login with password
 sed --in-place 's/^PermitRootLogin.*/PermitRootLogin no/g' /etc/ssh/sshd_config
 sed --in-place 's/^PasswordAuthentication.*/PasswordAuthentication no/g' /etc/ssh/sshd_config
 if sshd -t -q; then systemctl restart ssh; fi

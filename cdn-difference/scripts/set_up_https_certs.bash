@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-regions=("fra" "lon" "syd")
+regions=("fra" "lon" "tor" "syd")
 
 cd ..
 . config.env

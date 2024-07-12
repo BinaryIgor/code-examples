@@ -6,4 +6,4 @@ export APP=load-test
 bash build_and_package.bash
 echo
 
-echo "Load Test is packaged and ready for deploy!"
+echo "$APP is packaged and ready for deploy!"

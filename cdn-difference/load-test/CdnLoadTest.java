@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class CdnLoadTest {
 
-    static final int REQUESTS = envIntValueOrDefault("REQUESTS", 2000);
+    static final int REQUESTS = envIntValueOrDefault("REQUESTS", 1000);
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", 50);
     static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 100);
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
@@ -26,7 +26,7 @@ public class CdnLoadTest {
         var endpointsStats = ENDPOINTS.stream()
             .collect(Collectors.toMap(Endpoint::id, k -> EndpointStats.empty()));
 
-        System.out.println("Starting CdnDifferenceTest!");
+        System.out.println("Starting CdnLoadTest!");
         System.out.println();
         System.out.printf("About to make %d requests with %d/s rate to %s host%n", REQUESTS, REQUESTS_PER_SECOND, HOST);
         System.out.printf("Timeouts are %d ms for connect and %d ms for request%n", CONNECT_TIMEOUT, REQUEST_TIMEOUT);
@@ -131,7 +131,7 @@ public class CdnLoadTest {
 
         try {
             var request = HttpRequest.newBuilder()
-                .uri(URI.create(HOST + "/" + endpoint.path))
+                .uri(URI.create(HOST + "/" + endpoint.path()))
                 .method(endpoint.method, HttpRequest.BodyPublishers.noBody())
                 .timeout(Duration.ofMillis(REQUEST_TIMEOUT))
                 .build();
@@ -195,8 +195,6 @@ public class CdnLoadTest {
         var max = sortedResults.getLast();
 
         var mean = sortedResults.stream().mapToLong(Long::longValue).average().getAsDouble();
-        var percentile10 = percentile(sortedResults, 10);
-        var percentile25 = percentile(sortedResults, 25);
         var percentile50 = percentile(sortedResults, 50);
         var percentile75 = percentile(sortedResults, 75);
         var percentile90 = percentile(sortedResults, 90);
@@ -207,8 +205,6 @@ public class CdnLoadTest {
         System.out.println("Max: " + formattedSeconds(max));
         System.out.println("Mean: " + formattedSeconds(mean));
         System.out.println();
-        System.out.println("Percentile 10: " + formattedSeconds(percentile10));
-        System.out.println("Percentile 25: " + formattedSeconds(percentile25));
         System.out.println("Percentile 50 (Median): " + formattedSeconds(percentile50));
         System.out.println("Percentile 75: " + formattedSeconds(percentile75));
         System.out.println("Percentile 90: " + formattedSeconds(percentile90));

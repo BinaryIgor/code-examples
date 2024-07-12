@@ -60,6 +60,7 @@ machines = [
     machine_config("fra", "static-fra-droplet", STATIC_MACHINE_SIZE_SLUG),
     machine_config("fra", "test-fra-droplet", TEST_MACHINE_SIZE_SLUG),
     machine_config("lon", "static-lon-droplet", STATIC_MACHINE_SIZE_SLUG),
+    machine_config("tor", "static-tor-droplet", STATIC_MACHINE_SIZE_SLUG),
     machine_config("syd", "static-syd-droplet", STATIC_MACHINE_SIZE_SLUG)
 ]
 machine_names = [m[NAME] for m in machines]
@@ -215,7 +216,7 @@ def assign_firewall(firewall_id, droplet_ids):
 
 
 print("Needed droplets:")
-print(f"{list(machine_names)}")
+print(machine_names)
 print()
 
 print("Creating droplets, if needed...")

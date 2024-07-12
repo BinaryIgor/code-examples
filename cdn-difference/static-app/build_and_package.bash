@@ -19,7 +19,7 @@ envsubst '${domain}' < template_nginx.conf > "${dist_dir}/nginx.conf"
 
 echo "Building image..."
 
-docker build . -t ${tagged_image}
+docker build --build-arg nginx_conf_dir="${dist_dir}" . -t ${tagged_image}
 
 gzipped_image_path="${dist_dir}/$app.tar.gz"
 

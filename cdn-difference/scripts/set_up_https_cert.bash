@@ -9,7 +9,7 @@ remote_host="deploy@$DOMAIN"
 domain_email=$DOMAIN_EMAIL
 
 # Standalone mode: certbot will temporarily spin up a webserver on the machine
-ssh $remote_host "
+ssh -oStrictHostKeyChecking=accept-new $remote_host "
 echo "Setting up certbot..."
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot

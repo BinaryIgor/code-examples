@@ -2,7 +2,7 @@
 set -euo pipefail
 
 app="static-app"
-app_dist_dir="$REGION/$app"
+app_dist_dir="dist/$REGION"
 deploy_user="deploy"
 remote_host="$deploy_user@$DEPLOY_HOST"
 deploy_dir="/home/$deploy_user/deploy/$app"
