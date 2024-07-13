@@ -7,39 +7,29 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class LoadTest {
+public class CdnLoadTest {
 
-    static final TestProfileParams TEST_PROFILE = testProfileParams();
-    // Number of instances used only in results report to make it clearer and more precise
-    static final int TEST_RESULTS_INSTANCES = envIntValueOrDefault("TEST_RESULTS_INSTANCES", 1);
-    static final int REQUESTS = envIntValueOrDefault("REQUESTS", TEST_PROFILE.requests());
-    static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", TEST_PROFILE.requestsPerSecond());
-    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", TEST_PROFILE.maxConcurrency());
+    static final int REQUESTS = envIntValueOrDefault("REQUESTS", 1000);
+    static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", 50);
+    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 100);
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     static final String HOST = envValueOrThrow("HOST");
-    static final boolean IN_MEMORY_ENDPOINT = Boolean.parseBoolean(envValueOrDefault("IN_MEMORY_ENDPOINT", "false"));
-    static final boolean SKIP_WRITE_ENDPOINT = Boolean.parseBoolean(envValueOrDefault("SKIP_WRITE_ENDPOINT", "false"));
-    // This needs to be keep in-sync with SecurityFilter in single-app
-    static final String SECRET_QUERY = envValueOrDefault("SECRET_QUERY", "17e57c8c-60ea-4b4a-8d48-5967f03b942c");
     static final Random RANDOM = new Random();
     static final List<Endpoint> ENDPOINTS = endpoints();
-    static final List<String> ENDPOINT_IDS = ENDPOINTS.stream().map(Endpoint::id).distinct().toList();
     static final int MAX_TO_LOG_ISSUES = 10;
     static final AtomicInteger LOGGED_ISSUES = new AtomicInteger(0);
 
     public static void main(String[] args) throws Exception {
-        var endpointsStats = ENDPOINT_IDS.stream()
-            .collect(Collectors.toMap(Function.identity(), k -> EndpointStats.empty()));
+        var endpointsStats = ENDPOINTS.stream()
+            .collect(Collectors.toMap(Endpoint::id, k -> EndpointStats.empty()));
 
-        System.out.println("Starting LoadTest on %s!".formatted(machinesString()));
+        System.out.println("Starting CdnLoadTest!");
         System.out.println();
-        System.out.println("About to make %d requests with %d/s rate, on each machine".formatted(REQUESTS, REQUESTS_PER_SECOND));
-        System.out.println("Timeouts are %d ms for connect and %d ms for request".formatted(CONNECT_TIMEOUT, REQUEST_TIMEOUT));
+        System.out.printf("About to make %d requests with %d/s rate to %s host%n", REQUESTS, REQUESTS_PER_SECOND, HOST);
+        System.out.printf("Timeouts are %d ms for connect and %d ms for request%n", CONNECT_TIMEOUT, REQUEST_TIMEOUT);
         System.out.println("Max concurrency is capped at: " + MAX_CONCURRENCY);
         System.out.println();
         System.out.println("Endpoints to test (chosen randomly):");
@@ -61,8 +51,7 @@ public class LoadTest {
 
             var issuedRequests = i + 1;
             if (issuedRequests % REQUESTS_PER_SECOND == 0 && issuedRequests < REQUESTS) {
-                System.out.println("%s, %d/%d requests were issued, waiting 1s before sending next batch..."
-                    .formatted(LocalDateTime.now(), issuedRequests, REQUESTS));
+                System.out.printf("%s, %d/%d requests were issued, waiting 1s before sending next batch...%n", LocalDateTime.now(), issuedRequests, REQUESTS);
                 Thread.sleep(1000);
             }
 
@@ -80,7 +69,7 @@ public class LoadTest {
         var duration = Duration.ofMillis(System.currentTimeMillis() - start);
 
         printDelimiter();
-        System.out.println("%d requests with %d per second rate took %s".formatted(REQUESTS, REQUESTS_PER_SECOND, duration));
+        System.out.printf("%d requests with %d per second rate took %s%n", REQUESTS, REQUESTS_PER_SECOND, duration);
         printDelimiter();
 
         var sortedResults = results.stream().map(EndpointResult::time).sorted().toList();
@@ -90,45 +79,17 @@ public class LoadTest {
 
         printDelimiter();
 
-        ENDPOINT_IDS.forEach(endpointId -> {
-            var endpointStats = endpointsStats.get(endpointId);
-            printEndpointStats(endpointId, endpointStats, sortedResults.size());
+        ENDPOINTS.forEach(endpoint -> {
+            var endpointStats = endpointsStats.get(endpoint.id());
+            printEndpointStats(endpoint.id(), endpointStats, sortedResults.size());
             printDelimiter();
         });
-    }
-
-    static TestProfileParams testProfileParams() {
-        var envTestProfile = envValueOrDefault("TEST_PROFILE", TestProfile.LOW_LOAD.name());
-        TestProfile testProfile;
-        try {
-            testProfile = TestProfile.valueOf(envTestProfile.toUpperCase());
-        } catch (Exception e) {
-            throw new RuntimeException(envTestProfile + " is not supported. Supported profiles: "
-                                       + Arrays.toString(TestProfile.values()));
-        }
-
-        return switch (testProfile) {
-            case LOW_LOAD -> TestProfileParams.ofRateFor15Seconds(5);
-            case BETWEEN_LOW_AND_AVERAGE_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(25);
-            case AVERAGE_LOAD -> TestProfileParams.ofRateFor15Seconds(50);
-            case AVERAGE_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(50);
-            case BETWEEN_AVERAGE_AND_HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(150);
-            case HIGH_LOAD -> TestProfileParams.ofRateFor15Seconds(250);
-            case HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(250);
-            case BETWEEN_HIGH_AND_VERY_HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(750);
-            case VERY_HIGH_LOAD -> TestProfileParams.ofRateFor15Seconds(1000);
-            case VERY_HIGH_LONG_LOAD -> TestProfileParams.ofRateFor10Minutes(1000);
-        };
     }
 
     static void printDelimiter() {
         System.out.println();
         System.out.println("...");
         System.out.println();
-    }
-
-    static String machinesString() {
-        return TEST_RESULTS_INSTANCES > 1 ? "%d machines".formatted(TEST_RESULTS_INSTANCES) : "1 machine";
     }
 
     static int envIntValueOrDefault(String key, int defaultValue) {
@@ -145,65 +106,9 @@ public class LoadTest {
     }
 
     static List<Endpoint> endpoints() {
-        if (IN_MEMORY_ENDPOINT) {
-            return List.of(Endpoint.oneInstance("GET: /accounts/in-memory", "GET",
-                EndpointInstance.withoutBody(HOST + "/accounts/in-memory?secret=" + SECRET_QUERY)));
-        }
-
-        // Used in AccountController to generate test data!
-        var existingId1 = UUID.fromString("06f40771-6460-479a-a47c-177473e240b5");
-        var existingId2 = UUID.fromString("4db7506f-43fe-475e-afbe-842514a6223b");
-        var accountByIdEndpoint = accountByIdEndpoint(List.of(existingId1, existingId2));
-
-        var existingName1 = "name-1";
-        var existingName2 = "name-5";
-        var existingName3 = "name-20";
-        var countAccountsByNameEndpoint = countAccountsByName(List.of(existingName1, existingName2, existingName3));
-
-        var writeEndpoint = Endpoint.oneInstance(
-            "POST: /accounts/execute-random-write",
-            "POST",
-            EndpointInstance.withoutBody(HOST + "/accounts/execute-random-write?secret=" + SECRET_QUERY));
-
-
-        return List.of(
-            SKIP_WRITE_ENDPOINT ? accountByIdEndpoint : writeEndpoint,
-            accountByIdEndpoint,
-            accountByIdEndpoint,
-            countAccountsByNameEndpoint,
-            countAccountsByNameEndpoint);
-    }
-
-    static Endpoint accountByIdEndpoint(List<UUID> existingIds) {
-        var existingInstances = existingIds.stream().map(LoadTest::accountByIdEndpointInstance).toList();
-        return new Endpoint("GET: /accounts/{id}", "GET",
-            () -> {
-                if (RANDOM.nextBoolean()) {
-                    return randomChoice(existingInstances);
-                }
-                var nonExistingId = UUID.randomUUID();
-                return accountByIdEndpointInstance(nonExistingId);
-            });
-    }
-
-    static EndpointInstance accountByIdEndpointInstance(UUID id) {
-        return EndpointInstance.withoutBody(HOST + "/accounts/" + id + "?secret=" + SECRET_QUERY);
-    }
-
-    static Endpoint countAccountsByName(List<String> existingNames) {
-        var existingInstances = existingNames.stream().map(LoadTest::countAccountsByNameEndpointInstance).toList();
-        return new Endpoint("GET: /accounts/count?name={name}", "GET",
-            () -> {
-                if (RANDOM.nextBoolean()) {
-                    return randomChoice(existingInstances);
-                }
-                var nonExistingName = "name-" + UUID.randomUUID();
-                return countAccountsByNameEndpointInstance(nonExistingName);
-            });
-    }
-
-    static EndpointInstance countAccountsByNameEndpointInstance(String name) {
-        return EndpointInstance.withoutBody(HOST + "/accounts/count?name=%s&secret=%s".formatted(name, SECRET_QUERY));
+        return List.of(new Endpoint("GET", "index.html"),
+            new Endpoint("GET", "styles.css"),
+            new Endpoint("GET", "cdn.png"));
     }
 
     static HttpClient newHttpClient() {
@@ -225,14 +130,9 @@ public class LoadTest {
         endpointStats.incrementRequests();
 
         try {
-            var endpointInstance = endpoint.instanceSupplier.get();
-            var body = endpointInstance.body == null ?
-                HttpRequest.BodyPublishers.noBody() :
-                HttpRequest.BodyPublishers.ofString(endpointInstance.body);
-
             var request = HttpRequest.newBuilder()
-                .uri(URI.create(endpointInstance.url))
-                .method(endpoint.method, body)
+                .uri(URI.create(HOST + "/" + endpoint.path()))
+                .method(endpoint.method, HttpRequest.BodyPublishers.noBody())
                 .timeout(Duration.ofMillis(REQUEST_TIMEOUT))
                 .build();
 
@@ -286,43 +186,30 @@ public class LoadTest {
 
         var allRequests = sortedResults.size();
 
-        var testsExecutedOnMachinesString = "Tests executed on: %s".formatted(machinesString());
-        if (TEST_RESULTS_INSTANCES > 1) {
-            testsExecutedOnMachinesString += ", in parallel";
-        }
-        System.out.println(testsExecutedOnMachinesString);
-        System.out.println("Executed requests on 1 machine: %d, with %d/s rate".formatted(allRequests, REQUESTS_PER_SECOND));
-        System.out.println("Requests with connect timeout [%d]: %d, as percentage: %d"
-            .formatted(CONNECT_TIMEOUT, connectTimeoutRequests, (connectTimeoutRequests * 100) / allRequests));
-        System.out.println("Requests with request timeout [%d]: %d, as percentage: %d"
-            .formatted(REQUEST_TIMEOUT, requestTimeoutRequests, (requestTimeoutRequests * 100) / allRequests));
+        System.out.printf("Executed requests: %d, with %d/s rate%n", allRequests, REQUESTS_PER_SECOND);
+        System.out.printf("Requests with connect timeout [%d]: %d, as percentage: %d%n", CONNECT_TIMEOUT, connectTimeoutRequests, (connectTimeoutRequests * 100) / allRequests);
+        System.out.printf("Requests with request timeout [%d]: %d, as percentage: %d%n", REQUEST_TIMEOUT, requestTimeoutRequests, (requestTimeoutRequests * 100) / allRequests);
         System.out.println();
 
         var min = sortedResults.getFirst();
         var max = sortedResults.getLast();
 
         var mean = sortedResults.stream().mapToLong(Long::longValue).average().getAsDouble();
-        var percentile10 = percentile(sortedResults, 10);
-        var percentile25 = percentile(sortedResults, 25);
         var percentile50 = percentile(sortedResults, 50);
         var percentile75 = percentile(sortedResults, 75);
         var percentile90 = percentile(sortedResults, 90);
         var percentile95 = percentile(sortedResults, 95);
         var percentile99 = percentile(sortedResults, 99);
-        var percentile999 = percentile(sortedResults, 99.9);
 
         System.out.println("Min: " + formattedSeconds(min));
         System.out.println("Max: " + formattedSeconds(max));
         System.out.println("Mean: " + formattedSeconds(mean));
         System.out.println();
-        System.out.println("Percentile 10: " + formattedSeconds(percentile10));
-        System.out.println("Percentile 25: " + formattedSeconds(percentile25));
         System.out.println("Percentile 50 (Median): " + formattedSeconds(percentile50));
         System.out.println("Percentile 75: " + formattedSeconds(percentile75));
         System.out.println("Percentile 90: " + formattedSeconds(percentile90));
         System.out.println("Percentile 95: " + formattedSeconds(percentile95));
         System.out.println("Percentile 99: " + formattedSeconds(percentile99));
-        System.out.println("Percentile 999: " + formattedSeconds(percentile999));
     }
 
     static String formattedSeconds(double milliseconds) {
@@ -368,8 +255,8 @@ public class LoadTest {
 
     static void printEndpointStats(String endpointId, EndpointStats endpointStats, int allRequests) {
         System.out.println(endpointId);
-        System.out.println("Requests: %d, which is %s of all requests".formatted(endpointStats.requests.get(),
-            formattedPercentage(endpointStats.requests.get(), allRequests)));
+        System.out.printf("Requests: %d, which is %s of all requests%n", endpointStats.requests.get(),
+            formattedPercentage(endpointStats.requests.get(), allRequests));
         System.out.println("Connect timeouts: " + endpointStats.connectTimeoutRequests);
         System.out.println("Request timeouts: " + endpointStats.requestTimeoutRequests);
         System.out.println("Requests by status: " + endpointStats.requestsByStatus);
@@ -379,47 +266,15 @@ public class LoadTest {
         return Math.round(number * 100.0 / total) + "%";
     }
 
-
-    enum TestProfile {
-        LOW_LOAD,
-        BETWEEN_LOW_AND_AVERAGE_LONG_LOAD,
-        AVERAGE_LOAD, AVERAGE_LONG_LOAD,
-        BETWEEN_AVERAGE_AND_HIGH_LONG_LOAD,
-        HIGH_LOAD, HIGH_LONG_LOAD,
-        BETWEEN_HIGH_AND_VERY_HIGH_LONG_LOAD,
-        VERY_HIGH_LOAD, VERY_HIGH_LONG_LOAD
-    }
-
-    record TestProfileParams(int requests, int requestsPerSecond, int maxConcurrency) {
-        TestProfileParams(int requests, int requestsPerSecond) {
-            this(requests, requestsPerSecond, 10_000);
-        }
-
-        static TestProfileParams ofRateFor15Seconds(int requestsPerSecond) {
-            return new TestProfileParams(requestsPerSecond * 15, requestsPerSecond);
-        }
-
-        static TestProfileParams ofRateFor10Minutes(int requestsPerSecond) {
-            return new TestProfileParams(requestsPerSecond * 600, requestsPerSecond);
-        }
-    }
-
     record EndpointResult(String id, long time) {
     }
 
-    record Endpoint(String id, String method, Supplier<EndpointInstance> instanceSupplier) {
-
-        static Endpoint oneInstance(String id, String method, EndpointInstance instance) {
-            return new Endpoint(id, method, () -> instance);
+    record Endpoint(String method, String path) {
+        String id() {
+            return method + ":" + path;
         }
     }
 
-    record EndpointInstance(String url, String body) {
-
-        static EndpointInstance withoutBody(String url) {
-            return new EndpointInstance(url, null);
-        }
-    }
 
     record EndpointStats(AtomicInteger requests,
                          AtomicInteger connectTimeoutRequests,
