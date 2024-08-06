@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: simple-web-analytics
+  threads:
+    virtual:
+      enabled: true
