@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <h1>Simple Web Analytics</h1>
+    <script>
+        // function getOS() {
+        //     try {
+        //         const ua = navigator.userAgent;
+
+        //     }
+        // }
+
+        function osVersion(os) {
+            let version;
+            let versionWithTrush = navigator.userAgent.split(os)[1];
+            if (versionWithTrush) {
+                version = versionWithTrush.substr(0, 30);
+            }
+            return version;
+        }
+
+        console.log("Some JavaScript...");
+        console.log("User agent...", navigator.userAgent);
+        console.log("Navigator...", navigator);
+
+
+    </script>
+</body>
+
+</html>
