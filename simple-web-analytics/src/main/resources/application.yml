@@ -1,6 +1,18 @@
 spring:
   application:
     name: simple-web-analytics
+  datasource:
+    url: "${DB_URL:jdbc:postgresql://localhost:5432/analytics}"
+    username: "${DB_USERNAME:analytics}"
+    password: "${DB_PASSWORD:analytics}"
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 5
   threads:
     virtual:
       enabled: true
+
+analytics-events:
+  batch-size: 250
+  check-batch-delay: 1000
+

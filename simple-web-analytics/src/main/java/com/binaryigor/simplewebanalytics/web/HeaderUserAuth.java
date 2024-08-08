@@ -1,5 +1,6 @@
-package com.binaryigor.simplewebanalytics;
+package com.binaryigor.simplewebanalytics.web;
 
+import com.binaryigor.simplewebanalytics.UserAuth;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

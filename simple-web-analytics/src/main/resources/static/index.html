@@ -1,30 +1,39 @@
 <!DOCTYPE html>
 <html>
 
+<head>
+    <style>
+    </style>
+</head>
+
 <body>
     <h1>Simple Web Analytics</h1>
-    <script>
-        // function getOS() {
-        //     try {
-        //         const ua = navigator.userAgent;
+    <div style="margin-top: 8px; margin-bottom: 16px">
+        <p>Simple page to showcase Simple, yet flexible and scalable, Web Analytics solution.</p>
+        <p>See network tab for details - view (after 5 seconds being on the page) and clicks are sent.</p>
+    </div>
+    <button id="button-a" style="padding: 4px 16px;">Button A</button>
+    <button id="button-b" style="padding: 4px 16px;">Button B</button>
+    <script type="module">
+        import * as Analytics from "./analytics.js";
 
-        //     }
-        // }
+        const TARGET_URL = "http://localhost:8080/analytics/events";
+        const VIEW_EVENT = "view";
+        const VIEW_EVENT_DELAY = 5_000;
+        const BUTTON_CLICK_EVENT = "button-click";
 
-        function osVersion(os) {
-            let version;
-            let versionWithTrush = navigator.userAgent.split(os)[1];
-            if (versionWithTrush) {
-                version = versionWithTrush.substr(0, 30);
-            }
-            return version;
-        }
 
         console.log("Some JavaScript...");
-        console.log("User agent...", navigator.userAgent);
-        console.log("Navigator...", navigator);
+        console.log("Sending view event...");
 
+        setTimeout(() => Analytics.sendEvent(TARGET_URL, VIEW_EVENT), VIEW_EVENT_DELAY);
 
+        document.getElementById("button-a").onclick = () => {
+            Analytics.sendEvent(TARGET_URL, BUTTON_CLICK_EVENT, { buttonId: "button-a" });
+        };
+        document.getElementById("button-b").onclick = () => {
+            Analytics.sendEvent(TARGET_URL, BUTTON_CLICK_EVENT, { buttonId: "button-b" });
+        };
     </script>
 </body>
 

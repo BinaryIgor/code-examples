@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.3.2</version>
     </parent>
 
     <groupId>com.binaryigor</groupId>
@@ -22,7 +22,6 @@
         <postresql.driver.version>42.7.3</postresql.driver.version>
         <testcontainers.version>1.19.7</testcontainers.version>
     </properties>
-
 
     <dependencies>
         <dependency>

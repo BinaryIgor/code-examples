@@ -1,0 +1,3 @@
+analytics-events:
+  batch-size: 2
+  check-batch-delay: 100

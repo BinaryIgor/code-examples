@@ -1,4 +1,4 @@
-package com.binaryigor.simplewebanalytics;
+package com.binaryigor.simplewebanalytics.core;
 
 import java.time.Instant;
 import java.util.UUID;
