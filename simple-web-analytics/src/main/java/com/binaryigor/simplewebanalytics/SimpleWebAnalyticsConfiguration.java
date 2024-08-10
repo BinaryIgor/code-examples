@@ -47,8 +47,10 @@ public class SimpleWebAnalyticsConfiguration implements WebMvcConfigurer {
                                                 ObjectMapper objectMapper,
                                                 @Value("${analytics-events.batch-size}")
                                                 int batchSize,
+                                                @Value("${analytics-events.max-in-memory-size}")
+                                                int maxInMemorySize,
                                                 @Value("${analytics-events.check-batch-delay}")
                                                 int checkBatchDelay) {
-        return new AnalyticsEventHandler(analyticsEventRepository, objectMapper, batchSize, checkBatchDelay);
+        return new AnalyticsEventHandler(analyticsEventRepository, objectMapper, batchSize, maxInMemorySize, checkBatchDelay);
     }
 }

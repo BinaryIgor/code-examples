@@ -34,13 +34,13 @@ public class SqlAnalyticsEventRepository implements AnalyticsEventRepository {
 
         var batchInsert = """
             INSERT INTO analytics_event
-            (timestamp, ip, device_id, user_id, url, browser, platform, device, type, data)""";
+            (timestamp, ip, device_id, user_id, url, browser, os, device, type, data)""";
 
         var argPlaceholders = events.stream().map(e -> "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
             .collect(Collectors.joining(",\n"));
         var argValues = events.stream()
             .flatMap(e -> Stream.of(Timestamp.from(e.timestamp()), e.ip(), e.deviceId(), e.userId(),
-                e.url(), e.browser(), e.platform(), e.device(), e.type(), toJsonb(e.data())))
+                e.url(), e.browser(), e.os(), e.device(), e.type(), toJsonb(e.data())))
             .toList();
 
         jdbcClient.sql(batchInsert + " VALUES " + argPlaceholders)
@@ -78,7 +78,7 @@ public class SqlAnalyticsEventRepository implements AnalyticsEventRepository {
                 row.getObject("user_id", UUID.class),
                 row.getString("url"),
                 row.getString("browser"),
-                row.getString("platform"),
+                row.getString("os"),
                 row.getString("device"),
                 row.getString("type"),
                 fromJsonb(row.getObject("data", PGobject.class))

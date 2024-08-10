@@ -12,7 +12,7 @@ CREATE TABLE analytics_event (
     user_id UUID,
     url TEXT NOT NULL,
     browser TEXT NOT NULL,
-    platform TEXT NOT NULL,
+    os TEXT NOT NULL,
     device TEXT NOT NULL,
     type TEXT NOT NULL,
     data JSONB

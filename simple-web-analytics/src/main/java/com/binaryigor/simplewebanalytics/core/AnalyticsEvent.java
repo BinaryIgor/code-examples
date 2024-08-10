@@ -9,7 +9,7 @@ public record AnalyticsEvent(Instant timestamp,
                              UUID userId,
                              String url,
                              String browser,
-                             String platform,
+                             String os,
                              String device,
                              String type,
                              Object data) {

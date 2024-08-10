@@ -12,7 +12,11 @@ spring:
     virtual:
       enabled: true
 
+server:
+  port: 8080
+
 analytics-events:
   batch-size: 250
+  max-in-memory-size: 2000
   check-batch-delay: 1000
 

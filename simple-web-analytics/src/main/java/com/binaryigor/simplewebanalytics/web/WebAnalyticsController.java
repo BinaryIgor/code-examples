@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.util.Optional;
 
 @RestController
@@ -31,13 +32,16 @@ public class WebAnalyticsController {
     @PostMapping("/events")
     void addEvent(// use this header, if you host it behind reverse proxy of some sorts
                   @RequestHeader(required = false, name = "real-ip") String realIp,
+                  // for test data only, to generate something more realistic!
+                  @RequestHeader(required = false, name = "timestamp") Instant timestamp,
                   @RequestBody AnalyticsEventRequest eventRequest,
                   HttpServletRequest httpRequest) {
         try {
             var clientIp = Optional.ofNullable(realIp)
                 .orElseGet(httpRequest::getRemoteAddr);
 
-            var event = eventRequest.toEvent(clock.instant(), clientIp, userAuth.currentUserId().orElse(null));
+            var eventTimestamp = timestamp == null ? clock.instant() : timestamp;
+            var event = eventRequest.toEvent(eventTimestamp, clientIp, userAuth.currentUserId().orElse(null));
 
             analyticsEventHandler.handle(event);
         } catch (Exception e) {

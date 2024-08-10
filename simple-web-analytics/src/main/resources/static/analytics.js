@@ -1,8 +1,8 @@
-const ANDROID_OS_REGEX = /(android)(.*)/i;
-const IOS_OS_REGEX = /(ipad|iphone|ipod)(.*)/i;
-const WINDOWS_OS_REGEX = /(windows)(.*)/i;
-const MAC_OS_REGEX = /(mac)(.*)/i;
-const LINUX_OS_REGEX = /(linux)(.*)/i;
+const ANDROID_OS_REGEX = /(android)/i;
+const IOS_OS_REGEX = /(ipad|iphone|ipod)/i;
+const WINDOWS_OS_REGEX = /(windows)/i;
+const MAC_OS_REGEX = /(mac)/i;
+const LINUX_OS_REGEX = /(linux)/i;
 
 const ANDROID_OS = "Android";
 const IOS_OS = "iOS";
@@ -19,11 +19,11 @@ const REGEXES_AND_OSES = [
     [LINUX_OS_REGEX, LINUX_OS]
 ];
 
-const OPERA_BROWSER_REGEX = /(opr|opera)(.*)/i
-const EDGE_BROWSER_REGEX = /(edg|edge)(.*)/i;
-const FIREFOX_BROWSER_REGEX = /(firefox|fxios)(.*)/i;
-const SAFARI_BROWSER_REGEX = /(safari)(.*)/i;
-const CHROME_BROWSER_REGEX = /(chrome|chromium)(.*)/i;
+const OPERA_BROWSER_REGEX = /(opr|opera)/i
+const EDGE_BROWSER_REGEX = /(edg|edge)/i;
+const FIREFOX_BROWSER_REGEX = /(firefox|fxios)/i;
+const SAFARI_BROWSER_REGEX = /(safari)/i;
+const CHROME_BROWSER_REGEX = /(chrome|chromium)/i;
 
 const SAFARI_BROWSER = "Safari";
 const OPERA_BROWSER = "Opera";
@@ -53,19 +53,19 @@ const MOBILE_DEVICE_THRESHOLD = 500;
 
 const DEVICE_ID_KEY = "device-id";
 
-let sessionPlatform = null;
+let sessionOS = null;
 let sessionBrowser = null;
 
-export function getPlatform() {
+export function getOS() {
     try {
-        if (sessionPlatform) {
-            return sessionPlatform;
+        if (sessionOS) {
+            return sessionOS;
         }
 
         for (const [regex, os] of REGEXES_AND_OSES) {
-            sessionPlatform = tryToMatchPlatform(regex, os);
-            if (sessionPlatform) {
-                return sessionPlatform;
+            sessionOS = tryToMatchOS(regex, os);
+            if (sessionOS) {
+                return sessionOS;
             }
         }
 
@@ -75,24 +75,12 @@ export function getPlatform() {
     }
 }
 
-function tryToMatchPlatform(regex, os) {
+function tryToMatchOS(regex, os) {
     const match = navigator.userAgent.match(regex);
     if (match) {
-        const osVersion = getOsVersion(match[2]);
-        if (osVersion) {
-            return `${os} ${osVersion}`;
-        }
         return os;
     }
     return undefined;
-}
-
-function getOsVersion(versionToParse) {
-    try {
-        return versionToParse.split(")")[0].trim();
-    } catch (e) {
-        return undefined;
-    }
 }
 
 export function getBrowser() {
@@ -117,21 +105,9 @@ export function getBrowser() {
 function tryToMatchBrowser(regex, browser) {
     const match = navigator.userAgent.match(regex);
     if (match) {
-        const browserVersion = getBrowserVersion(match[2]);
-        if (browserVersion) {
-            return `${browser} ${browserVersion}`;
-        }
         return browser;
     }
     return undefined;
-}
-
-function getBrowserVersion(versionToParse) {
-    try {
-        return versionToParse.replace("/", "").split(" ")[0];
-    } catch (e) {
-        return undefined;
-    }
 }
 
 export function getDevice() {
@@ -167,10 +143,11 @@ export function getDeviceId() {
 export async function sendEvent(targetUrl, type, data = null) {
     try {
         const event = JSON.stringify({
-            url: document.location.href,
+            url: document.location.href.toString(),
             browser: getBrowser(),
-            platform: getPlatform(),
+            os: getOS(),
             device: getDevice(),
+            deviceId: getDeviceId(),
             type: type,
             data: data
         });
@@ -182,8 +159,7 @@ export async function sendEvent(targetUrl, type, data = null) {
                 method: "POST",
                 body: event,
                 headers: {
-                    "content-type": "application/json",
-                    "device-id": getDeviceId()
+                    "content-type": "application/json"
                 }
             });
 

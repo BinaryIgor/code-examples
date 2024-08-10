@@ -8,13 +8,13 @@ import java.util.UUID;
 public record AnalyticsEventRequest(UUID deviceId,
                                     String url,
                                     String browser,
-                                    String platform,
+                                    String os,
                                     String device,
                                     String type,
                                     Object data) {
 
     public AnalyticsEvent toEvent(Instant timestamp, String clientIp, UUID userId) {
         return new AnalyticsEvent(timestamp, clientIp, deviceId, userId,
-            url, browser, platform, device, type, data);
+            url, browser, os, device, type, data);
     }
 }
