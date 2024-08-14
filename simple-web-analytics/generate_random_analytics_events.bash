@@ -1,4 +1,13 @@
 #!/bin/bash
-set -euo pipefail
+container='analytics-events-generator'
 
-curl -X POST "http://localhost:8080/internal/send-random-analytics-events?size=100000&concurrency=500"
+docker build . -t ${container}
+
+docker stop ${container}
+docker rm ${container}
+
+docker run --network host \
+  -e "SPRING_PROFILES_ACTIVE=events-generator" \
+  -e "EVENTS_SIZE=100000" \
+  -e "EVENTS_CONCURRENCY=1000" \
+  --memory "1000M" --cpus "4" --name ${container} ${container}

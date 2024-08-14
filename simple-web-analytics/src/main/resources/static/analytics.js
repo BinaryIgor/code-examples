@@ -49,7 +49,7 @@ const MOBILE_DEVICE = "Mobile";
 const UNKNOWN_DEVICE = "Unknown";
 
 const DESKTOP_DEVICE_WIDTH_THRESHOLD = 1200;
-const MOBILE_DEVICE_THRESHOLD = 500;
+const MOBILE_DEVICE_SIZE_THRESHOLD = 500;
 
 const DEVICE_ID_KEY = "device-id";
 
@@ -114,8 +114,8 @@ export function getDevice() {
     const portraitMode = window.innerWidth < window.innerHeight;
     const landscapeMode = window.innerWidth >= window.innerHeight;
 
-    if ((portraitMode && window.innerWidth < MOBILE_DEVICE_THRESHOLD) ||
-        (landscapeMode && window.innerHeight < MOBILE_DEVICE_THRESHOLD)) {
+    if ((portraitMode && window.innerWidth < MOBILE_DEVICE_SIZE_THRESHOLD) ||
+        (landscapeMode && window.innerHeight < MOBILE_DEVICE_SIZE_THRESHOLD)) {
         return MOBILE_DEVICE;
     }
 
@@ -163,7 +163,7 @@ export async function sendEvent(targetUrl, type, data = null) {
                 }
             });
 
-        // Sending analytical events is not critical, so we don't want to crush application because of it
+        // Sending analytical events is not critical, we don't want to crash application because of it
         if (!response.ok) {
             console.error(`Failed to send ${type} event to ${targetUrl} url:`, data);
         }

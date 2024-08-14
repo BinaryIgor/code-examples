@@ -45,7 +45,7 @@ public class WebAnalyticsController {
 
             analyticsEventHandler.handle(event);
         } catch (Exception e) {
-            // this endpoint must be public, and we don't want to show failures to unknown clients
+            // this endpoint must be public and we don't want to show failures to possibly unknown clients
             logger.error("Problem while handling analytics event: ", e);
         }
     }

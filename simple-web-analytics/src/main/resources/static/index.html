@@ -2,15 +2,13 @@
 <html>
 
 <head>
-    <style>
-    </style>
 </head>
 
 <body>
-    <h1>Simple Web Analytics</h1>
+    <h1>Simple yet Scalable Web Analytics</h1>
     <div style="margin-top: 8px; margin-bottom: 16px">
-        <p>Simple page to showcase Simple, yet flexible and scalable, Web Analytics solution.</p>
-        <p>See network tab for details - view (after 5 seconds being on the page) and clicks are sent.</p>
+        <p>Single page to showcase Simple yet Scalable Web Analytics solution.</p>
+        <p>See console logs and network tab for details - view (5 seconds after being on the page) and clicks are sent.</p>
     </div>
     <button id="button-a" style="padding: 4px 16px;">Button A</button>
     <button id="button-b" style="padding: 4px 16px;">Button B</button>
@@ -21,7 +19,6 @@
         const VIEW_EVENT = "view";
         const VIEW_EVENT_DELAY = 5_000;
         const BUTTON_CLICK_EVENT = "button-click";
-
 
         console.log("Some JavaScript...");
         console.log("Sending view event...");

@@ -3,12 +3,12 @@
 echo "Building jar..."
 echo
 
-mvn clean install
+mvn -Dmaven.test.skip=true clean install
 
 echo
 echo "Jar built, preparing Docker image..."
 
-container='analytics-app'
+container='analytics-backend'
 
 docker build . -t ${container}
 

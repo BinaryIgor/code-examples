@@ -1,0 +1,6 @@
+spring:
+  main:
+    web-application-type: none
+
+events-generator:
+  server-url: "http://localhost:8080/analytics/events"
