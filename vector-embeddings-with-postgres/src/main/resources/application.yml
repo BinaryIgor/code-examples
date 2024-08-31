@@ -1,0 +1,17 @@
+spring:
+  application: vector-embeddings-with-postgres
+  datasource:
+    url: "${DB_URL:jdbc:postgresql://localhost:5432/vembeddings}"
+    username: "${DB_USERNAME:vembeddings}"
+    password: "${DB_PASSWORD:vembeddings}"
+  threads:
+    virtual:
+      enabled: true
+  sql:
+    init.mode: always
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS data (
+    id UUID PRIMARY KEY,
+    type TEXT NOT NULL,
+    data JSONB NULL NULL
+);
