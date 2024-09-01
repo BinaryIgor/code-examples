@@ -1,5 +1,9 @@
 package com.binaryigor.vembeddingswithpostgres;
 
+import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsRepository;
+import com.binaryigor.vembeddingswithpostgres.generator.RandomVectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +11,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @ActiveProfiles(value = {"integration"})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    classes = IntegrationTest.TestConfig.class)
 @AutoConfigureWireMock(port = 0)
 public abstract class IntegrationTest {
 
@@ -29,6 +35,9 @@ public abstract class IntegrationTest {
     }
 
     @Autowired
+    protected TestVectorEmbeddingsDataSource testVectorEmbeddingsDataSource;
+
+    @Autowired
     protected TestRestTemplate restTemplate;
 
     @Autowired
@@ -39,9 +48,13 @@ public abstract class IntegrationTest {
 
     @BeforeEach
     void setup() {
-        jdbcClient.sql("TRUNCATE data").update();
+        jdbcClient.sql("TRUNCATE vector_embedding_data").update();
         VectorEmbeddingsRepository.TABLES_BY_MODELS.values()
             .forEach(t -> jdbcClient.sql("TRUNCATE %s".formatted(t)));
+    }
+
+    public void asyncEndpointDelay() {
+        delay(100);
     }
 
     public void delay(int millis) {
@@ -55,6 +68,14 @@ public abstract class IntegrationTest {
     @TestConfiguration
     static class TestConfig {
 
+        @Bean
+        TestVectorEmbeddingsDataSource testVectorEmbeddingsDataSource(VectorEmbeddingDataRepository dataRepository) {
+            return new TestVectorEmbeddingsDataSource(dataRepository);
+        }
 
+        @Bean
+        VectorEmbeddingsGenerator vectorEmbeddingsGenerator() {
+            return new RandomVectorEmbeddingsGenerator();
+        }
     }
 }

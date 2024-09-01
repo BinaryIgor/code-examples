@@ -1,4 +1,4 @@
-package com.binaryigor.vembeddingswithpostgres;
+package com.binaryigor.vembeddingswithpostgres.shared;
 
 import java.time.Duration;
 import java.time.Instant;

@@ -15,3 +15,14 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+data:
+  amazon-reviews:
+    batch-load-size: 100
+
+generators:
+  open-ai:
+    enabled: true
+    embeddings-url: "https://api.openai.com/v1/embeddings"
+    api-key: "${OPEN_AI_API_KEY}"
+

@@ -1,8 +1,11 @@
 package com.binaryigor.vembeddingswithpostgres;
 
+import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
+import com.binaryigor.vembeddingswithpostgres.embeddings.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -14,7 +17,12 @@ public class VectorEmbeddingsControllerTest extends IntegrationTest {
 
     @Test
     void generatesVectorEmbeddings() {
-        generateRandomVectorEmbeddings(100);
+        testVectorEmbeddingsDataSource.dataSource(List.of(
+            new VectorEmbeddingInputData("1", "some-data-1"),
+            new VectorEmbeddingInputData("2", "some-data-2")));
+
+        loadVectorEmbeddings();
+        generateVectorEmbeddings();
 
         var savedEmbedding = randomVectorEmbeddingFromDb();
 
@@ -24,12 +32,23 @@ public class VectorEmbeddingsControllerTest extends IntegrationTest {
             .hasSizeGreaterThan(1);
     }
 
-    private void generateRandomVectorEmbeddings(int size) {
-        var response = restTemplate.postForEntity("/vector-embeddings/generate-random?size=%s&model=%s".formatted(size, TESTED_MODEL),
-            null, Void.class);
-        Assertions.assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+    private void loadVectorEmbeddings() {
+        var response = restTemplate.postForEntity("/vector-embeddings/load-data",
+            new VectorEmbeddingsController.LoadDataRequest(testVectorEmbeddingsDataSource.dataType(), "dummy-path"), Void.class);
 
-        delay(250);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+
+        asyncEndpointDelay();
+    }
+
+    private void generateVectorEmbeddings() {
+        var response = restTemplate.postForEntity("/vector-embeddings/generate?size=%s&model=%s&dataType=%s"
+                .formatted(1000, TESTED_MODEL, testVectorEmbeddingsDataSource.dataType()),
+            null, Void.class);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+
+        asyncEndpointDelay();
     }
 
     private VectorEmbedding randomVectorEmbeddingFromDb() {

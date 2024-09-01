@@ -1,4 +1,4 @@
-package com.binaryigor.vembeddingswithpostgres;
+package com.binaryigor.vembeddingswithpostgres.embeddings;
 
 import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
@@ -33,9 +33,9 @@ public class VectorEmbeddingsRepository {
         TABLES_BY_MODELS.forEach((m, t) -> {
             jdbcClient.sql("""
                     CREATE TABLE IF NOT EXISTS %s (
-                        id UUID PRIMARY KEY,
+                        id TEXT PRIMARY KEY,
                         embedding VECTOR(%d) NOT NULL,
-                        embedding_input TEXT NOT NULL
+                        embedding_input TEXT
                     );
                     """.formatted(t, m.dimensions))
                 .update();
@@ -85,7 +85,7 @@ public class VectorEmbeddingsRepository {
     }
 
     private VectorEmbedding vectorEmbedding(ResultSet result) throws SQLException {
-        return new VectorEmbedding(result.getObject("id", UUID.class),
+        return new VectorEmbedding(result.getString("id"),
             embedding((PGobject) result.getObject("embedding")),
             result.getString("embedding_input"));
     }
@@ -110,7 +110,7 @@ public class VectorEmbeddingsRepository {
                 .formatted(tableOfModel(model)))
             .params(pgVector, pgVector, limit)
             .query((r, n) -> new VectorEmbeddingSearchResult(
-                r.getObject("id", UUID.class),
+                r.getString("id"),
                 r.getString("embedding_input"),
                 r.getFloat("distance")))
             .list();
