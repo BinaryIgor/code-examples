@@ -1,7 +1,8 @@
 package com.binaryigor.vembeddingswithpostgres.embeddings;
 
 public enum VectorEmbeddingModel {
-    OPEN_AI_TEXT_3_SMALL(1536, "text-embedding-3-small");
+    OPEN_AI_TEXT_3_SMALL(1536, "text-embedding-3-small"),
+    GEMINI_TEXT_004(768, "models/text-embedding-004");
 
     public final int dimensions;
     public final String apiName;
