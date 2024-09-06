@@ -11,15 +11,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class VectorEmbeddingsRepository {
+public class VectorEmbeddingRepository {
 
     public static final Map<VectorEmbeddingModel, String> TABLES_BY_MODELS = Map.of(
         VectorEmbeddingModel.OPEN_AI_TEXT_3_SMALL, tableOfModel(VectorEmbeddingModel.OPEN_AI_TEXT_3_SMALL)
     );
-    private final Logger logger = LoggerFactory.getLogger(VectorEmbeddingsRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(VectorEmbeddingRepository.class);
     private final JdbcClient jdbcClient;
 
-    public VectorEmbeddingsRepository(JdbcClient jdbcClient) {
+    public VectorEmbeddingRepository(JdbcClient jdbcClient) {
         this.jdbcClient = jdbcClient;
     }
 

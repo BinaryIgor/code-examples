@@ -2,8 +2,8 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.AmazonReviewsVectorEmbeddingsDataSource;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsRepository;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsService;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
 import com.binaryigor.vembeddingswithpostgres.generator.OpenAIVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,14 +38,14 @@ public class VectorEmbeddingsWithPostgresApp {
     }
 
     @Bean(initMethod = "initDb")
-    VectorEmbeddingsRepository vectorEmbeddingsRepository(JdbcClient jdbcClient) {
-        return new VectorEmbeddingsRepository(jdbcClient);
+    VectorEmbeddingRepository vectorEmbeddingsRepository(JdbcClient jdbcClient) {
+        return new VectorEmbeddingRepository(jdbcClient);
     }
 
     @Bean
-    VectorEmbeddingsService vectorEmbeddingsService(VectorEmbeddingsRepository repository,
-                                                    List<VectorEmbeddingsGenerator> generators) {
-        return new VectorEmbeddingsService(repository, generators);
+    VectorEmbeddingService vectorEmbeddingsService(VectorEmbeddingRepository repository,
+                                                   List<VectorEmbeddingsGenerator> generators) {
+        return new VectorEmbeddingService(repository, generators);
     }
 
     @ConditionalOnProperty(value = "generators.open-ai.enabled", havingValue = "true")

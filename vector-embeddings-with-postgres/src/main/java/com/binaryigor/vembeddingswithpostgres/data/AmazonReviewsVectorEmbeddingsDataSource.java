@@ -81,7 +81,7 @@ public class AmazonReviewsVectorEmbeddingsDataSource implements VectorEmbeddings
     public record ReviewRecord(String id, String userProfile, String score, String time, String summary, String text) {
 
         public String embeddingData() {
-            return score + "\n" + summary + "\n" + text;
+            return summary + "\n\n" + text + "\n\n" + userProfile;
         }
     }
 }

@@ -13,7 +13,7 @@ public class VectorEmbeddingsControllerTest extends IntegrationTest {
 
     private static final VectorEmbeddingModel TESTED_MODEL = VectorEmbeddingModel.OPEN_AI_TEXT_3_SMALL;
     @Autowired
-    private VectorEmbeddingsRepository vectorEmbeddingsRepository;
+    private VectorEmbeddingRepository vectorEmbeddingsRepository;
 
     @Test
     void generatesVectorEmbeddings() {
@@ -57,7 +57,7 @@ public class VectorEmbeddingsControllerTest extends IntegrationTest {
 
     private List<VectorEmbeddingSearchResult> rawSearchVectorEmbeddings(List<Float> input) {
         var response = restTemplate.postForEntity("/vector-embeddings/raw-search",
-            new VectorEmbeddingsController.RawSearchRequest(input, TESTED_MODEL), VectorEmbeddingsSearchResult.class);
+            new VectorEmbeddingsController.RawSearchRequest(input, TESTED_MODEL, null), VectorEmbeddingsSearchResult.class);
 
         Assertions.assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 

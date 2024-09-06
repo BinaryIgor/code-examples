@@ -1,10 +1,13 @@
 package com.binaryigor.vembeddingswithpostgres;
 
+import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingData;
+import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingsDataSource;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingModel;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsSearchResult;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsService;
 import com.binaryigor.vembeddingswithpostgres.shared.Extensions;
+import com.binaryigor.vembeddingswithpostgres.shared.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,12 +22,15 @@ public class VectorEmbeddingsController {
 
     private static final Logger logger = LoggerFactory.getLogger(VectorEmbeddingsController.class);
     private final List<VectorEmbeddingsDataSource> dataSources;
-    private final VectorEmbeddingsService service;
+    private final VectorEmbeddingService embeddingService;
+    private final VectorEmbeddingDataRepository embeddingDataRepository;
 
     public VectorEmbeddingsController(List<VectorEmbeddingsDataSource> dataSources,
-                                      VectorEmbeddingsService service) {
+                                      VectorEmbeddingService embeddingService,
+                                      VectorEmbeddingDataRepository embeddingDataRepository) {
         this.dataSources = dataSources;
-        this.service = service;
+        this.embeddingService = embeddingService;
+        this.embeddingDataRepository = embeddingDataRepository;
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -56,7 +62,7 @@ public class VectorEmbeddingsController {
         var dataSource = embeddingsDataSource(dataType);
         Thread.startVirtualThread(() -> {
             try {
-                service.generateAndSaveEmbeddings(model, dataSource.get(), batchSize, skip);
+                embeddingService.generateAndSaveEmbeddings(model, dataSource.get(), batchSize, skip);
             } catch (Exception e) {
                 logger.error("Problem while generating vector embeddings for {} data type, using {} model:",
                     dataType, model, e);
@@ -66,29 +72,41 @@ public class VectorEmbeddingsController {
 
     @PostMapping("/search")
     VectorEmbeddingsSearchResult search(@RequestBody SearchRequest request) {
-        var result = Extensions.timed(() -> service.search(request.model, request.input, 5));
+        var result = Extensions.timed(() -> embeddingService.search(request.model, request.input, request.limit));
         return new VectorEmbeddingsSearchResult(result.time(), result.result());
     }
 
     @PostMapping("/raw-search")
     VectorEmbeddingsSearchResult rawSearch(@RequestBody RawSearchRequest request) {
-        var result = Extensions.timed(() -> service.rawSearch(request.model, request.input, 5));
+        var result = Extensions.timed(() -> embeddingService.rawSearch(request.model, request.input, request.limit));
         return new VectorEmbeddingsSearchResult(result.time(), result.result());
+    }
+
+    @GetMapping("/data/{id}")
+    VectorEmbeddingData embeddingData(@PathVariable("id") String id) {
+        return embeddingDataRepository.ofId(id, Object.class)
+            .orElseThrow(() -> ResourceNotFoundException.ofType("VectorEmbeddingData", id));
     }
 
     @PostMapping("/similar-to-embedding-search")
     VectorEmbeddingsSearchResult similarToEmbeddingSearch(@RequestBody SimilarToVectorSearchRequest request) {
-        var result = Extensions.timed(() -> service.similarToEmbeddingSearch(request.model, request.embeddingId, 5));
+        var result = Extensions.timed(() -> embeddingService.similarToEmbeddingSearch(request.model, request.embeddingId, 10));
         return new VectorEmbeddingsSearchResult(result.time(), result.result());
     }
 
     public record LoadDataRequest(String type, String path) {
     }
 
-    public record SearchRequest(String input, VectorEmbeddingModel model) {
+    public record SearchRequest(String input, VectorEmbeddingModel model, Integer limit) {
+        public SearchRequest {
+            limit = limit == null ? 5 : limit;
+        }
     }
 
-    public record RawSearchRequest(List<Float> input, VectorEmbeddingModel model) {
+    public record RawSearchRequest(List<Float> input, VectorEmbeddingModel model, Integer limit) {
+        public RawSearchRequest {
+            limit = limit == null ? 5 : limit;
+        }
     }
 
     public record SimilarToVectorSearchRequest(UUID embeddingId, VectorEmbeddingModel model) {

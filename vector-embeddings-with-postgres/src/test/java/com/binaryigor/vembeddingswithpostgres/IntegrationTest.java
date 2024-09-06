@@ -1,7 +1,7 @@
 package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsRepository;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
 import com.binaryigor.vembeddingswithpostgres.generator.RandomVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +49,7 @@ public abstract class IntegrationTest {
     @BeforeEach
     void setup() {
         jdbcClient.sql("TRUNCATE vector_embedding_data").update();
-        VectorEmbeddingsRepository.TABLES_BY_MODELS.values()
+        VectorEmbeddingRepository.TABLES_BY_MODELS.values()
             .forEach(t -> jdbcClient.sql("TRUNCATE %s".formatted(t)));
     }
 

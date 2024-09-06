@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class VectorEmbeddingsService {
+public class VectorEmbeddingService {
 
-    private static final Logger logger = LoggerFactory.getLogger(VectorEmbeddingsService.class);
-    private final VectorEmbeddingsRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(VectorEmbeddingService.class);
+    private final VectorEmbeddingRepository repository;
     private final List<VectorEmbeddingsGenerator> generators;
 
-    public VectorEmbeddingsService(VectorEmbeddingsRepository repository,
-                                   List<VectorEmbeddingsGenerator> generators) {
+    public VectorEmbeddingService(VectorEmbeddingRepository repository,
+                                  List<VectorEmbeddingsGenerator> generators) {
         this.repository = repository;
         this.generators = generators;
     }

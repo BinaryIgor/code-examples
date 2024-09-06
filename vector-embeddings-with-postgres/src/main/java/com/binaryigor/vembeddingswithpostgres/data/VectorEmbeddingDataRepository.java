@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.postgresql.util.PGobject;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,9 +65,14 @@ public class VectorEmbeddingDataRepository {
     public <T> Stream<VectorEmbeddingData> allOfType(String type, Class<T> dataType) {
         return jdbcClient.sql("SELECT id, type, data FROM vector_embedding_data WHERE type = ?")
             .param(type)
-            .query((r, n) -> new VectorEmbeddingData(r.getString("id"), type,
-                data((PGobject) r.getObject("data"), dataType)))
+            .query((r, n) -> vectorEmbeddingData(r, dataType))
             .stream();
+    }
+
+    private <T> VectorEmbeddingData vectorEmbeddingData(ResultSet result, Class<T> dataType) throws SQLException {
+        return new VectorEmbeddingData(result.getString("id"),
+            result.getString("type"),
+            data((PGobject) result.getObject("data"), dataType));
     }
 
     private <T> T data(PGobject jsonb, Class<T> dataType) {
@@ -73,5 +81,12 @@ public class VectorEmbeddingDataRepository {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public <T> Optional<VectorEmbeddingData> ofId(String id, Class<T> dataType) {
+        return jdbcClient.sql("SELECT id, type, data FROM vector_embedding_data WHERE id = ?")
+            .param(id)
+            .query((r, n) -> vectorEmbeddingData(r, dataType))
+            .optional();
     }
 }
