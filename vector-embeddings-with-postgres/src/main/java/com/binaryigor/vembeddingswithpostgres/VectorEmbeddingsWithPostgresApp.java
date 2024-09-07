@@ -4,6 +4,7 @@ import com.binaryigor.vembeddingswithpostgres.data.AmazonReviewsVectorEmbeddings
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
+import com.binaryigor.vembeddingswithpostgres.generator.GoogleVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generator.OpenAIVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,10 +53,19 @@ public class VectorEmbeddingsWithPostgresApp {
     @Bean
     VectorEmbeddingsGenerator openAIEmbeddingsGenerator(ObjectMapper objectMapper,
                                                         @Value("${generators.open-ai.embeddings-url}")
-                                                        String openAIEmbeddingsUrl,
+                                                        String embeddingsUrl,
                                                         @Value("${generators.open-ai.api-key}")
-                                                        String openAIApiKey) {
-        return new OpenAIVectorEmbeddingsGenerator(HttpClient.newHttpClient(), objectMapper,
-            openAIEmbeddingsUrl, openAIApiKey);
+                                                        String apiKey) {
+        return new OpenAIVectorEmbeddingsGenerator(HttpClient.newHttpClient(), objectMapper, embeddingsUrl, apiKey);
+    }
+
+    @ConditionalOnProperty(value = "generators.google.enabled", havingValue = "true")
+    @Bean
+    VectorEmbeddingsGenerator googleEmbeddingsGenerator(ObjectMapper objectMapper,
+                                                        @Value("${generators.google.base-url}")
+                                                        String baseUrl,
+                                                        @Value("${generators.google.api-key}")
+                                                        String apiKey) {
+        return new GoogleVectorEmbeddingsGenerator(HttpClient.newHttpClient(), objectMapper, baseUrl, apiKey);
     }
 }

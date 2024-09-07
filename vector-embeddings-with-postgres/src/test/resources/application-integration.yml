@@ -3,3 +3,5 @@ wiremock.reset-mappings-after-each-test: true
 generators:
   open-ai:
     enabled: false
+  google:
+    enabled: false

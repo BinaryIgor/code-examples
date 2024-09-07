@@ -8,14 +8,14 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class VectorEmbeddingRepository {
 
-    public static final Map<VectorEmbeddingModel, String> TABLES_BY_MODELS = Map.of(
-        VectorEmbeddingModel.OPEN_AI_TEXT_3_SMALL, tableOfModel(VectorEmbeddingModel.OPEN_AI_TEXT_3_SMALL)
-    );
+    public static final Map<VectorEmbeddingModel, String> TABLES_BY_MODELS = Arrays.stream(VectorEmbeddingModel.values())
+        .collect(Collectors.toMap(Function.identity(), VectorEmbeddingRepository::tableOfModel));
     private final Logger logger = LoggerFactory.getLogger(VectorEmbeddingRepository.class);
     private final JdbcClient jdbcClient;
 

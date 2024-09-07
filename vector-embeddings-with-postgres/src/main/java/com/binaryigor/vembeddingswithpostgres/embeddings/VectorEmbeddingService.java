@@ -26,7 +26,8 @@ public class VectorEmbeddingService {
     public void generateAndSaveEmbeddings(VectorEmbeddingModel model,
                                           SizedStream<VectorEmbeddingInputData> data,
                                           int batchSize,
-                                          int skip) {
+                                          int skip,
+                                          int rateLimitDelay) {
         logger.info("About to generate {} vector embeddings, using {} model and skipping first {} items",
             data.size(), model, skip);
 
@@ -48,7 +49,7 @@ public class VectorEmbeddingService {
                     var generatedEmbeddings = generateVectorEmbeddings(model, generateEmbeddingInputs);
                     repository.save(model, generatedEmbeddings);
                     generateEmbeddingInputs.clear();
-                    rateLimitDelay();
+                    rateLimitDelay(rateLimitDelay);
                 }
             });
         }

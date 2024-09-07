@@ -57,12 +57,16 @@ public class VectorEmbeddingsController {
     @PostMapping("/generate")
     void generateEmbeddings(@RequestParam("model") VectorEmbeddingModel model,
                             @RequestParam("dataType") String dataType,
-                            @RequestParam(name = "batchSize", required = false, defaultValue = "500") int batchSize,
-                            @RequestParam(name = "skip", required = false, defaultValue = "0") int skip) {
+                            @RequestParam(name = "batchSize", required = false, defaultValue = "500")
+                            int batchSize,
+                            @RequestParam(name = "skip", required = false, defaultValue = "0")
+                            int skip,
+                            @RequestParam(name = "rateLimitDelay", required = false, defaultValue = "5000")
+                            int rateLimitDelay) {
         var dataSource = embeddingsDataSource(dataType);
         Thread.startVirtualThread(() -> {
             try {
-                embeddingService.generateAndSaveEmbeddings(model, dataSource.get(), batchSize, skip);
+                embeddingService.generateAndSaveEmbeddings(model, dataSource.get(), batchSize, skip, rateLimitDelay);
             } catch (Exception e) {
                 logger.error("Problem while generating vector embeddings for {} data type, using {} model:",
                     dataType, model, e);

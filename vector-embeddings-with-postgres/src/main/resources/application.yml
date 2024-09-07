@@ -25,4 +25,8 @@ generators:
     enabled: true
     embeddings-url: "https://api.openai.com/v1/embeddings"
     api-key: "${OPEN_AI_API_KEY}"
+  google:
+    enabled: true
+    base-url: "https://generativelanguage.googleapis.com"
+    api-key: "${GOOGLE_API_KEY}"
 
