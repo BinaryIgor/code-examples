@@ -1,5 +1,6 @@
 package com.binaryigor.vembeddingswithpostgres.embeddings;
 
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
 import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsSupportedDataSources;
 import org.postgresql.util.PGobject;
 import org.slf4j.Logger;

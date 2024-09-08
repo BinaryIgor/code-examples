@@ -1,15 +1,16 @@
 package com.binaryigor.vembeddingswithpostgres;
 
-import com.binaryigor.vembeddingswithpostgres.data.AmazonReviewsVectorEmbeddingsDataSource;
 import com.binaryigor.vembeddingswithpostgres.data.BooksVectorEmbeddingsDataSource;
+import com.binaryigor.vembeddingswithpostgres.data.PerformanceTestVectorEmbeddingsDataSource;
 import com.binaryigor.vembeddingswithpostgres.data.TheVectorEmbeddingsSupportedDataSources;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
-import com.binaryigor.vembeddingswithpostgres.generator.GoogleVectorEmbeddingsGenerator;
-import com.binaryigor.vembeddingswithpostgres.generator.OpenAIVectorEmbeddingsGenerator;
-import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.generators.GoogleVectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.generators.OpenAIVectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.generators.PerformanceTestVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsSupportedDataSources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,17 +37,16 @@ public class VectorEmbeddingsWithPostgresApp {
     }
 
     @Bean
-    AmazonReviewsVectorEmbeddingsDataSource amazonReviewsVectorEmbeddingsDataSource(VectorEmbeddingDataRepository dataRepository,
-                                                                                    @Value("${data.amazon-reviews.batch-load-size}")
-                                                                                    int batchLoadSize) {
-        return new AmazonReviewsVectorEmbeddingsDataSource(dataRepository, batchLoadSize);
-    }
-
-    @Bean
     BooksVectorEmbeddingsDataSource booksVectorEmbeddingsDataSource(VectorEmbeddingDataRepository dataRepository,
                                                                     @Value("${data.books.batch-load-size}")
                                                                     int batchLoadSize) {
         return new BooksVectorEmbeddingsDataSource(dataRepository, batchLoadSize);
+    }
+
+    @Bean
+    PerformanceTestVectorEmbeddingsDataSource performanceTestVectorEmbeddingsDataSource(@Value("${data.performance-test.data-size}")
+                                                                                        int dataSize) {
+        return new PerformanceTestVectorEmbeddingsDataSource(dataSize);
     }
 
     @Bean
@@ -84,5 +84,10 @@ public class VectorEmbeddingsWithPostgresApp {
                                                         @Value("${generators.google.api-key}")
                                                         String apiKey) {
         return new GoogleVectorEmbeddingsGenerator(HttpClient.newHttpClient(), objectMapper, baseUrl, apiKey);
+    }
+
+    @Bean
+    PerformanceTestVectorEmbeddingsGenerator performanceTestVectorEmbeddingsGenerator() {
+        return new PerformanceTestVectorEmbeddingsGenerator();
     }
 }

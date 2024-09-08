@@ -1,6 +1,6 @@
 package com.binaryigor.vembeddingswithpostgres;
 
-import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.shared.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

@@ -17,10 +17,10 @@ springdoc:
     enabled: true
 
 data:
-  amazon-reviews:
-    batch-load-size: 100
   books:
     batch-load-size: 100
+  performance-test:
+    data-size: 1_000_000
 
 generators:
   open-ai:

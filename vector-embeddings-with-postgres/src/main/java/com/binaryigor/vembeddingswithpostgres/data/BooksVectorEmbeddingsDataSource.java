@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class BooksVectorEmbeddingsDataSource implements VectorEmbeddingsDataSource {
 
-    private static final String DATA_TYPE = "Books";
+    private static final String DATA_TYPE = "BOOKS";
     private final VectorEmbeddingDataRepository dataRepository;
     private final int batchLoadSize;
 

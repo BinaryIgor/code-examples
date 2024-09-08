@@ -1,8 +1,9 @@
 package com.binaryigor.vembeddingswithpostgres.embeddings;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
-import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
 import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,11 +91,11 @@ public class VectorEmbeddingService {
             .toList();
     }
 
-    private void rateLimitDelay() {
-        rateLimitDelay(20_000);
-    }
 
     private void rateLimitDelay(long delay) {
+        if (delay <= 0) {
+            return;
+        }
         try {
             Thread.sleep(delay);
         } catch (Exception e) {

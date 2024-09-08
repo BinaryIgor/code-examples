@@ -2,8 +2,8 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
-import com.binaryigor.vembeddingswithpostgres.generator.RandomVectorEmbeddingsGenerator;
-import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.generators.RandomVectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;

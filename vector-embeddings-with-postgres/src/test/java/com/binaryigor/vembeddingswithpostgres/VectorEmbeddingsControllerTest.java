@@ -2,6 +2,7 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
 import com.binaryigor.vembeddingswithpostgres.embeddings.*;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

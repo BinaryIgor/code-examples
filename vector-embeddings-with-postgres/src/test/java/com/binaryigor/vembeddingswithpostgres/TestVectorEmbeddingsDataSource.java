@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public class TestVectorEmbeddingsDataSource implements VectorEmbeddingsDataSource {
 
-    public static final String DATA_TYPE = "Test";
+    public static final String DATA_TYPE = "TEST";
     private final VectorEmbeddingDataRepository dataRepository;
     private Supplier<List<VectorEmbeddingInputData>> dataSource = List::of;
 

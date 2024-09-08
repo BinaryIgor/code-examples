@@ -1,7 +1,8 @@
-package com.binaryigor.vembeddingswithpostgres.generator;
+package com.binaryigor.vembeddingswithpostgres.generators;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingModel;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

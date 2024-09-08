@@ -1,7 +1,6 @@
-package com.binaryigor.vembeddingswithpostgres.generator;
+package com.binaryigor.vembeddingswithpostgres.shared;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingModel;
 
 import java.util.List;
 import java.util.Map;

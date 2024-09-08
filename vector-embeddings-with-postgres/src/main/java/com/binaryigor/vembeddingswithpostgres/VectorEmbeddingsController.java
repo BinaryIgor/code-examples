@@ -2,7 +2,7 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingData;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingModel;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingTableKey;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsSearchResult;
