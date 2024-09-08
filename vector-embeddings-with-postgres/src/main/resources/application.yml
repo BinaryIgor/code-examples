@@ -19,6 +19,8 @@ springdoc:
 data:
   amazon-reviews:
     batch-load-size: 100
+  books:
+    batch-load-size: 100
 
 generators:
   open-ai:

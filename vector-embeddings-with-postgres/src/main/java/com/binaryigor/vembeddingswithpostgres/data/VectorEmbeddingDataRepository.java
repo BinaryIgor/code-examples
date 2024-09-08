@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +21,7 @@ public class VectorEmbeddingDataRepository {
         this.objectMapper = objectMapper;
     }
 
-    public void save(List<VectorEmbeddingData> data) {
+    public void save(Collection<VectorEmbeddingData> data) {
         if (data.isEmpty()) {
             return;
         }

@@ -1,6 +1,7 @@
 package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.AmazonReviewsVectorEmbeddingsDataSource;
+import com.binaryigor.vembeddingswithpostgres.data.BooksVectorEmbeddingsDataSource;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
@@ -36,6 +37,13 @@ public class VectorEmbeddingsWithPostgresApp {
                                                                                     @Value("${data.amazon-reviews.batch-load-size}")
                                                                                     int batchLoadSize) {
         return new AmazonReviewsVectorEmbeddingsDataSource(dataRepository, batchLoadSize);
+    }
+
+    @Bean
+    BooksVectorEmbeddingsDataSource booksVectorEmbeddingsDataSource(VectorEmbeddingDataRepository dataRepository,
+                                                                    @Value("${data.books.batch-load-size}")
+                                                                    int batchLoadSize) {
+        return new BooksVectorEmbeddingsDataSource(dataRepository, batchLoadSize);
     }
 
     @Bean(initMethod = "initDb")
