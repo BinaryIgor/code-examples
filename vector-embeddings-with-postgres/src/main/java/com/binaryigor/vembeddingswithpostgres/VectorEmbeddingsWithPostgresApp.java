@@ -2,12 +2,15 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.AmazonReviewsVectorEmbeddingsDataSource;
 import com.binaryigor.vembeddingswithpostgres.data.BooksVectorEmbeddingsDataSource;
+import com.binaryigor.vembeddingswithpostgres.data.TheVectorEmbeddingsSupportedDataSources;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
 import com.binaryigor.vembeddingswithpostgres.generator.GoogleVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generator.OpenAIVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsSupportedDataSources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -46,9 +49,15 @@ public class VectorEmbeddingsWithPostgresApp {
         return new BooksVectorEmbeddingsDataSource(dataRepository, batchLoadSize);
     }
 
+    @Bean
+    VectorEmbeddingsSupportedDataSources vectorEmbeddingsSupportedDataSources(List<VectorEmbeddingsDataSource> vectorEmbeddingsDataSources) {
+        return new TheVectorEmbeddingsSupportedDataSources(vectorEmbeddingsDataSources);
+    }
+
     @Bean(initMethod = "initDb")
-    VectorEmbeddingRepository vectorEmbeddingsRepository(JdbcClient jdbcClient) {
-        return new VectorEmbeddingRepository(jdbcClient);
+    VectorEmbeddingRepository vectorEmbeddingsRepository(JdbcClient jdbcClient,
+                                                         VectorEmbeddingsSupportedDataSources vectorEmbeddingsSupportedDataSources) {
+        return new VectorEmbeddingRepository(jdbcClient, vectorEmbeddingsSupportedDataSources);
     }
 
     @Bean

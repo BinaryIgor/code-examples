@@ -33,7 +33,10 @@
 <form class="limited-width">
     <p style="font-weight: bold">Model</p>
     <p style="font-style: italic">OPEN_AI_TEXT_3_SMALL, GOOGLE_TEXT_004</p>
-    <input name="model" placeholder="On of the available models..." value="OPEN_AI_TEXT_3_SMALL">
+    <input name="model" placeholder="One of the available models..." value="OPEN_AI_TEXT_3_SMALL">
+    <p style="font-weight: bold">Data Source</p>
+    <p style="font-style: italic">Books</p>
+    <input name="dataSource" placeholder="One of the available data sources..." value="Books">
     <p style="font-weight: bold">Input</p>
     <input name="input" placeholder="An interesting input of sorts...">
     <p style="font-weight: bold">Results</p>
@@ -51,27 +54,28 @@
     const searchForm = document.querySelector("form");
     const searchResults = document.getElementById("search-results");
 
-    const [searchModel, searchInput, searchResultsLimit, searchSubmit] = searchForm.querySelectorAll("input");
+    const [searchModel, searchDataSource, searchInput, searchResultsLimit, searchSubmit] = searchForm.querySelectorAll("input");
 
     searchForm.onsubmit = e => {
         e.preventDefault();
 
         const modelValue = searchModel.value;
         const inputValue = searchInput.value;
+        const dataSourceValue = searchDataSource.value;
         const resultsValue = searchResultsLimit.value;
 
-        if (!modelValue || !inputValue) {
-            searchResults.innerHTML = `<p class="error">Both model and the input is required</p>`;
+        if (!modelValue || !dataSourceValue || !inputValue) {
+            searchResults.innerHTML = `<p class="error">Model, data source and the input is required</p>`;
         } else {
             searchResults.innerHTML = "<p>Searching...</p>";
-            searchAndRenderResults(searchSubmit, inputValue, modelValue, resultsValue);
+            searchAndRenderResults(searchSubmit, inputValue, modelValue, dataSourceValue, resultsValue);
         }
     };
 
-    async function searchAndRenderResults(searchSubmit, input, model, results) {
+    async function searchAndRenderResults(searchSubmit, input, model, dataSource, results) {
         searchSubmit.disabled = true;
         try {
-            const response = await sendSearchRequest(input, model, results);
+            const response = await sendSearchRequest(input, model, dataSource, results);
             const resultElements = response.results.map(e => `
             <div style="margin: 16px 0px">
                 <p style="font-size: 2rem; font-weight: bold">---</p>
@@ -95,12 +99,12 @@
         }
     }
 
-    async function sendSearchRequest(input, model, results) {
+    async function sendSearchRequest(input, model, dataSource, results) {
         const response = await fetch(`${apiUrl}/vector-embeddings/search`,
             {
                 method: "POST",
                 headers: { "content-type": "application/json" },
-                body: JSON.stringify({ input: input, model: model, limit: results })
+                body: JSON.stringify({ input: input, model: model, dataSource: dataSource, limit: results })
             });
         const jsonResponse = await response.json();
         if (!response.ok) {

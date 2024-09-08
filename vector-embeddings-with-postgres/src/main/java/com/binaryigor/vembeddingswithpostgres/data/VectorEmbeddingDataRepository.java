@@ -32,7 +32,7 @@ public class VectorEmbeddingDataRepository {
             .toList();
 
         var sql = """
-            INSERT INTO vector_embedding_data (id, type, data) VALUES %s
+            INSERT INTO vembedding_data (id, type, data) VALUES %s
             ON CONFLICT (id) DO UPDATE
             SET type = EXCLUDED.type,
                 data = EXCLUDED.data
@@ -55,7 +55,7 @@ public class VectorEmbeddingDataRepository {
     }
 
     public int countOfType(String type) {
-        return jdbcClient.sql("SELECT COUNT(*) FROM vector_embedding_data WHERE type = ?")
+        return jdbcClient.sql("SELECT COUNT(*) FROM vembedding_data WHERE type = ?")
             .param(type)
             .query(Integer.class)
             .optional()
@@ -63,7 +63,7 @@ public class VectorEmbeddingDataRepository {
     }
 
     public <T> Stream<VectorEmbeddingData> allOfType(String type, Class<T> dataType) {
-        return jdbcClient.sql("SELECT id, type, data FROM vector_embedding_data WHERE type = ?")
+        return jdbcClient.sql("SELECT id, type, data FROM vembedding_data WHERE type = ?")
             .param(type)
             .query((r, n) -> vectorEmbeddingData(r, dataType))
             .stream();
@@ -84,7 +84,7 @@ public class VectorEmbeddingDataRepository {
     }
 
     public <T> Optional<VectorEmbeddingData> ofId(String id, Class<T> dataType) {
-        return jdbcClient.sql("SELECT id, type, data FROM vector_embedding_data WHERE id = ?")
+        return jdbcClient.sql("SELECT id, type, data FROM vembedding_data WHERE id = ?")
             .param(id)
             .query((r, n) -> vectorEmbeddingData(r, dataType))
             .optional();

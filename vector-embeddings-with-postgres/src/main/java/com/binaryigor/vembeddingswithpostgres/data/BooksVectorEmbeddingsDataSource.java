@@ -3,13 +3,12 @@ package com.binaryigor.vembeddingswithpostgres.data;
 import com.binaryigor.vembeddingswithpostgres.shared.CsvFile;
 import com.binaryigor.vembeddingswithpostgres.shared.Extensions;
 import com.binaryigor.vembeddingswithpostgres.shared.SizedStream;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.HashMap;
-import java.util.HexFormat;
 
 public class BooksVectorEmbeddingsDataSource implements VectorEmbeddingsDataSource {
 
@@ -97,10 +96,6 @@ public class BooksVectorEmbeddingsDataSource implements VectorEmbeddingsDataSour
                              String publisher,
                              String publishDate,
                              String price) {
-
-        public String id() {
-            return HexFormat.of().formatHex((title + publisher + publishDate + price).getBytes(StandardCharsets.UTF_8));
-        }
 
         public String embeddingData() {
             return title + "\n\n" + description;

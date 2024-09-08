@@ -12,6 +12,7 @@ import java.util.List;
 public class VectorEmbeddingsControllerTest extends IntegrationTest {
 
     private static final VectorEmbeddingModel TESTED_MODEL = VectorEmbeddingModel.OPEN_AI_TEXT_3_SMALL;
+    private static final String TESTED_DATA_SOURCE = TestVectorEmbeddingsDataSource.DATA_TYPE;
     @Autowired
     private VectorEmbeddingRepository vectorEmbeddingsRepository;
 
@@ -52,12 +53,12 @@ public class VectorEmbeddingsControllerTest extends IntegrationTest {
     }
 
     private VectorEmbedding randomVectorEmbeddingFromDb() {
-        return vectorEmbeddingsRepository.allOfModel(TESTED_MODEL).getFirst();
+        return vectorEmbeddingsRepository.allOf(new VectorEmbeddingTableKey(TESTED_MODEL, TESTED_DATA_SOURCE)).getFirst();
     }
 
     private List<VectorEmbeddingSearchResult> rawSearchVectorEmbeddings(List<Float> input) {
         var response = restTemplate.postForEntity("/vector-embeddings/raw-search",
-            new VectorEmbeddingsController.RawSearchRequest(input, TESTED_MODEL, null), VectorEmbeddingsSearchResult.class);
+            new VectorEmbeddingsController.RawSearchRequest(input, TESTED_MODEL, TESTED_DATA_SOURCE, null), VectorEmbeddingsSearchResult.class);
 
         Assertions.assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 

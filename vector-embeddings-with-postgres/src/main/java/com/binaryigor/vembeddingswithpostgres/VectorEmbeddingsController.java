@@ -2,12 +2,13 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingData;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
-import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingsDataSource;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingModel;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingTableKey;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsSearchResult;
 import com.binaryigor.vembeddingswithpostgres.shared.Extensions;
 import com.binaryigor.vembeddingswithpostgres.shared.ResourceNotFoundException;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -66,7 +67,7 @@ public class VectorEmbeddingsController {
         var dataSource = embeddingsDataSource(dataType);
         Thread.startVirtualThread(() -> {
             try {
-                embeddingService.generateAndSaveEmbeddings(model, dataSource.get(), batchSize, skip, rateLimitDelay);
+                embeddingService.generateAndSaveEmbeddings(model, dataSource, batchSize, skip, rateLimitDelay);
             } catch (Exception e) {
                 logger.error("Problem while generating vector embeddings for {} data type, using {} model:",
                     dataType, model, e);
@@ -76,13 +77,17 @@ public class VectorEmbeddingsController {
 
     @PostMapping("/search")
     VectorEmbeddingsSearchResult search(@RequestBody SearchRequest request) {
-        var result = Extensions.timed(() -> embeddingService.search(request.model, request.input, request.limit));
+        var result = Extensions.timed(() -> embeddingService.search(
+            new VectorEmbeddingTableKey(request.model, request.dataSource),
+            request.input, request.limit));
         return new VectorEmbeddingsSearchResult(result.time(), result.result());
     }
 
     @PostMapping("/raw-search")
     VectorEmbeddingsSearchResult rawSearch(@RequestBody RawSearchRequest request) {
-        var result = Extensions.timed(() -> embeddingService.rawSearch(request.model, request.input, request.limit));
+        var result = Extensions.timed(() -> embeddingService.rawSearch(
+            new VectorEmbeddingTableKey(request.model, request.dataSource),
+            request.input, request.limit));
         return new VectorEmbeddingsSearchResult(result.time(), result.result());
     }
 
@@ -94,26 +99,28 @@ public class VectorEmbeddingsController {
 
     @PostMapping("/similar-to-embedding-search")
     VectorEmbeddingsSearchResult similarToEmbeddingSearch(@RequestBody SimilarToVectorSearchRequest request) {
-        var result = Extensions.timed(() -> embeddingService.similarToEmbeddingSearch(request.model, request.embeddingId, 10));
+        var result = Extensions.timed(() -> embeddingService.similarToEmbeddingSearch(
+            new VectorEmbeddingTableKey(request.model, request.dataSource),
+            request.embeddingId, 10));
         return new VectorEmbeddingsSearchResult(result.time(), result.result());
     }
 
     public record LoadDataRequest(String type, String path) {
     }
 
-    public record SearchRequest(String input, VectorEmbeddingModel model, Integer limit) {
+    public record SearchRequest(String input, VectorEmbeddingModel model, String dataSource, Integer limit) {
         public SearchRequest {
             limit = limit == null ? 5 : limit;
         }
     }
 
-    public record RawSearchRequest(List<Float> input, VectorEmbeddingModel model, Integer limit) {
+    public record RawSearchRequest(List<Float> input, VectorEmbeddingModel model, String dataSource, Integer limit) {
         public RawSearchRequest {
             limit = limit == null ? 5 : limit;
         }
     }
 
-    public record SimilarToVectorSearchRequest(UUID embeddingId, VectorEmbeddingModel model) {
+    public record SimilarToVectorSearchRequest(UUID embeddingId, VectorEmbeddingModel model, String dataSource) {
     }
 
     public static class DataTypeNotSupportedException extends RuntimeException {

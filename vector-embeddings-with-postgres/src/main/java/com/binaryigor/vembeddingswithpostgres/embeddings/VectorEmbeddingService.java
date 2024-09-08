@@ -2,7 +2,7 @@ package com.binaryigor.vembeddingswithpostgres.embeddings;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
 import com.binaryigor.vembeddingswithpostgres.generator.VectorEmbeddingsGenerator;
-import com.binaryigor.vembeddingswithpostgres.shared.SizedStream;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +24,15 @@ public class VectorEmbeddingService {
     }
 
     public void generateAndSaveEmbeddings(VectorEmbeddingModel model,
-                                          SizedStream<VectorEmbeddingInputData> data,
+                                          VectorEmbeddingsDataSource dataSource,
                                           int batchSize,
                                           int skip,
                                           int rateLimitDelay) {
-        logger.info("About to generate {} vector embeddings, using {} model and skipping first {} items",
-            data.size(), model, skip);
+        var data = dataSource.get();
+        var tableKey = new VectorEmbeddingTableKey(model, dataSource.dataType());
+
+        logger.info("About to generate {} vector embeddings, using {} model, skipping first {} items with the batch size of {} and rate limit delay {}",
+            data.size(), model, skip, batchSize, rateLimitDelay);
 
         var generateEmbeddingInputs = new LinkedList<VectorEmbeddingInputData>();
 
@@ -47,7 +50,7 @@ public class VectorEmbeddingService {
                 if (generateEmbeddingInputs.size() >= batchSize) {
                     logger.info("Generating and saving {}/{} vector embeddings...", idxValue, data.size());
                     var generatedEmbeddings = generateVectorEmbeddings(model, generateEmbeddingInputs);
-                    repository.save(model, generatedEmbeddings);
+                    repository.save(tableKey, generatedEmbeddings);
                     generateEmbeddingInputs.clear();
                     rateLimitDelay(rateLimitDelay);
                 }
@@ -57,7 +60,7 @@ public class VectorEmbeddingService {
         if (!generateEmbeddingInputs.isEmpty()) {
             logger.info("Saving last vector embeddings batch...");
             var generatedEmbeddings = generateVectorEmbeddings(model, generateEmbeddingInputs);
-            repository.save(model, generatedEmbeddings);
+            repository.save(tableKey, generatedEmbeddings);
         }
 
         logger.info("{} vector embeddings generated and saved!", data.size());
@@ -99,24 +102,24 @@ public class VectorEmbeddingService {
         }
     }
 
-    public List<VectorEmbeddingSearchResult> search(VectorEmbeddingModel model,
+    public List<VectorEmbeddingSearchResult> search(VectorEmbeddingTableKey tableKey,
                                                     String input,
                                                     int limit) {
-        var embeddingInput = generateVectorEmbedding(model, input);
-        return repository.mostSimilar(model, embeddingInput, limit);
+        var embeddingInput = generateVectorEmbedding(tableKey.model(), input);
+        return repository.mostSimilar(tableKey, embeddingInput, limit);
     }
 
-    public List<VectorEmbeddingSearchResult> rawSearch(VectorEmbeddingModel model,
+    public List<VectorEmbeddingSearchResult> rawSearch(VectorEmbeddingTableKey table,
                                                        List<Float> input,
                                                        int limit) {
-        return repository.mostSimilar(model, input, limit);
+        return repository.mostSimilar(table, input, limit);
     }
 
-    public List<VectorEmbeddingSearchResult> similarToEmbeddingSearch(VectorEmbeddingModel model,
+    public List<VectorEmbeddingSearchResult> similarToEmbeddingSearch(VectorEmbeddingTableKey table,
                                                                       UUID embeddingId,
                                                                       int limit) {
-        var embedding = repository.ofId(model, embeddingId).orElseThrow();
-        return repository.mostSimilar(model, embedding.embedding(), limit);
+        var embedding = repository.ofId(table, embeddingId).orElseThrow();
+        return repository.mostSimilar(table, embedding.embedding(), limit);
     }
 
     private record GenerateEmbeddingInput(String id, String input) {

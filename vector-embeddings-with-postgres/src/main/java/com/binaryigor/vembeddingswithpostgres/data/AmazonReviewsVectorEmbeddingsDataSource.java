@@ -1,6 +1,7 @@
 package com.binaryigor.vembeddingswithpostgres.data;
 
 import com.binaryigor.vembeddingswithpostgres.shared.SizedStream;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

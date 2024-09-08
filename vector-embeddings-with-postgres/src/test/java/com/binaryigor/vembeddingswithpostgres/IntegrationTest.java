@@ -36,20 +36,19 @@ public abstract class IntegrationTest {
 
     @Autowired
     protected TestVectorEmbeddingsDataSource testVectorEmbeddingsDataSource;
-
     @Autowired
     protected TestRestTemplate restTemplate;
-
     @Autowired
     protected JdbcClient jdbcClient;
-
     @Autowired
     protected ObjectMapper objectMapper;
+    @Autowired
+    private VectorEmbeddingRepository vectorEmbeddingRepository;
 
     @BeforeEach
     void setup() {
-        jdbcClient.sql("TRUNCATE vector_embedding_data").update();
-        VectorEmbeddingRepository.TABLES_BY_MODELS.values()
+        jdbcClient.sql("TRUNCATE vembedding_data").update();
+        vectorEmbeddingRepository.tables()
             .forEach(t -> jdbcClient.sql("TRUNCATE %s".formatted(t)));
     }
 

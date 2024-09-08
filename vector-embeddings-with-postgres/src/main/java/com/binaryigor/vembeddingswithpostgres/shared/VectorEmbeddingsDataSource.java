@@ -1,6 +1,6 @@
-package com.binaryigor.vembeddingswithpostgres.data;
+package com.binaryigor.vembeddingswithpostgres.shared;
 
-import com.binaryigor.vembeddingswithpostgres.shared.SizedStream;
+import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
 
 public interface VectorEmbeddingsDataSource {
 
