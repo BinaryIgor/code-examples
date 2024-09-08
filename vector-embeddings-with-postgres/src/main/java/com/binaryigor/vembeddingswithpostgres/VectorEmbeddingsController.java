@@ -2,12 +2,12 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingData;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
-import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingTableKey;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsSearchResult;
 import com.binaryigor.vembeddingswithpostgres.shared.Extensions;
 import com.binaryigor.vembeddingswithpostgres.shared.ResourceNotFoundException;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
 import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +103,30 @@ public class VectorEmbeddingsController {
             new VectorEmbeddingTableKey(request.model, request.dataSource),
             request.embeddingId, 10));
         return new VectorEmbeddingsSearchResult(result.time(), result.result());
+    }
+
+    @PostMapping("/reindex-ivfflat")
+    void reindexIVFFlat(@RequestBody VectorEmbeddingTableKey tableKey) {
+        try {
+            logger.info("Reindexing IVFFlat table {}, it can take a while...", tableKey);
+            embeddingService.reindexIVFFlat(tableKey);
+            logger.info("Table {} IVFFlat reindexed!", tableKey);
+        } catch (Exception e) {
+            logger.error("Failure while reindexing IVFFlat {} table", tableKey, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/reindex-hnsw")
+    void reindexHNSW(@RequestBody VectorEmbeddingTableKey tableKey) {
+        try {
+            logger.info("Reindexing HSNW table {}, it can take a while...", tableKey);
+            embeddingService.reindexHNSW(tableKey);
+            logger.info("Table {} HNSW reindexed!", tableKey);
+        } catch (Exception e) {
+            logger.error("Failure while reindexing HNSW {} table", tableKey, e);
+            throw new RuntimeException(e);
+        }
     }
 
     public record LoadDataRequest(String type, String path) {

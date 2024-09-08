@@ -18,6 +18,8 @@ public class LoadTest {
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 10_000);
     static final String HOST = envValueOrThrow("HOST");
+    static final String VEMBEDDINGS_MODEL = envValueOrThrow("VEMBEDDINGS_MODEL");
+    static final String VEMBEDDINGS_DATA_SOURCE = envValueOrThrow("VEMBEDDINGS_DATA_SOURCE");
     static final Random RANDOM = new Random();
     static final List<Endpoint> ENDPOINTS = endpoints();
     static final int MAX_TO_LOG_ISSUES = 10;
@@ -34,6 +36,9 @@ public class LoadTest {
         System.out.println("Max concurrency is capped at: " + MAX_CONCURRENCY);
         System.out.println();
         System.out.println("Endpoints to test (chosen randomly): " + ENDPOINTS.size());
+        System.out.println();
+        System.out.printf("Model to test %s with %s data source", VEMBEDDINGS_MODEL, VEMBEDDINGS_DATA_SOURCE);
+        System.out.println();
         printDelimiter();
 
         var start = System.currentTimeMillis();
@@ -104,11 +109,11 @@ public class LoadTest {
                 var body = """
                     {
                       "input":"%s",
-                      "model":" PERFORMANCE_TEST",
-                      "dataSource":"PERFORMANCE_TEST",
-                      "limit":"5"
+                      "model": "%s",
+                      "dataSource": "%s",
+                      "limit": "5"
                     }
-                    """.formatted(UUID.randomUUID());
+                    """.formatted(UUID.randomUUID(), VEMBEDDINGS_MODEL, VEMBEDDINGS_DATA_SOURCE);
                 return new Endpoint("POST", "vector-embeddings/search", body);
             }).limit(100)
             .toList();

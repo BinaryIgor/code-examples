@@ -19,6 +19,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.net.http.HttpClient;
 import java.util.List;
@@ -56,8 +57,9 @@ public class VectorEmbeddingsWithPostgresApp {
 
     @Bean(initMethod = "initDb")
     VectorEmbeddingRepository vectorEmbeddingsRepository(JdbcClient jdbcClient,
+                                                         PlatformTransactionManager transactionManager,
                                                          VectorEmbeddingsSupportedDataSources vectorEmbeddingsSupportedDataSources) {
-        return new VectorEmbeddingRepository(jdbcClient, vectorEmbeddingsSupportedDataSources);
+        return new VectorEmbeddingRepository(jdbcClient, transactionManager, vectorEmbeddingsSupportedDataSources);
     }
 
     @Bean

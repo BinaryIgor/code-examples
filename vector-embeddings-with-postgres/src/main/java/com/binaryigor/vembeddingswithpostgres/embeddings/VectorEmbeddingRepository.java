@@ -6,10 +6,13 @@ import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,12 +20,16 @@ import java.util.stream.Stream;
 public class VectorEmbeddingRepository {
 
     private final Map<VectorEmbeddingTableKey, String> tablesByModelAndDataSource;
+    private final Map<VectorEmbeddingTableKey, Integer> tablesIVFFlatIndexProbesParam = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VectorEmbeddingRepository.class);
     private final JdbcClient jdbcClient;
+    private final TransactionTemplate transactionTemplate;
 
     public VectorEmbeddingRepository(JdbcClient jdbcClient,
+                                     PlatformTransactionManager transactionManager,
                                      VectorEmbeddingsSupportedDataSources dataSources) {
         this.jdbcClient = jdbcClient;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
         this.tablesByModelAndDataSource = Arrays.stream(VectorEmbeddingModel.values())
             .flatMap(m -> dataSources.get().stream()
                 .map(ds -> new VectorEmbeddingTableKey(m, ds)))
@@ -49,7 +56,20 @@ public class VectorEmbeddingRepository {
                     );
                     """.formatted(table, key.model().dimensions))
                 .update();
+
+            var ivfflatIndexListsParam = determineIVFFlatListsParam(countAllOf(key));
+            tablesIVFFlatIndexProbesParam.put(key, determineIVFFlatIndexProbesParam(ivfflatIndexListsParam));
         });
+    }
+
+    private int determineIVFFlatIndexProbesParam(int listsParam) {
+        if (listsParam < 100) {
+            return 1;
+        }
+        if (listsParam < 500) {
+            return 3;
+        }
+        return 5;
     }
 
     public void save(VectorEmbeddingTableKey tableKey, VectorEmbedding embedding) {
@@ -121,19 +141,117 @@ public class VectorEmbeddingRepository {
                                                          List<Float> embedding,
                                                          int limit) {
         var pgVector = pgVector(embedding);
-        return jdbcClient.sql("SELECT id, embedding_input, embedding <-> ? AS distance FROM %s ORDER BY embedding <-> ? LIMIT ?"
-                .formatted(embeddingTable(tableKey)))
-            .params(pgVector, pgVector, limit)
-            .query((r, n) -> new VectorEmbeddingSearchResult(
-                r.getString("id"),
-                r.getString("embedding_input"),
-                r.getFloat("distance")))
-            .list();
+        return transactionTemplate.execute(t -> {
+            var probesParam = tablesIVFFlatIndexProbesParam.getOrDefault(tableKey, 1);
+            if (probesParam > 1) {
+                jdbcClient.sql("SET LOCAL ivfflat.probes=" + probesParam)
+                    .update();
+            }
+            return jdbcClient.sql("SELECT id, embedding_input, embedding <-> ? AS distance FROM %s ORDER BY embedding <-> ? LIMIT ?"
+                    .formatted(embeddingTable(tableKey)))
+                .params(pgVector, pgVector, limit)
+                .query((r, n) -> new VectorEmbeddingSearchResult(
+                    r.getString("id"),
+                    r.getString("embedding_input"),
+                    r.getFloat("distance")))
+                .list();
+        });
     }
 
     public List<VectorEmbedding> allOf(VectorEmbeddingTableKey tableKey) {
         return jdbcClient.sql("SELECT id, embedding, embedding_input FROM %s".formatted(embeddingTable(tableKey)))
             .query((r, n) -> vectorEmbedding(r))
             .list();
+    }
+
+    public int countAllOf(VectorEmbeddingTableKey tableKey) {
+        return jdbcClient.sql("SELECT COUNT(*) FROM %s".formatted(embeddingTable(tableKey)))
+            .query(Integer.class)
+            .optional()
+            .orElse(0);
+    }
+
+    public void reindexIVFFlat(VectorEmbeddingTableKey tableKey) {
+        var table = embeddingTable(tableKey);
+
+        var tableCount = countAllOf(tableKey);
+        var lists = determineIVFFlatListsParam(tableCount);
+
+        var indexName = table + "_ivfflat";
+        var oldIndexName = indexName + "_old";
+
+        transactionTemplate.execute(t -> {
+            var maintenanceWorkMem = jdbcClient.sql("SHOW maintenance_work_mem").query(String.class).single();
+
+            // vector indexes take more resources to create
+            jdbcClient.sql("SET maintenance_work_mem='1GB'")
+                .update();
+
+            jdbcClient.sql("ALTER INDEX IF EXISTS %s RENAME TO %s".formatted(indexName, oldIndexName))
+                .update();
+
+            jdbcClient.sql("CREATE INDEX %s ON %s USING ivfflat(embedding vector_l2_ops) WITH (lists=%d)"
+                    .formatted(indexName, table, lists))
+                .update();
+
+            jdbcClient.sql("DROP INDEX IF EXISTS " + oldIndexName)
+                .update();
+
+            jdbcClient.sql("SET maintenance_work_mem='%s'".formatted(maintenanceWorkMem))
+                .update();
+
+            return null;
+        });
+
+        tablesIVFFlatIndexProbesParam.put(tableKey, determineIVFFlatIndexProbesParam(lists));
+    }
+
+    // recommended params reference: https://github.com/pgvector/pgvector?tab=readme-ov-file#ivfflat
+    private int determineIVFFlatListsParam(int tableSize) {
+        int lists;
+        if (tableSize > 1_000_000) {
+            lists = (int) Math.sqrt(tableSize);
+        } else if (tableSize > 10_000) {
+            lists = tableSize / 1000;
+        } else if (tableSize > 1000) {
+            lists = tableSize / 100;
+        } else {
+            lists = tableSize / 10;
+        }
+        return lists;
+    }
+
+    public void reindexHNSW(VectorEmbeddingTableKey tableKey) {
+        var table = embeddingTable(tableKey);
+
+        var indexName = table + "_hnsw";
+        var oldIndexName = indexName + "_old";
+
+        // default values
+        int m = 16;
+        int efConstruction = 64;
+
+        transactionTemplate.execute(t -> {
+            var maintenanceWorkMem = jdbcClient.sql("SHOW maintenance_work_mem").query(String.class).single();
+
+            // vector indexes take more resources to create
+            jdbcClient.sql("SET maintenance_work_mem='8GB'")
+                .update();
+
+            jdbcClient.sql("ALTER INDEX IF EXISTS %s RENAME TO %s".formatted(indexName, oldIndexName))
+                .update();
+
+            jdbcClient.sql("CREATE INDEX %s ON %s USING hnsw (embedding vector_l2_ops) WITH ( m = %d, ef_construction = %d)"
+                    .formatted(indexName, table, m, efConstruction))
+                .update();
+
+            jdbcClient.sql("DROP INDEX IF EXISTS " + oldIndexName)
+                .update();
+
+            jdbcClient.sql("SET maintenance_work_mem='%s'".formatted(maintenanceWorkMem))
+                .update();
+
+            return null;
+        });
     }
 }

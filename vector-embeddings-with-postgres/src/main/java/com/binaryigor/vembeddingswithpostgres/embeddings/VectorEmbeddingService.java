@@ -123,6 +123,11 @@ public class VectorEmbeddingService {
         return repository.mostSimilar(table, embedding.embedding(), limit);
     }
 
-    private record GenerateEmbeddingInput(String id, String input) {
+    public void reindexIVFFlat(VectorEmbeddingTableKey tableKey) {
+        repository.reindexIVFFlat(tableKey);
+    }
+
+    public void reindexHNSW(VectorEmbeddingTableKey tableKey) {
+        repository.reindexHNSW(tableKey);
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 public class VectorEmbeddingsControllerTest extends IntegrationTest {
 
@@ -19,19 +21,58 @@ public class VectorEmbeddingsControllerTest extends IntegrationTest {
 
     @Test
     void generatesVectorEmbeddings() {
-        testVectorEmbeddingsDataSource.dataSource(List.of(
-            new VectorEmbeddingInputData("1", "some-data-1"),
-            new VectorEmbeddingInputData("2", "some-data-2")));
+        testVectorEmbeddingsDataSource.dataSource(
+            List.of(randomVectorEmbeddingInputData(),
+                randomVectorEmbeddingInputData()));
 
         loadVectorEmbeddings();
         generateVectorEmbeddings();
 
+        assertVectorEmbeddingsWereGenerated();
+    }
+
+    private void assertVectorEmbeddingsWereGenerated() {
         var savedEmbedding = randomVectorEmbeddingFromDb();
-
         var searchResults = rawSearchVectorEmbeddings(savedEmbedding.embedding());
-
         Assertions.assertThat(searchResults)
             .hasSizeGreaterThan(1);
+    }
+
+    @Test
+    void reindexesIVFFlatVectorEmbeddingsIdempotently() {
+        var inputData = Stream.generate(this::randomVectorEmbeddingInputData)
+            .limit(50)
+            .toList();
+        testVectorEmbeddingsDataSource.dataSource(inputData);
+
+        loadVectorEmbeddings();
+        generateVectorEmbeddings();
+
+        assertVectorEmbeddingsWereGenerated();
+
+        reindexIVFFlatVectorEmbeddings();
+        reindexIVFFlatVectorEmbeddings();
+    }
+
+    @Test
+    void reindexesHNSWVectorEmbeddingsIdempotently() {
+        var inputData = Stream.generate(this::randomVectorEmbeddingInputData)
+            .limit(50)
+            .toList();
+        testVectorEmbeddingsDataSource.dataSource(inputData);
+
+        loadVectorEmbeddings();
+        generateVectorEmbeddings();
+
+        assertVectorEmbeddingsWereGenerated();
+
+        reindexHNSWVectorEmbeddings();
+        reindexHNSWVectorEmbeddings();
+    }
+
+
+    private VectorEmbeddingInputData randomVectorEmbeddingInputData() {
+        return new VectorEmbeddingInputData(UUID.randomUUID().toString(), UUID.randomUUID() + "-data");
     }
 
     private void loadVectorEmbeddings() {
@@ -51,6 +92,20 @@ public class VectorEmbeddingsControllerTest extends IntegrationTest {
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
 
         asyncEndpointDelay();
+    }
+
+    private void reindexIVFFlatVectorEmbeddings() {
+        var response = restTemplate.postForEntity("/vector-embeddings/reindex-ivfflat",
+            new VectorEmbeddingTableKey(TESTED_MODEL, testVectorEmbeddingsDataSource.dataType()), Void.class);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    private void reindexHNSWVectorEmbeddings() {
+        var response = restTemplate.postForEntity("/vector-embeddings/reindex-hnsw",
+            new VectorEmbeddingTableKey(TESTED_MODEL, testVectorEmbeddingsDataSource.dataType()), Void.class);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     private VectorEmbedding randomVectorEmbeddingFromDb() {

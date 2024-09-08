@@ -49,11 +49,12 @@ public abstract class IntegrationTest {
     void setup() {
         jdbcClient.sql("TRUNCATE vembedding_data").update();
         vectorEmbeddingRepository.tables()
-            .forEach(t -> jdbcClient.sql("TRUNCATE %s".formatted(t)));
+            .forEach(t -> jdbcClient.sql("TRUNCATE %s".formatted(t))
+                .update());
     }
 
     public void asyncEndpointDelay() {
-        delay(100);
+        delay(250);
     }
 
     public void delay(int millis) {
