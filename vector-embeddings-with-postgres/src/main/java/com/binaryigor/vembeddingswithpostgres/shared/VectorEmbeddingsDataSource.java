@@ -6,7 +6,7 @@ public interface VectorEmbeddingsDataSource {
 
     String dataType();
 
-    void load(String path);
+    int load(String path);
 
     SizedStream<VectorEmbeddingInputData> get();
 }

@@ -1,8 +1,9 @@
 package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
+import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingInputData;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
-import com.binaryigor.vembeddingswithpostgres.generators.RandomVectorEmbeddingsGenerator;
+import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingModel;
 import com.binaryigor.vembeddingswithpostgres.shared.VectorEmbeddingsGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,12 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ActiveProfiles(value = {"integration"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -75,7 +82,28 @@ public abstract class IntegrationTest {
 
         @Bean
         VectorEmbeddingsGenerator vectorEmbeddingsGenerator() {
-            return new RandomVectorEmbeddingsGenerator();
+            return new VectorEmbeddingsGenerator() {
+
+                private static final Random RANDOM = new Random();
+
+                @Override
+                public boolean supports(VectorEmbeddingModel model) {
+                    return true;
+                }
+
+                @Override
+                public List<Float> generate(VectorEmbeddingModel model, String input) throws Exception {
+                    return Stream.generate(RANDOM::nextFloat)
+                        .limit(model.dimensions)
+                        .toList();
+                }
+
+                @Override
+                public Map<VectorEmbeddingInputData, List<Float>> generateBatch(VectorEmbeddingModel model, List<VectorEmbeddingInputData> inputs) throws Exception {
+                    return inputs.stream()
+                        .collect(Collectors.toMap(e -> e, e -> generate(model, e.data())));
+                }
+            };
         }
     }
 }

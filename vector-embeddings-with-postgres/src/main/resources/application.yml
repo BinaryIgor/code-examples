@@ -18,7 +18,7 @@ springdoc:
 
 data:
   books:
-    batch-load-size: 100
+    batch-load-size: 250
   performance-test:
     data-size: 1_000_000
 

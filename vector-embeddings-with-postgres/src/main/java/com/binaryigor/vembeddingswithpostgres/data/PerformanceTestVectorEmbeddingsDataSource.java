@@ -24,8 +24,8 @@ public class PerformanceTestVectorEmbeddingsDataSource implements VectorEmbeddin
     }
 
     @Override
-    public void load(String path) {
-
+    public int load(String path) {
+        return dataSize;
     }
 
     @Override

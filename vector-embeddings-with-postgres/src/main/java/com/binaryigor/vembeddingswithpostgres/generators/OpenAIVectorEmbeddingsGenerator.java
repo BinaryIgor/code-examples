@@ -76,8 +76,8 @@ public class OpenAIVectorEmbeddingsGenerator implements VectorEmbeddingsGenerato
                 })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         } catch (Throwable e) {
-            logger.error("Problem while generating OpenAI embedding: ", e);
-            throw new Exception("Problem while generating OpenAI embedding: " + e.getMessage());
+            logger.error("Problem while generating OpenAI embeddings: ", e);
+            throw new Exception("Problem while generating OpenAI embeddings: " + e.getMessage());
         }
     }
 

@@ -14,7 +14,7 @@ public class LoadTest {
 
     static final int REQUESTS = envIntValueOrDefault("REQUESTS", 1000);
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", 50);
-    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 100);
+    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", REQUESTS_PER_SECOND * 2);
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 10_000);
     static final String HOST = envValueOrThrow("HOST");
@@ -264,19 +264,6 @@ public class LoadTest {
 
     static boolean isInteger(double value) {
         return Math.round(value) - value <= 10e6;
-    }
-
-    static void printEndpointStats(String endpointId, EndpointStats endpointStats, int allRequests) {
-        System.out.println(endpointId);
-        System.out.printf("Requests: %d, which is %s of all requests%n", endpointStats.requests.get(),
-            formattedPercentage(endpointStats.requests.get(), allRequests));
-        System.out.println("Connect timeouts: " + endpointStats.connectTimeoutRequests);
-        System.out.println("Request timeouts: " + endpointStats.requestTimeoutRequests);
-        System.out.println("Requests by status: " + endpointStats.requestsByStatus);
-    }
-
-    static String formattedPercentage(int number, int total) {
-        return Math.round(number * 100.0 / total) + "%";
     }
 
     record EndpointResult(String id, long time) {

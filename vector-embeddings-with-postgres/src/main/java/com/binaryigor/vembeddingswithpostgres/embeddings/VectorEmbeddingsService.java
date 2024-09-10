@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class VectorEmbeddingService {
+public class VectorEmbeddingsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(VectorEmbeddingService.class);
+    private static final Logger logger = LoggerFactory.getLogger(VectorEmbeddingsService.class);
     private final VectorEmbeddingRepository repository;
     private final List<VectorEmbeddingsGenerator> generators;
 
-    public VectorEmbeddingService(VectorEmbeddingRepository repository,
-                                  List<VectorEmbeddingsGenerator> generators) {
+    public VectorEmbeddingsService(VectorEmbeddingRepository repository,
+                                   List<VectorEmbeddingsGenerator> generators) {
         this.repository = repository;
         this.generators = generators;
     }
@@ -91,7 +91,6 @@ public class VectorEmbeddingService {
             .toList();
     }
 
-
     private void rateLimitDelay(long delay) {
         if (delay <= 0) {
             return;
@@ -117,7 +116,7 @@ public class VectorEmbeddingService {
     }
 
     public List<VectorEmbeddingSearchResult> similarToEmbeddingSearch(VectorEmbeddingTableKey table,
-                                                                      UUID embeddingId,
+                                                                      String embeddingId,
                                                                       int limit) {
         var embedding = repository.ofId(table, embeddingId).orElseThrow();
         return repository.mostSimilar(table, embedding.embedding(), limit);

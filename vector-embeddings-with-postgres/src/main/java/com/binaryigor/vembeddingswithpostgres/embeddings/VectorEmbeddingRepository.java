@@ -111,7 +111,7 @@ public class VectorEmbeddingRepository {
         }
     }
 
-    public Optional<VectorEmbedding> ofId(VectorEmbeddingTableKey tableKey, UUID id) {
+    public Optional<VectorEmbedding> ofId(VectorEmbeddingTableKey tableKey, String id) {
         return jdbcClient.sql("SELECT id, embedding, embedding_input FROM %s WHERE id = ?"
                 .formatted(embeddingTable(tableKey)))
             .param(id)
@@ -190,7 +190,7 @@ public class VectorEmbeddingRepository {
             jdbcClient.sql("ALTER INDEX IF EXISTS %s RENAME TO %s".formatted(indexName, oldIndexName))
                 .update();
 
-            jdbcClient.sql("CREATE INDEX %s ON %s USING ivfflat(embedding vector_l2_ops) WITH (lists=%d)"
+            jdbcClient.sql("CREATE INDEX %s ON %s USING ivfflat (embedding vector_l2_ops) WITH (lists=%d)"
                     .formatted(indexName, table, lists))
                 .update();
 

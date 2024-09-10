@@ -5,7 +5,7 @@ import com.binaryigor.vembeddingswithpostgres.data.PerformanceTestVectorEmbeddin
 import com.binaryigor.vembeddingswithpostgres.data.TheVectorEmbeddingsSupportedDataSources;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingRepository;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsService;
 import com.binaryigor.vembeddingswithpostgres.generators.GoogleVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generators.OpenAIVectorEmbeddingsGenerator;
 import com.binaryigor.vembeddingswithpostgres.generators.PerformanceTestVectorEmbeddingsGenerator;
@@ -32,7 +32,7 @@ public class VectorEmbeddingsWithPostgresApp {
     }
 
     @Bean
-    VectorEmbeddingDataRepository vectorEmbeddingsDataRepository(JdbcClient jdbcClient,
+    VectorEmbeddingDataRepository vectorEmbeddingDataRepository(JdbcClient jdbcClient,
                                                                  ObjectMapper objectMapper) {
         return new VectorEmbeddingDataRepository(jdbcClient, objectMapper);
     }
@@ -56,16 +56,16 @@ public class VectorEmbeddingsWithPostgresApp {
     }
 
     @Bean(initMethod = "initDb")
-    VectorEmbeddingRepository vectorEmbeddingsRepository(JdbcClient jdbcClient,
+    VectorEmbeddingRepository vectorEmbeddingRepository(JdbcClient jdbcClient,
                                                          PlatformTransactionManager transactionManager,
                                                          VectorEmbeddingsSupportedDataSources vectorEmbeddingsSupportedDataSources) {
         return new VectorEmbeddingRepository(jdbcClient, transactionManager, vectorEmbeddingsSupportedDataSources);
     }
 
     @Bean
-    VectorEmbeddingService vectorEmbeddingsService(VectorEmbeddingRepository repository,
+    VectorEmbeddingsService vectorEmbeddingsService(VectorEmbeddingRepository repository,
                                                    List<VectorEmbeddingsGenerator> generators) {
-        return new VectorEmbeddingService(repository, generators);
+        return new VectorEmbeddingsService(repository, generators);
     }
 
     @ConditionalOnProperty(value = "generators.open-ai.enabled", havingValue = "true")

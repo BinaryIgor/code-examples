@@ -2,7 +2,7 @@ package com.binaryigor.vembeddingswithpostgres;
 
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingData;
 import com.binaryigor.vembeddingswithpostgres.data.VectorEmbeddingDataRepository;
-import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingService;
+import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsService;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingTableKey;
 import com.binaryigor.vembeddingswithpostgres.embeddings.VectorEmbeddingsSearchResult;
 import com.binaryigor.vembeddingswithpostgres.shared.Extensions;
@@ -23,11 +23,11 @@ public class VectorEmbeddingsController {
 
     private static final Logger logger = LoggerFactory.getLogger(VectorEmbeddingsController.class);
     private final List<VectorEmbeddingsDataSource> dataSources;
-    private final VectorEmbeddingService embeddingService;
+    private final VectorEmbeddingsService embeddingService;
     private final VectorEmbeddingDataRepository embeddingDataRepository;
 
     public VectorEmbeddingsController(List<VectorEmbeddingsDataSource> dataSources,
-                                      VectorEmbeddingService embeddingService,
+                                      VectorEmbeddingsService embeddingService,
                                       VectorEmbeddingDataRepository embeddingDataRepository) {
         this.dataSources = dataSources;
         this.embeddingService = embeddingService;
@@ -40,7 +40,10 @@ public class VectorEmbeddingsController {
         var dataSource = embeddingsDataSource(request.type());
         Thread.startVirtualThread(() -> {
             try {
-                dataSource.load(request.path());
+                logger.info("Loading {} for embeddings data...", request.type());
+                var size = dataSource.load(request.path());
+                logger.info("{} for embeddings data loaded, its size (might be different in db, if not unique): {}",
+                    request.type(), size);
             } catch (Exception e) {
                 logger.error("Fail to load %s data for vector embeddings:".formatted(request.type()), e);
             }
@@ -144,7 +147,7 @@ public class VectorEmbeddingsController {
         }
     }
 
-    public record SimilarToVectorSearchRequest(UUID embeddingId, VectorEmbeddingModel model, String dataSource) {
+    public record SimilarToVectorSearchRequest(String embeddingId, VectorEmbeddingModel model, String dataSource) {
     }
 
     public static class DataTypeNotSupportedException extends RuntimeException {

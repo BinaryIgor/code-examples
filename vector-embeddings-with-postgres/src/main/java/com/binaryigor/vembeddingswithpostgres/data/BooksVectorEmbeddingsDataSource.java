@@ -27,9 +27,11 @@ public class BooksVectorEmbeddingsDataSource implements VectorEmbeddingsDataSour
     }
 
     @Override
-    public void load(String path) {
+    public int load(String path) {
         var header = true;
         var dataBatch = new HashMap<String, VectorEmbeddingData>();
+
+        var loadedDataSize = 0;
 
         try (var reader = Files.newBufferedReader(Path.of(path))) {
 
@@ -46,6 +48,8 @@ public class BooksVectorEmbeddingsDataSource implements VectorEmbeddingsDataSour
                     break;
                 }
 
+                loadedDataSize++;
+
                 var embeddingData = embeddingDataFromCsvRow(line, hashDigest);
                 dataBatch.put(embeddingData.id(), embeddingData);
                 if (dataBatch.size() >= batchLoadSize) {
@@ -57,6 +61,8 @@ public class BooksVectorEmbeddingsDataSource implements VectorEmbeddingsDataSour
             }
 
             dataRepository.save(dataBatch.values());
+
+            return loadedDataSize;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

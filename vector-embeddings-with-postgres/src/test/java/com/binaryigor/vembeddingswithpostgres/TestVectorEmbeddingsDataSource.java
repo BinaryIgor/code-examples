@@ -29,11 +29,13 @@ public class TestVectorEmbeddingsDataSource implements VectorEmbeddingsDataSourc
     }
 
     @Override
-    public void load(String path) {
+    public int load(String path) {
         var dataToSave = dataSource.get().stream()
             .map(d -> new VectorEmbeddingData(d.id(), dataType(), new SingleValueJson(d.data())))
             .toList();
         dataRepository.save(dataToSave);
+
+        return dataToSave.size();
     }
 
     @Override
