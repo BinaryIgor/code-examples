@@ -1,0 +1,34 @@
+spring:
+  application: vector-embeddings-with-postgres
+  datasource:
+    url: "${DB_URL:jdbc:postgresql://localhost:5432/vembeddings}"
+    username: "${DB_USERNAME:vembeddings}"
+    password: "${DB_PASSWORD:vembeddings}"
+  threads:
+    virtual:
+      enabled: true
+  sql:
+    init.mode: always
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+data:
+  books:
+    batch-load-size: 250
+  performance-test:
+    data-size: 1_000_000
+
+generators:
+  open-ai:
+    enabled: true
+    embeddings-url: "https://api.openai.com/v1/embeddings"
+    api-key: "${OPEN_AI_API_KEY}"
+  google:
+    enabled: true
+    base-url: "https://generativelanguage.googleapis.com"
+    api-key: "${GOOGLE_API_KEY}"
+

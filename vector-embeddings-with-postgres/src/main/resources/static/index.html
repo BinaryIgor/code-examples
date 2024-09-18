@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Vector Embeddings</title>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        .limited-width {
+            width: 100%;
+            max-width: 800px;
+        }
+        input {
+            padding: 8px 8px;
+            width: 100%;
+        }
+
+        .error {
+            color: red;
+        }
+
+        a { 
+            color: inherit; 
+        } 
+    </style>
+</head>
+
+<body>
+<h1>Vector Embeddings</h1>
+
+<form class="limited-width">
+    <p style="font-weight: bold">Model</p>
+    <p style="font-style: italic">OPEN_AI_TEXT_3_SMALL, GOOGLE_TEXT_004, PERFORMANCE_TEST</p>
+    <input name="model" placeholder="One of the available models..." value="OPEN_AI_TEXT_3_SMALL">
+    <p style="font-weight: bold">Data Source</p>
+    <p style="font-style: italic">BOOKS, PERFORMANCE_TEST</p>
+    <input name="dataSource" placeholder="One of the available data sources..." value="BOOKS">
+    <p style="font-weight: bold">Input</p>
+    <input name="input" placeholder="An interesting input of sorts...">
+    <p style="font-weight: bold">Results</p>
+    <input name="results" value="5">
+    <input style="margin-top: 32px" type="submit" value="Search">
+</form>
+
+<div id="search-results" class="limited-width" style="margin-top: 32px">
+
+</div>
+
+</body>
+<script>
+    const apiUrl = "http://localhost:8080";
+    const searchForm = document.querySelector("form");
+    const searchResults = document.getElementById("search-results");
+
+    const [searchModel, searchDataSource, searchInput, searchResultsLimit, searchSubmit] = searchForm.querySelectorAll("input");
+
+    searchForm.onsubmit = e => {
+        e.preventDefault();
+
+        const modelValue = searchModel.value;
+        const inputValue = searchInput.value;
+        const dataSourceValue = searchDataSource.value;
+        const resultsValue = searchResultsLimit.value;
+
+        if (!modelValue || !dataSourceValue || !inputValue) {
+            searchResults.innerHTML = `<p class="error">Model, data source and the input is required</p>`;
+        } else {
+            searchResults.innerHTML = "<p>Searching...</p>";
+            searchAndRenderResults(searchSubmit, inputValue, modelValue, dataSourceValue, resultsValue);
+        }
+    };
+
+    async function searchAndRenderResults(searchSubmit, input, model, dataSource, results) {
+        searchSubmit.disabled = true;
+        try {
+            const response = await sendSearchRequest(input, model, dataSource, results);
+            const resultElements = response.results.map(e => `
+            <div style="margin: 16px 0px">
+                <p style="font-size: 2rem; font-weight: bold">---</p>
+                <p style="font-weight: bold">Embedding Input</p>
+                <p style="white-space: pre-wrap; margin-bottom: 8px">${e.embeddingInput}</p>
+                <p style="font-weight: bold">Distance</p>
+                <p>${e.distance}</p>
+                <p style="font-weight: bold">Id</p>
+                <a href="/vector-embeddings/data/${e.id}" target="_blank">Related data: ${e.id}</a>
+            </div>`);
+            const resultsHTML = resultElements.join("\n");
+            searchResults.innerHTML = `
+            <h2>Results</h2>
+            <div class="margin: 8px 0px">Search time: ${response.searchTime}</div>
+            ${resultsHTML}
+            `;
+        } catch(e) {
+            searchResults.innerHTML = `<p>Failure to get search results: ${e}</p>`;
+        } finally {
+            searchSubmit.disabled = false;
+        }
+    }
+
+    async function sendSearchRequest(input, model, dataSource, results) {
+        const response = await fetch(`${apiUrl}/vector-embeddings/search`,
+            {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ input: input, model: model, dataSource: dataSource, limit: results })
+            });
+        const jsonResponse = await response.json();
+        if (!response.ok) {
+            throw new Error(`${response.status}: ${JSON.stringify(jsonResponse)}`);
+        }
+        return jsonResponse;
+    }
+</script>
+</body>
+
+</html>
