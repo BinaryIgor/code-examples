@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root, :host {
+    /* Changes the primary theme color to purple using primitives */
+    --sl-color-primary-50: #f8fafc;
+    --sl-color-primary-100: #f1f5f9;
+    --sl-color-primary-200: #e2e8f0;
+    --sl-color-primary-300: #cbd5e1;
+    --sl-color-primary-400: #94a3b8;
+    --sl-color-primary-500: #64748b;
+    --sl-color-primary-600: #475569;
+    --sl-color-primary-700: #334155;
+    --sl-color-primary-800: #1e293b;
+    --sl-color-primary-900: #0f172a;
+    --sl-color-primary-950: #020617;
+
+    --sl-input-border-color: #334155;
+    --sl-input-border-color-focus: #64748b;
+    --sl-input-border-color-hover: var(--sl-input-border-color-focus);
+    --sl-input-focus-ring-color: var(--sl-input-border-color-focus);
+    --sl-input-focus-ring-style: solid;
+    --sl-focus-ring-width: 1px;
+    --sl-input-focus-ring: solid var(--sl-focus-ring-width) var(--sl-input-focus-ring-color);
+    --sl-input-focus-ring-offset: 1x;
+    --sl-input-border-width: 1px;
+    --sl-input-border-radius-medium: 0.25rem;
+}
+
+div {
+    font-size: 22px;
+}
+
+sl-button::part(base) {
+    /* Set design tokens for height and border width */
+    border-color: var(--sl-color-primary-700);
+    border-radius: 1rem;
+}
+
+sl-button::part(base):hover {
+    border-color: var(--sl-color-primary-400);
+}
+
+sl-button::part(base):focus {
+    border-color: var(--sl-color-primary-400);
+  }
+
+  sl-button::part(base):active {
+    border-color: var(--sl-color-primary-400);
+  }
+
+/* sl-button::part(base) {
+    border: solid 0.06125rem black;
+    font-size: 1.5rem;
+} */
+
+/* sl-input {
+    --sl-input-focus-ring-color: darkorange;
+    --sl-input-focus-ring-style: solid;
+    --sl-input-focus-ring-width: 0;
+    --sl-input-focus-ring: solid 1px darkorange;
+    --sl-input-focus-ring-offset: 0x;
+    --sl-input-border-width: 1px;
+    --sl-input-border-color: darkorange;
+    --sl-input-border-color-focus: darkorange;
+    --sl-input-border-color-hover: darkorange;
+} */
+
+/* sl-select {
+    --sl-focus-ring-width: 1px;
+    --sl-focus-ring-color: #475569;
+    --sl-focus-ring-style: solid;
+    --sl-focus-ring: 0 0 0 var(--sl-focus-ring-width) #475569;
+    --sl-input-border-color-focus: #475569;
+} */
+
+@layer components {
+    .button-like {
+        @apply rounded-md border-slate-200 border-2 px-8 py-2 cursor-pointer bg-white font-bold outline-none;
+    }
+
+    .long-button-like {
+        @apply button-like block my-2 w-full max-w-[600px];
+    }
+
+    sl-dialog::part(header) {
+        @apply text-red-500 my-2 p-4;
+    }
+
+    sl-dialog::part(header-actions) {
+        @apply px-2;
+    }
+
+    sl-dialog::part(title) {
+        @apply p-2;
+    }
+
+    sl-dialog::part(body) {
+        @apply px-4 pb-4;
+    }
+
+    sl-dialog::part(panel) {
+        @apply my-4 pb-8 rounded-xl;
+    }
+    
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.fade-in {
+    animation: fade-in 500ms;
+    animation-fill-mode: forwards;
+}
+
+.fade-out {
+    animation: fade-out 500ms;
+    animation-fill-mode: forwards;
+}
+
+.fade-in-long {
+    animation: fade-in 1500ms;
+    animation-fill-mode: forwards;
+}
+
+.fade-out-long {
+    animation: fade-out 1500ms;
+    animation-fill-mode: forwards;
+}
