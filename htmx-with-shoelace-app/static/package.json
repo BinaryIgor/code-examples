@@ -1,7 +1,7 @@
 {
-    "name": "@shoelace-style/rollup-example",
+    "name": "htmx-with-shoelace-app-static",
     "version": "1.0.0",
-    "description": "A base setup that demonstrates how to import Shoelace components with Rollup.",
+    "description": "",
     "dependencies": {
         "@shoelace-style/shoelace": "2.17.1",
         "htmx.org": "^2.0.2"
@@ -11,15 +11,13 @@
         "rollup": "^2.22.2",
         "rollup-plugin-copy": "^3.3.0",
         "rollup-plugin-css-only": "^3.1.0",
-        "tailwindcss": "^3.3.3",
-        "express": "^4.18.2"
+        "tailwindcss": "^3.3.3"
     },
     "scripts": {
         "start": "rollup -c -w",
         "build": "bash build.bash",
-        "run:server": "node src/server.mjs",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build:watch:css": "bash build_and_watch_css.bash"
     },
-    "author": "",
+    "author": "Igor",
     "license": "ISC"
 }
