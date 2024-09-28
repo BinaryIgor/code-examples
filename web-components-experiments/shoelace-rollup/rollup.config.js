@@ -1,5 +1,4 @@
 import path from 'path';
-import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import css from 'rollup-plugin-css-only'
 import resolve from '@rollup/plugin-node-resolve';
@@ -9,7 +8,6 @@ export default {
   output: [{ dir: path.resolve(__dirname, 'dist'), format: 'es' }],
   plugins: [
     resolve(),
-    commonjs(),
     // Bundle styles into dist/bundle.css
     css({
       output: 'bundle.css' 

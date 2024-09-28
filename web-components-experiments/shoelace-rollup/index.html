@@ -18,5 +18,14 @@
   <sl-rating></sl-rating>
   
   <script src="dist/index.js"></script>
+  <script>
+    document.querySelector("sl-button").onclick = () => {
+        console.log("Shoelace button clicked!");
+    };
+
+    document.querySelector("sl-input").addEventListener("sl-change", e => {
+        console.log("Input change!", e);
+    });
+  </script>
 </body>
 </html>
