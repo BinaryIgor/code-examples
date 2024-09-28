@@ -1,31 +1,30 @@
 <!doctype html>
 <html>
+
 <head>
-  <title>Shoelace Rollup Example</title>
-  <link rel="stylesheet" href="dist/bundle.css">
+    <title>Shoelace Rollup Example</title>
+    <link rel="stylesheet" href="dist/bundle.css">
+    <link rel="stylesheet" href="dist/style.css">
 </head>
+</head>
+
 <body>
-  <h1>Shoelace Rollup Example</h1>
+    <h1 class="m-8">Shoelace Rollup Example</h1>
 
-  <sl-button type="primary">Click me</sl-button>
+    <sl-button hx-post="/sl-button-click" type="primary">Click me</sl-button>
 
-  <br><br>
+    <br><br>
 
-  <sl-input placeholder="Enter some text" style="max-width: 300px;"></sl-input>
-  
-  <br><br>
-  
-  <sl-rating></sl-rating>
-  
-  <script src="dist/index.js"></script>
-  <script>
-    document.querySelector("sl-button").onclick = () => {
-        console.log("Shoelace button clicked!");
-    };
+    <sl-input placeholder="Enter some text" style="max-width: 300px;"></sl-input>
 
-    document.querySelector("sl-input").addEventListener("sl-change", e => {
-        console.log("Input change!", e);
-    });
-  </script>
+    <br><br>
+
+    <sl-rating></sl-rating>
+
+    <some-component></some-component>
+
+    <script src="dist/index.js"></script>
+    <script src="node_modules/htmx.org/dist/htmx.min.js"></script>
 </body>
+
 </html>

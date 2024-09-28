@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+:host {
+    /* Changes the primary theme color to purple using primitives */
+    --sl-color-primary-50: #f8fafc;
+    --sl-color-primary-100: #f1f5f9;
+    --sl-color-primary-200: #e2e8f0;
+    --sl-color-primary-300: #cbd5e1;
+    --sl-color-primary-400: #94a3b8;
+    --sl-color-primary-500: #64748b;
+    --sl-color-primary-600: #475569;
+    --sl-color-primary-700: #334155;
+    --sl-color-primary-800: #1e293b;
+    --sl-color-primary-900: #0f172a;
+    --sl-color-primary-950: #020617;
+
+    --sl-input-border-color: #334155;
+    --sl-input-border-color-focus: #64748b;
+    --sl-input-border-color-hover: var(--sl-input-border-color-focus);
+    --sl-input-focus-ring-color: var(--sl-input-border-color-focus);
+    --sl-input-focus-ring-style: solid;
+    --sl-focus-ring-width: 1px;
+    --sl-input-focus-ring: solid var(--sl-focus-ring-width) var(--sl-input-focus-ring-color);
+    --sl-input-focus-ring-offset: 1x;
+    --sl-input-border-width: 1px;
+    --sl-input-border-radius-medium: 0.25rem;
+}
+
+#name-error {
+    font-size: var(--sl-input-help-text-font-size-medium);
+    color: var(--sl-color-danger-700);
+}
+
+.inline-validation sl-input[data-user-invalid]::part(base) {
+    border-color: var(--sl-color-danger-600);
+}
+
+.inline-validation [data-user-invalid]::part(form-control-label),
+.inline-validation [data-user-invalid]::part(form-control-help-text) {
+    color: var(--sl-color-danger-700);
+}
+
+.inline-validation sl-input:focus-within[data-user-invalid]::part(base) {
+    border-color: var(--sl-color-danger-600);
+    box-shadow: 0 0 0 var(--sl-focus-ring-width) var(--sl-color-danger-300);
+}
