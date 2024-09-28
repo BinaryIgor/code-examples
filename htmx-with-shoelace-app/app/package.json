@@ -1,0 +1,19 @@
+{
+    "name": "htmx-with-shoelace-app",
+    "version": "1.0.0",
+    "description": "HTMX with Shoelace App",
+    "main": "src/app.js",
+    "scripts": {
+        "start": "node .",
+        "build:run": "bash build_and_run.bash"
+    },
+    "author": "Igor",
+    "license": "ISC",
+    "type": "module",
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "dependencies": {
+        "express": "^4.21.1"
+    }
+}
