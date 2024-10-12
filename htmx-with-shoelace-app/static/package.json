@@ -14,7 +14,6 @@
         "tailwindcss": "^3.3.3"
     },
     "scripts": {
-        "start": "rollup -c -w",
         "build": "bash build.bash",
         "build:watch:css": "bash build_and_watch_css.bash"
     },

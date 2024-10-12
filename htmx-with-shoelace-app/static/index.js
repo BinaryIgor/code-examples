@@ -1,4 +1,4 @@
-// Import here all shoelace assets and components that you intend to use and have in final index.js bundle
+// Import here all shoelace assets and components that you intend to use and have in the final index.js bundle
 import '@shoelace-style/shoelace/dist/themes/light.css';
 import SlButton from '@shoelace-style/shoelace/dist/components/button/button.js';
 import SlIcon from '@shoelace-style/shoelace/dist/components/icon/icon.js';
