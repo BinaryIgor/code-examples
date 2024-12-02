@@ -1,0 +1,5 @@
+#!/bin/bash
+export TEST_CASE="WRITES_100"
+export QUERIES_TO_EXECUTE=${QUERIES_TO_EXECUTE:-10000}
+export QUERIES_MAX_RATE=${QUERIES_MAX_RATE:-1000}
+bash run_test_case.bash
