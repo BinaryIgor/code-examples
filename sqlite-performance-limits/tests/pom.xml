@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.binaryigor</groupId>
-    <artifactId>sqlite-performance-limits-tests</artifactId>
+    <artifactId>sqlite-limits-tests</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
@@ -12,7 +12,6 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-<!--        <maven.exec.plugin.version>3.3.0</maven.exec.plugin.version>-->
     </properties>
 
     <dependencies>
@@ -46,7 +45,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>sqlite-performance-limits-tests</finalName>
+                            <finalName>sqlite-limits-tests</finalName>
                             <archive>
                                 <manifest>
                                     <mainClass>com.binaryigor.sqlitelimits.SQLiteLimitsTests</mainClass>

@@ -1,3 +1,3 @@
 FROM eclipse-temurin:21-alpine
-COPY SQLiteLimitsTest.java /SQLiteLimitsTest.java
-ENTRYPOINT exec java SQLiteLimitsTest.java
+COPY target/sqlite-limits-tests-jar-with-dependencies.jar /sqlite-limits-tests.jar
+ENTRYPOINT ["java", "-jar", "/sqlite-limits-tests.jar"]
