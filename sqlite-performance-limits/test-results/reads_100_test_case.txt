@@ -1,0 +1,93 @@
+sqlite-limits-tests
+sqlite-limits-tests
+About to run SQLite performance limits tests!
+Connecting to /db/limits_tests.db db with the journal_mode=WAL
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@52af6cff
+
+DB connection established, running init queries
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+Init queries executed, running READS_100 test case!
+The following test case will be executed: TestCase[queriesToExecute=500000, queriesMaxRate=50000, queryGroups=[QueryGroup[id=select-by-id, tables=[account]], QueryGroup[id=select-by-name, tables=[account]], QueryGroup[id=select-by-email, tables=[account]]]]
+Tables count before test...
+account: 1002096
+
+Running it...
+
+2024-12-09T17:50:21.462882022, 50000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:23.182039065, 100000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:24.222879122, 150000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:25.272508988, 200000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:26.304603304, 250000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:27.334981276, 300000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:28.469589030, 350000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:29.489657595, 400000/500000 queries were issued, waiting 1s before sending next query batch...
+2024-12-09T17:50:30.623078263, 450000/500000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case finished! It had queries: [QueryGroup[id=select-by-id, tables=[account]], QueryGroup[id=select-by-name, tables=[account]], QueryGroup[id=select-by-email, tables=[account]]]
+Tables count after test...
+account: 1002096
+
+Some stats...
+
+Test duration: PT11.351S
+Executed queries: 500000
+Wanted queries rate: 50000/s
+Real queries rate: 45454/s
+
+Min: 0.014252 ms
+Max: 121.949282 ms
+Mean: 0.029621 ms
+
+Percentile 50 (Median): 0.022117 ms
+Percentile 75: 0.023555 ms
+Percentile 90: 0.028372 ms
+Percentile 95: 0.033507 ms
+Percentile 99: 0.043811 ms
+Percentile 99.9: 0.109719 ms
+
+Queries % share:
+select-by-id: 33
+select-by-name: 33
+select-by-email: 33
+
+Queries stats:
+select-by-id: 
+Min: 0.014252 ms
+Max: 121.922486 ms
+Mean: 0.027231 ms
+
+Percentile 50 (Median): 0.019567 ms
+Percentile 75: 0.020661 ms
+Percentile 90: 0.026034 ms
+Percentile 95: 0.030711 ms
+Percentile 99: 0.040731 ms
+Percentile 99.9: 0.100011 ms
+select-by-name: 
+Min: 0.017041 ms
+Max: 121.949282 ms
+Mean: 0.03212 ms
+
+Percentile 50 (Median): 0.023195 ms
+Percentile 75: 0.024421 ms
+Percentile 90: 0.030314 ms
+Percentile 95: 0.035724 ms
+Percentile 99: 0.045602 ms
+Percentile 99.9: 0.114377 ms
+select-by-email: 
+Min: 0.015785 ms
+Max: 97.176744 ms
+Mean: 0.029506 ms
+
+Percentile 50 (Median): 0.022023 ms
+Percentile 75: 0.023229 ms
+Percentile 90: 0.028764 ms
+Percentile 95: 0.033841 ms
+Percentile 99: 0.044126 ms
+Percentile 99.9: 0.111426 ms
+
+...
+
