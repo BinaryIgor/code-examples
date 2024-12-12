@@ -1,0 +1,136 @@
+About to run SQLite Limits Tests!
+Connecting to /db/limits_tests.db db with the journal_mode=WAL
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@52af6cff
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+
+DB connection established, running init queries
+
+Init queries executed, db schema:
+
+CREATE TABLE IF NOT EXISTS account (
+  id INTEGER PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  description TEXT,
+  created_at INTEGER NOT NULL,
+  version INTEGER
+);
+CREATE INDEX IF NOT EXISTS account_name ON account(name);
+
+The following test case (WRITES_50_READS_50) will be executed: TestCase[queriesToExecute=40000, queriesRate=2000, queryGroups=[QueryGroup[id=select-by-email, tables=[account]], QueryGroup[id=select-by-id, tables=[account]], QueryGroup[id=select-by-name, tables=[account]], QueryGroup[id=insert, tables=[account]], QueryGroup[id=update-various-fields-by-id, tables=[account]], QueryGroup[id=delete-by-id, tables=[account]]]]
+
+Tables count before test...
+account: 999932
+
+Running it...
+
+2024-12-12T06:12:35.925514225, 2000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:37.066516616, 4000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:38.350763439, 6000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:39.484673645, 8000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:40.781482701, 10000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:42.086013279, 12000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:43.452632229, 14000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:44.888309550, 16000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:46.226472267, 18000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:47.538200012, 20000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:48.733343307, 22000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:50.057720656, 24000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:51.449468471, 26000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:52.653674645, 28000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:53.896077187, 30000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:55.009434555, 32000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:56.161249877, 34000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:57.304273933, 36000/40000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:12:58.603464647, 38000/40000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case finished! It had queries:
+QueryGroup[id=select-by-email, tables=[account]]
+QueryGroup[id=select-by-id, tables=[account]]
+QueryGroup[id=select-by-name, tables=[account]]
+QueryGroup[id=insert, tables=[account]]
+QueryGroup[id=update-various-fields-by-id, tables=[account]]
+QueryGroup[id=delete-by-id, tables=[account]]
+
+Tables count after test...
+account: 1000022
+
+Some stats...
+
+Test duration: PT25.225S
+Executed queries: 40000
+Wanted queries rate: 2000/s
+Actual queries rate: 1586/s
+
+Min: 0.010133 ms
+Max: 1434.965598 ms
+Mean: 1.21968 ms
+
+Percentile 50 (Median): 0.068164 ms
+Percentile 75: 0.938406 ms
+Percentile 90: 1.646718 ms
+Percentile 95: 1.752176 ms
+Percentile 99: 2.309163 ms
+Percentile 99.9: 131.528419 ms
+
+Queries % share:
+select-by-email: 16.81
+select-by-id: 16.51
+select-by-name: 16.83
+insert: 16.6
+update-various-fields-by-id: 16.53
+delete-by-id: 16.73
+
+...
+
+Queries Stats...
+
+select-by-email:
+Min: 0.012215 ms
+Max: 1.446686 ms
+Mean: 0.030289 ms
+Percentile 90: 0.045673 ms
+Percentile 99: 0.077063 ms
+
+select-by-id:
+Min: 0.011023 ms
+Max: 1.451542 ms
+Mean: 0.02637 ms
+Percentile 90: 0.039308 ms
+Percentile 99: 0.071086 ms
+
+select-by-name:
+Min: 0.0136 ms
+Max: 1.249167 ms
+Mean: 0.031857 ms
+Percentile 90: 0.048211 ms
+Percentile 99: 0.080633 ms
+
+insert:
+Min: 0.357019 ms
+Max: 1434.965598 ms
+Mean: 2.495758 ms
+Percentile 90: 1.763598 ms
+Percentile 99: 3.752075 ms
+
+update-various-fields-by-id:
+Min: 0.014615 ms
+Max: 1335.391991 ms
+Mean: 2.733143 ms
+Percentile 90: 1.771687 ms
+Percentile 99: 5.910303 ms
+
+delete-by-id:
+Min: 0.010133 ms
+Max: 1337.043822 ms
+Mean: 2.02579 ms
+Percentile 90: 1.728182 ms
+Percentile 99: 3.232672 ms
+
+
+...
+

@@ -1,0 +1,108 @@
+About to run SQLite Limits Tests!
+Connecting to /db/limits_tests.db db with the journal_mode=WAL
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@52af6cff
+
+DB connection established, running init queries
+[main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+
+Init queries executed, db schema:
+
+CREATE TABLE IF NOT EXISTS account (
+  id INTEGER PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  description TEXT,
+  created_at INTEGER NOT NULL,
+  version INTEGER
+);
+CREATE INDEX IF NOT EXISTS account_name ON account(name);
+
+The following test case (READS_100) will be executed: TestCase[queriesToExecute=1000000, queriesRate=50000, queryGroups=[QueryGroup[id=select-by-email, tables=[account]], QueryGroup[id=select-by-id, tables=[account]], QueryGroup[id=select-by-name, tables=[account]]]]
+
+Tables count before test...
+account: 1001195
+
+Running it...
+
+2024-12-12T06:19:59.178300220, 50000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:00.342832618, 100000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:01.367217788, 150000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:02.388142330, 200000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:03.410974271, 250000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:04.491627258, 300000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:05.504923969, 350000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:06.540133117, 400000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:07.625947812, 450000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:08.641473844, 500000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:09.648088390, 550000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:10.655454106, 600000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:11.662953744, 650000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:12.682143374, 700000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:13.689146294, 750000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:14.723082469, 800000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:15.748153556, 850000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:16.766354641, 900000/1000000 queries were issued, waiting 1s before sending next query batch...
+2024-12-12T06:20:17.779080829, 950000/1000000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case finished! It had queries:
+QueryGroup[id=select-by-email, tables=[account]]
+QueryGroup[id=select-by-id, tables=[account]]
+QueryGroup[id=select-by-name, tables=[account]]
+
+Tables count after test...
+account: 1001195
+
+Some stats...
+
+Test duration: PT20.183S
+Executed queries: 1000000
+Wanted queries rate: 50000/s
+Actual queries rate: 49547/s
+
+Min: 0.008531 ms
+Max: 107.297347 ms
+Mean: 0.017646 ms
+
+Percentile 50 (Median): 0.013894 ms
+Percentile 75: 0.014784 ms
+Percentile 90: 0.016182 ms
+Percentile 95: 0.020844 ms
+Percentile 99: 0.035956 ms
+Percentile 99.9: 0.064259 ms
+
+Queries % share:
+select-by-email: 33.24
+select-by-id: 33.43
+select-by-name: 33.33
+
+...
+
+Queries Stats...
+
+select-by-email:
+Min: 0.010145 ms
+Max: 106.040681 ms
+Mean: 0.018031 ms
+Percentile 90: 0.016091 ms
+Percentile 99: 0.036266 ms
+
+select-by-id:
+Min: 0.008531 ms
+Max: 106.156175 ms
+Mean: 0.015736 ms
+Percentile 90: 0.014149 ms
+Percentile 99: 0.033046 ms
+
+select-by-name:
+Min: 0.010792 ms
+Max: 107.297347 ms
+Mean: 0.019177 ms
+Percentile 90: 0.01692 ms
+Percentile 99: 0.038108 ms
+
+
+...
