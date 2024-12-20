@@ -1,3 +1,4 @@
+-- multiple statements in a query not supported: https://github.com/xerial/sqlite-jdbc/issues/277 --
 CREATE TABLE account (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
@@ -5,5 +6,3 @@ CREATE TABLE account (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     version BIGINT NOT NULL
 );
-
-CREATE INDEX account_name ON account(name);

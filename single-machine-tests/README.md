@@ -90,7 +90,7 @@ python3 prepare_infra.py large
 `large` is a machine size argument; supported values:
 * small - 1 CPU + 2 GB memory droplet
 * medium - 2 CPUs + 4 GB memory droplet
-* small - 4 CPUs + 8 GB memory droplet with dedicated, not shared, cpu(s)
+* large - 4 CPUs + 8 GB memory droplet with dedicated, not shared, cpu(s)
 
 This script can take a while to finish, because it also creates 4 test droplets - we will run load tests from them - and volume for the Postgres db.
 Additionally, it is idempotent - we can run it multiple times, and it will figure out what needs to created and what
@@ -453,5 +453,3 @@ For more options and details, check out `load-test` directory.
 ## What else you can do
 
 I encourage you to run various test profiles on various machines (small, medium, large and your own) and compare the results!
-
-
