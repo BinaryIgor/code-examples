@@ -15,14 +15,13 @@ NAME = "name"
 # full machine slugs reference: https://slugs.do-api.dev/
 # we start from 2gb because we use Docker and it needs some memory also
 SMALL_MACHINE = "small"
-SMALL_MACHINE_SLUG = "s-1vcpu-2gb-amd"
+SMALL_MACHINE_SLUG = "s-1vcpu-1gb-amd"
 
 MEDIUM_MACHINE = "medium"
-MEDIUM_MACHINE_SLUG = "s-2vcpu-4gb-amd"
+MEDIUM_MACHINE_SLUG = "s-2vcpu-2gb-amd"
 
 LARGE_MACHINE = "large"
-# 4 CPU, 8 GB RAM + dedicated CPU
-LARGE_MACHINE_SLUG = "c-4"
+LARGE_MACHINE_SLUG = "s-4vcpu-8gb-amd"
 
 def print_and_exit(message):
     print(message)
