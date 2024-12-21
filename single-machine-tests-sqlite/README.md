@@ -119,7 +119,7 @@ ls -l
 -rw-rw-r-- 1 igor igor 222339765 gru 21 11:00 single-app.tar.gz
 ```
 
-These are just gzipped docker images that we will deploy to our `single-machine`.
+This is just gzipped docker image that we will deploy to our `single-machine`.
 
 ### Deploy
 
@@ -176,40 +176,35 @@ curl -X POST -v http://localhost:80/accounts/generate-test-data
 
 We can then investigate process' progress by checking out `single-app` logs:
 ```
-TODO: large compare!
-
 docker logs single-app
 
-2024-12-21T10:09:50.510Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:09:54.921Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 50000/1250000 accounts were created
-2024-12-21T10:09:55.021Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:10:02.357Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 100000/1250000 accounts were created
-2024-12-21T10:10:02.434Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:10:12.243Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 150000/1250000 accounts were created
-2024-12-21T10:10:12.278Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:10:22.927Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 200000/1250000 accounts were created
-2024-12-21T10:10:22.952Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:10:34.336Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 250000/1250000 accounts were created
-2024-12-21T10:10:34.368Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:10:45.963Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 300000/1250000 accounts were created
-2024-12-21T10:10:45.985Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:10:58.025Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 350000/1250000 accounts were created
-2024-12-21T10:10:58.055Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:11:10.165Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 400000/1250000 accounts were created
+2024-12-21T11:42:26.110Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:42:26.562Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 10000/1250000 accounts were created
+2024-12-21T11:42:26.581Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:42:27.491Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 20000/1250000 accounts were created
+2024-12-21T11:42:27.500Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:42:28.672Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 30000/1250000 accounts were created
+2024-12-21T11:42:28.681Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:42:30.087Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 40000/1250000 accounts were created
+2024-12-21T11:42:30.097Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:42:31.901Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 50000/1250000 accounts were created
+2024-12-21T11:42:31.913Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:42:33.849Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 60000/1250000 accounts were created
+2024-12-21T11:42:33.857Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
 ...
-2024-12-21T10:15:08.242Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1100000/1250000 accounts were created
-2024-12-21T10:15:08.267Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:15:26.037Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1150000/1250000 accounts were created
-2024-12-21T10:15:26.066Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:15:43.700Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1200000/1250000 accounts were created
-2024-12-21T10:15:43.733Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 50000 accounts were generated, creating them...
-2024-12-21T10:16:01.404Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1250000/1250000 accounts were created
-2024-12-21T10:16:01.409Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : All accounts were created, it took: PT6M11.370155109S!
+2024-12-21T11:50:57.459Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1220000/1250000 accounts were created
+2024-12-21T11:50:57.464Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:51:02.456Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1230000/1250000 accounts were created
+2024-12-21T11:51:02.461Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:51:07.449Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1240000/1250000 accounts were created
+2024-12-21T11:51:07.455Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : Next 10000 accounts were generated, creating them...
+2024-12-21T11:51:12.496Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : 1250000/1250000 accounts were created
+2024-12-21T11:51:12.497Z  INFO 1 --- [single-app] [               ] c.b.s.app.account.AccountController      : All accounts were created, it took: PT8M46.477782041S!
 ```
 
 We can then inspect our db:
 ```
-<copy-paste content of the scripts/build_and_run_sqlite_browser.bash - it will build and run docker image with sqlite3 CLI>
+<copy-paste content of the scripts/build_and_run_sqlite_browser.bash - it will build and run docker container with sqlite3 CLI>
 # inside docker
 
 root@e3362a3fb4f0:/db# sqlite3
@@ -356,62 +351,60 @@ Requests by status: {200=920}
 
 LoadTest supports various test profiles. To load our machine more, we can do:
 ```
-TODO: refresh
-
-export TEST_PROFILE=very_high_load
+export TEST_PROFILE=high_load
 bash run_load_test.bash
 
 ...
 
-ssh test-machine@64.225.109.249 cat /home/test-machine/load-test-results/test_results-large-very_high_load.txt
+ssh test-machine@64.225.109.249 cat /home/test-machine/load-test-results/test_results-medium-high_load.txt
 
 ...
 
-15000 requests with 1000 per second rate took PT15.362S
+15000 requests with 500 per second rate took PT30.323S
 
 ...
 
 Tests executed on: 4 machines, in parallel
-Executed requests on 1 machine: 15000, with 1000/s rate
+Executed requests on 1 machine: 15000, with 500/s rate
 Requests with connect timeout [5000]: 0, as percentage: 0
 Requests with request timeout [5000]: 0, as percentage: 0
 
 Min: 0.0 s
-Max: 1.373 s
-Mean: 0.076 s
+Max: 0.194 s
+Mean: 0.014 s
 
 Percentile 10: 0.001 s
 Percentile 25: 0.001 s
-Percentile 50 (Median): 0.002 s
-Percentile 75: 0.003 s
-Percentile 90: 0.25 s
-Percentile 95: 0.706 s
-Percentile 99: 0.944 s
-Percentile 99.9: 1.165 s
+Percentile 50 (Median): 0.005 s
+Percentile 75: 0.02 s
+Percentile 90: 0.041 s
+Percentile 95: 0.051 s
+Percentile 99: 0.074 s
+Percentile 99.9: 0.107 s
 
 ...
 
 POST: /accounts/execute-random-write
-Requests: 2898, which is 19% of all requests
+Requests: 1479, which is 10% of all requests
 Connect timeouts: 0
 Request timeouts: 0
-Requests by status: {200=2898}
+Requests by status: {200=1479}
 
 ...
 
 GET: /accounts/{id}
-Requests: 6124, which is 41% of all requests
+Requests: 9056, which is 60% of all requests
 Connect timeouts: 0
 Request timeouts: 0
-Requests by status: {404=3100, 200=3024}
+Requests by status: {404=4443, 200=4613}
 
 ...
 
-GET: /accounts/count?name={name}
-Requests: 5978, which is 40% of all requests
+GET: /accounts?name={name}
+Requests: 4465, which is 30% of all requests
 Connect timeouts: 0
 Request timeouts: 0
-Requests by status: {200=5978}
+Requests by status: {200=4465}
 
 ...
 ```

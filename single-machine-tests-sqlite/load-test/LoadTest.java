@@ -110,8 +110,7 @@ public class LoadTest {
             case LOW_LOAD -> TestProfileParams.ofRateFor30Seconds(10);
             case AVERAGE_LOAD -> TestProfileParams.ofRateFor30Seconds(100);
             case HIGH_LOAD -> TestProfileParams.ofRateFor30Seconds(500);
-            case VERY_HIGH_LOAD -> TestProfileParams.ofRateFor30Seconds(1000);
-            case ULTRA_HIGH_LOAD -> TestProfileParams.ofRateFor30Seconds(1500);
+            case VERY_HIGH_LOAD -> TestProfileParams.ofRateFor30Seconds(750);
         };
     }
 
@@ -378,8 +377,7 @@ public class LoadTest {
         LOW_LOAD,
         AVERAGE_LOAD,
         HIGH_LOAD,
-        VERY_HIGH_LOAD,
-        ULTRA_HIGH_LOAD
+        VERY_HIGH_LOAD
     }
 
     record TestProfileParams(int requests, int requestsPerSecond, int maxConcurrency) {
