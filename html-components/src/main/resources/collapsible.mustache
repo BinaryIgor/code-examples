@@ -1,0 +1,23 @@
+<div id="{{id}}">
+  <div>{{header}}</div>
+  <div style="display: none"{{#class}}class="{{.}}"{{/class}}>
+    {{#items}}
+    <div>{{.}}</div>
+    {{/items}}
+  </div>
+</div>
+
+<script>
+  (function() {
+    const collapsible = document.getElementById("{{id}}");
+    const [itemsHeader, itemsContainer] = collapsible.querySelectorAll("div");
+    itemsHeader.onclick = () => {
+      const itemsDisplay = itemsContainer.style.display;
+      if (itemsDisplay == 'block') {
+        itemsContainer.style.display = 'none';
+      } else {
+        itemsContainer.style.display = 'block';
+      }
+    };
+  })();
+</script>
