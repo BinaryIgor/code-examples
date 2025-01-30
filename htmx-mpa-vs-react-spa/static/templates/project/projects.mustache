@@ -1,0 +1,47 @@
+<div class="m-4 w-full">
+    <h1 class="text-2xl my-8">Projects</h1>
+    {{#hasProjects}}
+        <div class="space-y-2">
+            {{#projects}}
+                <div id="p-{{id}}" class="relative p-4 border rounded border-black max-w-80">
+                    <div>{{name}}</div>
+                    <span class="absolute top-0 right-0 text-3xl p-2 cursor-pointer"
+                          onclick="deleteProject('{{id}}')"
+                          hx-delete="/projects/{{id}}"
+                          hx-confirm="true"
+                          hx-target="#p-{{id}}"
+                          hx-swap="delete">
+                        &times;
+                    </span>
+                </div>
+            {{/projects}}
+        </div>
+        {{> ../components/confirmable-modal}}
+    {{/hasProjects}}
+    {{^projects}}
+        <div>There are no projects!</div>
+    {{/projects}}
+
+    <div class="my-8"><a class="underline" href="/projects/create">Add new project</a></div>
+</div>
+
+<script>
+    let lastDeleteProjectId;
+    let deleteProjectHTMXEvent;
+    function deleteProject(id) {
+        console.log("Delete project of id:", id);
+        lastDeleteProjectId = id;
+        document.dispatchEvent(new CustomEvent('confirmable-modal-show'));
+    }
+
+    document.addEventListener("confirmable-modal-right-clicked", e => {
+        console.log("Right clicked! Should delete project: ", lastDeleteProjectId);
+        deleteProjectHTMXEvent.detail.issueRequest(deleteProjectHTMXEvent);
+    });
+
+    document.addEventListener("htmx:confirm", e => {
+        e.preventDefault();
+        console.log("Should confirm HTMX request!", e);
+        deleteProjectHTMXEvent = e;
+    });
+</script>

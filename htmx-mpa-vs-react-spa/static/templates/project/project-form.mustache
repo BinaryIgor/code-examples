@@ -1,0 +1,22 @@
+<form hx-post="/projects/create" hx-swap="outerHTML">
+    <input class="block p-2" type="text" placeholder="Name" name="name" value="{{nameValue}}">
+    <p class="error mb-2 {{#nameErrorHidden}}hidden{{/nameErrorHidden}}">{{nameError}}</p>
+    <input class="button-like px-8 py-2 mt-4" type="submit" value="Create">
+</form>
+
+<script>
+    (function () {
+        const form = document.querySelector("form");
+        const nameInput = form.querySelector("input");
+        const nameError = form.querySelector("p");
+        nameInput.oninput = (e) => {
+            console.log("Input has changed!", nameInput.value);
+            const name = nameInput.value;
+            if (!name || name.length < 3 || name.length > 100) {
+                nameError.classList.remove("hidden");
+            } else {
+                nameError.classList.add("hidden");
+            }
+        };
+    })();
+</script>

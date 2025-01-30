@@ -1,0 +1,20 @@
+<div id="navigation" class="h-screen space-y-4 px-8 pt-16 border-r-2 border-solid border-black">
+    <a href="/projects" class="block">Projects</a>
+    <a href="/tasks" class="block">Tasks</a>
+    <a href="/stats" class="block">Stats</a>
+    <a href="/account" class="block">Account</a>
+</div>
+<script>
+    const currentPath = location.pathname;
+    const [projects, tasks, stats, account] = document.getElementById("navigation").querySelectorAll("a");
+
+    if (currentPath.startsWith('/projects')) {
+      projects.classList.add('underline');
+    } else if (currentPath.startsWith('/tasks')) {
+      tasks.classList.add('underline');
+    } else if (currentPath.startsWith('/stats')) {
+      stats.classList.add('underline');
+    } else if (currentPath.startsWith('/account')) {
+      account.classList.add('underline');
+    }
+</script>
