@@ -1,0 +1,14 @@
+<h1 class="text-2xl my-8">{{task.name}} {{task.task}}</h1>
+<div>Project: {{projectValue}}</div>
+<div>Status: {{task.status}}</div>
+<div class="text-xl my-8 underline cursor-pointer"
+     onclick="toggleTaskForm()">{{task.edit}}</div>
+<div id="task-form" class="hidden mb-8">{{>task-form}}</div>
+<a class="text-xl my-4 underline block" href="{{tasksUrl}}">{{task.tasks}}</a>
+
+<script>
+    function toggleTaskForm() {
+        const taskForm = document.getElementById("task-form");
+        taskForm.classList.toggle("hidden");
+    }
+</script>

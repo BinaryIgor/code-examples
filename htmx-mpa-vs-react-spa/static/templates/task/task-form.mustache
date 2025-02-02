@@ -1,0 +1,50 @@
+<form {{{taskFormAttrs}}} hx-swap="none">
+    <input class="block p-2" type="text" placeholder="Name" name="name" value="{{nameValue}}">
+    <p class="error mb-2 {{#nameErrorHidden}}hidden{{/nameErrorHidden}}">{{nameError}}</p>
+    <input class="block p-2 mt-4" type="text" placeholder="Project name" name="project" value="{{projectValue}}">
+    <p class="error mb-2 {{#projectErrorHidden}}hidden{{/projectErrorHidden}}">{{projectError}}</p>
+    {{#statusValue}}
+        <input class="block p-2 mt-4" type="text" placeholder="Status" name="status" value="{{statusValue}}"
+            data-status-allowed-values="{{statusAllowedValues}}">
+        <p class="error mb-2 {{#statusErrorHidden}}hidden{{/statusErrorHidden}}">{{statusError}}</p>
+    {{/statusValue}}
+    <input class="button-like px-8 py-2 mt-4" type="submit" value="{{submitValue}}">
+</form>
+
+<script>
+    (function () {
+        const form = document.querySelector("form");
+        const [nameInput, projectInput, statusInput] = form.querySelectorAll("input:not([type='submit'])");
+        const [nameError, projectError, statusError] = form.querySelectorAll("p");
+
+        nameInput.oninput = e => {
+            const name = nameInput.value;
+            if (!name || name.length < 3 || name.length > 100) {
+                nameError.classList.remove("hidden");
+            } else {
+                nameError.classList.add("hidden");
+            }
+        };
+        projectInput.oninput = e => {
+            const project = projectInput.value;
+            if (!project || project.length < 3 || project.length > 100) {
+                projectError.classList.remove("hidden");
+            } else {
+                projectError.classList.add("hidden");
+            }
+        };
+
+        if (statusInput) {
+            const statusAllowedValues = statusInput.getAttribute("data-status-allowed-values").split(",");
+            statusInput.oninput = e => {
+                const status = statusInput.value;
+                console.log("Allowed values", statusAllowedValues);
+                if (!status || !statusAllowedValues.includes(status)) {
+                    statusError.classList.remove("hidden");
+                } else {
+                    statusError.classList.add("hidden");
+                }
+            };
+        }
+    })();
+</script>

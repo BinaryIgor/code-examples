@@ -1,5 +1,8 @@
 package com.binaryigor.htmxvsreact.project;
 
+import com.binaryigor.htmxvsreact.project.exception.ProjectValidationException;
+import com.binaryigor.htmxvsreact.shared.contracts.ProjectView;
+
 import java.util.UUID;
 
 public record Project(UUID id, String name, UUID ownerId) {
@@ -15,5 +18,9 @@ public record Project(UUID id, String name, UUID ownerId) {
 
     public static Project newOne(String name, UUID ownerId) {
         return new Project(UUID.randomUUID(), name, ownerId);
+    }
+
+    public ProjectView toView() {
+        return new ProjectView(id, name);
     }
 }

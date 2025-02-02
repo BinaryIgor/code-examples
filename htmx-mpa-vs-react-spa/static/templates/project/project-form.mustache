@@ -1,7 +1,7 @@
-<form hx-post="/projects/create" hx-swap="outerHTML">
+<form {{{projectFormAttrs}}} hx-swap="outerHTML">
     <input class="block p-2" type="text" placeholder="Name" name="name" value="{{nameValue}}">
     <p class="error mb-2 {{#nameErrorHidden}}hidden{{/nameErrorHidden}}">{{nameError}}</p>
-    <input class="button-like px-8 py-2 mt-4" type="submit" value="Create">
+    <input class="button-like px-8 py-2 mt-4" type="submit" value="{{submitValue}}">
 </form>
 
 <script>

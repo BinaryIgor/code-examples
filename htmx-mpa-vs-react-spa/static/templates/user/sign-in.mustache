@@ -1,0 +1,13 @@
+<h1 class="text-2xl my-8">{{sign-in.title}}</h1>
+
+<form hx-post="/sign-in" hx-swap="none">
+    <input class="block p-2" type="email" placeholder="{{sign-in.email-placeholder}}" name="email" value="{{emailValue}}">
+    <p class="error mb-2 hidden">{{emailError}}</p>
+    <input class="block p-2" type="password" placeholder="{{sign-in.password-placeholder}}" name="password" value="{{passwordValue}}">
+    <p class="error mb-2 hidden">{{passwordError}}</p>
+    <input class="button-like px-8 py-2 mt-4" type="submit" value="{{sign-in.sign-in}}">
+</form>
+
+<script>
+    document.addEventListener("replace-url", e => location.replace(e.detail.value));
+</script>

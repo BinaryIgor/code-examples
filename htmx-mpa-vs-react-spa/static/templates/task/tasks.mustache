@@ -1,0 +1,54 @@
+<h1 class="text-2xl my-8">{{tasks.title}}</h1>
+
+<div class="mt-8">
+    <input class="p-4" name="projectName"
+           placeholder="{{tasks.projects-filter-placeholder}}"
+           value="{{projectsFilterValue}}"
+           hx-get="/tasks"
+           hx-trigger="input changed delay:500ms"
+           hx-target="#tasks-container"
+           hx-include="[name='status']"
+           hx-replace-url="true">
+    <p class="italic ml-2">{{tasks.options}}: {{projectsFilterOptions}}</p>
+    <input class="p-4" name="status"
+           placeholder="{{tasks.statuses-filter-placeholder}}"
+           value="{{statusesFilterValue}}"
+           hx-get="/tasks"
+           hx-trigger="input changed delay:500ms"
+           hx-target="#tasks-container"
+           hx-include="[name='projectName']"
+           hx-replace-url="true">
+    <p class="italic ml-2">{{tasks.options}}: {{statusesFilterOptions}}</p>
+</div>
+
+<div id="tasks-container" class="space-y-2 my-12">
+    {{> tasks-search-results}}
+</div>
+
+<div class="my-8"><a id="add-task-link" class="underline" href="/tasks/create">{{tasks.add}}</a></div>
+
+<script>
+    const tasksContainer = document.getElementById("tasks-container");
+    document.addEventListener("htmx:beforeRequest", e => {
+        console.log("Before making http request", e);
+    });
+
+    window.addEventListener("pageshow", e => {
+        if (e.persisted) {
+            location.reload();
+        }
+    });
+
+    document.getElementById("add-task-link").onclick = e => {
+        if (location.search) {
+            const tasksSearch = btoa(location.search.substr(1));
+            e.target.href = e.target.href + "?tasksSearch=" + tasksSearch;
+        }
+    };
+
+    const scroll = sessionStorage.getItem("tasks-scroll");
+    if (scroll) {
+        document.documentElement.scroll(0, scroll);
+        sessionStorage.removeItem("tasks-scroll");
+    }
+</script>

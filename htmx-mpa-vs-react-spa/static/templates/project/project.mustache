@@ -1,0 +1,13 @@
+<h1 class="text-2xl my-8">{{project.name}} {{project-page.project}}</h1>
+<div class="text-xl my-4 underline cursor-pointer"
+     onclick="toggleProjectForm()">{{project-page.edit}}</div>
+<div id="project-form" class="hidden mb-8">{{>project-form}}</div>
+<a class="text-xl my-4 underline block" href="/tasks?projectName={{project.name}}">{{project-page.tasks}}</a>
+<a class="text-xl my-4 underline" href="/projects">{{project-page.projects}}</a>
+
+<script>
+    function toggleProjectForm() {
+        const projectForm = document.getElementById("project-form");
+        projectForm.classList.toggle("hidden");
+    }
+</script>

@@ -5,14 +5,29 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="{{cssPath}}"/>
-    <script src="{{htmxPath}}"></script>
+    <script src="{{htmxPath}}" defer></script>
 </head>
 
 <body class="bg-slate-50">
-    <div class="flex flex-row w-full">
-        {{> navigation}}
-        {{{content}}}
+    {{> components/error-modal}}
+    <div class="flex w-full min-h-screen">
+        {{^hideNavigation}}
+            {{> navigation}}
+        {{/hideNavigation}}
+        <div class="w-full p-4">
+            {{{content}}}
+        </div>
     </div>
+
+<script>
+    document.addEventListener("htmx:afterRequest", e => {
+        console.log("After HTMX request!", e);
+        if (e.detail.failed) {
+            const error = e.detail.xhr.response;
+            document.dispatchEvent(new CustomEvent("error-modal-show", { detail: { content: error }}));
+        }
+    });
+</script>
 </body>
 
 </html>

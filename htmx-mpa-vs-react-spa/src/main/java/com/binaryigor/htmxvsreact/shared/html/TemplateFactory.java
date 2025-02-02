@@ -1,4 +1,4 @@
-package com.binaryigor.htmxvsreact.html;
+package com.binaryigor.htmxvsreact.shared.html;
 
 import com.github.mustachejava.Mustache;
 

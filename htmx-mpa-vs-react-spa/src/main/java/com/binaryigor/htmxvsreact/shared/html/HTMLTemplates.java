@@ -1,4 +1,6 @@
-package com.binaryigor.htmxvsreact.html;
+package com.binaryigor.htmxvsreact.shared.html;
+
+import com.binaryigor.htmxvsreact.shared.Translations;
 
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -18,23 +20,23 @@ public class HTMLTemplates {
         return render(template, params, false);
     }
 
-    public String renderPartial(String template, Map<String, Object> params) {
+    public String render(String template, Map<String, Object> params) {
         return render(template, params, true);
     }
 
-    private String render(String template, Map<String, Object> params, boolean partial) {
+    private String render(String template, Map<String, ?> params, boolean partial) {
         try {
             var compiled = doRender(template, params);
             if (partial) {
                 return compiled;
             }
-            return doRender("page-skeleton.mustache", enrichedParams(params, compiled));
+            return doRender("page-skeleton.mustache", enrichedForFullPageParams(params, compiled));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String doRender(String template, Map<String, Object> params) {
+    private String doRender(String template, Map<String, ?> params) {
         try {
             var compiled = factory.compile("static/templates/" + template);
             var writer = new StringWriter();
@@ -45,11 +47,12 @@ public class HTMLTemplates {
         }
     }
 
-    private Map<String, Object> enrichedParams(Map<String, Object> params, String content) {
-        var enrichedParams = new HashMap<>(params);
+    private Map<String, ?> enrichedForFullPageParams(Map<String, ?> params, String content) {
+        var enrichedParams = new HashMap<String, Object>(params);
         enrichedParams.put("cssPath", htmlConfig.cssPath());
         enrichedParams.put("htmxPath", htmlConfig.htmxPath());
         enrichedParams.put("content", content);
-        return enrichedParams;
+        enrichedParams.put("errorModalTitle", Translations.message("error-modal-title"));
+        return Translations.enrich(enrichedParams, "navigation");
     }
 }
