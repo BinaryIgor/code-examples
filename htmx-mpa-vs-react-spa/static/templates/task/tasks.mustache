@@ -1,0 +1,8 @@
+<div class="m-4">
+    <h1 class="text-2xl my-8">{{tasks.title}}</h1>
+    {{^tasks}}
+        <div>{{tasks.no-tasks}}</div>
+    {{/tasks}}
+
+    <div class="my-8"><a class="underline" href="/tasks/create">{{tasks.add}}</a></div>
+</div>

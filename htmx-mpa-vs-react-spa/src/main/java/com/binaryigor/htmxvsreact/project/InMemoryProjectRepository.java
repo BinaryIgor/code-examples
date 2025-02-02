@@ -2,6 +2,7 @@ package com.binaryigor.htmxvsreact.project;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,5 +25,15 @@ public class InMemoryProjectRepository implements ProjectRepository {
     @Override
     public void delete(UUID id) {
         db.remove(id);
+    }
+
+    @Override
+    public Optional<Project> ofName(String name) {
+        return db.values().stream().filter(p -> p.name().equals(name)).findAny();
+    }
+
+    @Override
+    public Optional<Project> ofId(UUID id) {
+        return Optional.ofNullable(db.get(id));
     }
 }

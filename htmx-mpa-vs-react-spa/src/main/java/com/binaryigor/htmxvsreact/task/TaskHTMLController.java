@@ -1,5 +1,7 @@
-package com.binaryigor.htmxvsreact.html;
+package com.binaryigor.htmxvsreact.task;
 
+import com.binaryigor.htmxvsreact.html.HTMLTemplates;
+import com.binaryigor.htmxvsreact.shared.Translations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +20,7 @@ public class TaskHTMLController {
 
     @GetMapping
     String tasks() {
-        return templates.renderPage("tasks.mustache", Map.of("title", "Tasks"));
+        return templates.renderPage("task/tasks.mustache",
+            Map.of("title", Translations.message("tasks.title")));
     }
 }

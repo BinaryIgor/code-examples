@@ -1,5 +1,7 @@
 package com.binaryigor.htmxvsreact.project;
 
+import com.binaryigor.htmxvsreact.project.exception.ProjectValidationException;
+
 import java.util.UUID;
 
 public record Project(UUID id, String name, UUID ownerId) {

@@ -6,13 +6,17 @@ spring:
       static-locations: [ "file:static" ]
       cache:
         period: 0
-#  datasource:
-#    url: "${DB_URL:jdbc:postgresql://localhost:5432/analytics}"
-#    username: "${DB_USERNAME:analytics}"
-#    password: "${DB_PASSWORD:analytics}"
-#    hikari:
-#      minimum-idle: 1
-#      maximum-pool-size: 5
+  datasource:
+    url: "${DB_URL:jdbc:sqlite:/tmp/htmx-vs-react/htmx-vs-react.db}"
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 10
+      connection-init-sql: >
+        PRAGMA journal_mode=WAL;
+        PRAGMA cache_size=-10000;
+        PRAGMA temp_store=MEMORY;
+        PRAGMA foreign_keys = ON;
+  sql.init.mode: always
   threads:
     virtual:
       enabled: true

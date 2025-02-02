@@ -1,4 +1,4 @@
-package com.binaryigor.htmxvsreact.project;
+package com.binaryigor.htmxvsreact.project.exception;
 
 public class ProjectValidationException extends RuntimeException {
 

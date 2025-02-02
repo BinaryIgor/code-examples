@@ -1,5 +1,7 @@
 package com.binaryigor.htmxvsreact.html;
 
+import com.binaryigor.htmxvsreact.shared.Translations;
+
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,17 +20,18 @@ public class HTMLTemplates {
         return render(template, params, false);
     }
 
-    public String renderPartial(String template, Map<String, Object> params) {
+    public String render(String template, Map<String, Object> params) {
         return render(template, params, true);
     }
 
     private String render(String template, Map<String, Object> params, boolean partial) {
         try {
-            var compiled = doRender(template, params);
+            var withTranslationsParams = enrichedWithTranslationsParams(params);
+            var compiled = doRender(template, withTranslationsParams);
             if (partial) {
                 return compiled;
             }
-            return doRender("page-skeleton.mustache", enrichedParams(params, compiled));
+            return doRender("page-skeleton.mustache", enrichedWithAssetsParams(withTranslationsParams, compiled));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -45,11 +48,18 @@ public class HTMLTemplates {
         }
     }
 
-    private Map<String, Object> enrichedParams(Map<String, Object> params, String content) {
+    private Map<String, Object> enrichedWithAssetsParams(Map<String, Object> params, String content) {
         var enrichedParams = new HashMap<>(params);
         enrichedParams.put("cssPath", htmlConfig.cssPath());
         enrichedParams.put("htmxPath", htmlConfig.htmxPath());
         enrichedParams.put("content", content);
         return enrichedParams;
     }
+
+    private Map<String, Object> enrichedWithTranslationsParams(Map<String, Object> params) {
+        var enrichedParams = new HashMap<>(params);
+        Translations.copyAll(enrichedParams);
+        return enrichedParams;
+    }
+
 }

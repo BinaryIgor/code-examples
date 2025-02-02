@@ -10,6 +10,24 @@ public class Translations {
     @SuppressWarnings("rawtypes")
     private static final Map<String, ExceptionTranslator> EXCEPTION_TRANSLATIONS = new ConcurrentHashMap<>();
 
+    static {
+        TRANSLATIONS.putAll(Map.of(
+            "projects.title", "Projects",
+            "projects.delete-modal-title", "Delete project",
+            "projects.delete-modal-left", "Cancel",
+            "projects.delete-modal-content-template", "Are you sure to delete {project} project?",
+            "projects.delete-modal-right", "Ok"));
+
+        TRANSLATIONS.putAll(Map.of("project.create", "Create",
+            "project.save", "Save"));
+
+        TRANSLATIONS.putAll(Map.of("tasks.title", "Tasks",
+            "tasks.no-tasks", "There are no tasks.",
+            "tasks.add", "Add new task"));
+
+        TRANSLATIONS.put("error-page.title", "Something went wrong...");
+    }
+
     public static void register(String key, String message) {
         TRANSLATIONS.put(key, message);
     }
@@ -31,6 +49,10 @@ public class Translations {
     @SuppressWarnings("unchecked")
     public static String error(Class<? extends Throwable> key) {
         return EXCEPTION_TRANSLATIONS.computeIfAbsent(key.getSimpleName(), k -> e -> key.getSimpleName()).translate(null);
+    }
+
+    public static void copyAll(Map<String, Object> target) {
+        target.putAll(TRANSLATIONS);
     }
 
     public interface ExceptionTranslator<T extends Throwable> {
