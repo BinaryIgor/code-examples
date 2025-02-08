@@ -9,3 +9,6 @@
 * Profile - new page
   * stats
   * sign out
+
+## TODO
+* one vs two nginxes (/mpa and /spa)?

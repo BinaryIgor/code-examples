@@ -1,20 +1,15 @@
 spring:
   application:
     name: htmx-mpa-vs-react-spa
-  web:
-    resources: # for live reload from local, but outside the classpath dir
-      static-locations: [ "file:static" ]
-      cache:
-        period: 0
   datasource:
     url: "${DB_URL:jdbc:sqlite:/tmp/htmx-vs-react.db}"
     sqlite:
       pool-size: 10
-      busy-timeout: 500
+      busy-timeout: 5000
       journal-mode: WAL
       # multiple of page size; default page size is 4096 bytes
       # https://www.sqlite.org/pragma.html#pragma_cache_size
-      cache-size: 1000
+      cache-size: 10_000
   sql.init.mode: always
   threads:
     virtual:
@@ -24,5 +19,12 @@ server:
   port: 8080
 
 html:
-  css-path: "/live-styles.css"
-  htmx-path: "/htmx.2.0.4.min.js"
+  css-path: "${CSS_PATH:/live-styles.css}"
+  htmx-path: "/js/htmx.2.0.4.min.js"
+
+auth:
+  issuer: htmx-mpa-vs-react-spa
+  token-key: "${AUTH_TOKEN_KEY:c2VjcmV0Cg==}"
+  # 7 days
+  token-duration: "PT168H"
+  issue-new-token-before-expiration-duration: "PT167H"

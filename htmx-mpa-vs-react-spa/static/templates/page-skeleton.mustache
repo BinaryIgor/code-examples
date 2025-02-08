@@ -21,7 +21,6 @@
 
 <script>
     document.addEventListener("htmx:afterRequest", e => {
-        console.log("After HTMX request!", e);
         if (e.detail.failed) {
             const error = e.detail.xhr.response;
             document.dispatchEvent(new CustomEvent("error-modal-show", { detail: { content: error }}));

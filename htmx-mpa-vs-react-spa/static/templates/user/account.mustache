@@ -1,3 +1,7 @@
 <h1 class="text-2xl my-8">{{user-account.title}}</h1>
-<div class="my-8">{{user.name}}, {{user.email}}</div>
+<div class="my-8">
+    <p>{{user-account.name-label}}: {{user.name}}</p>
+    <p>{{user-account.email-label}}: {{user.email}}</p>
+    <p>{{user-account.language-label}}: {{user.language}}</p>
+</div>
 <a class="underline" href="/sign-out">{{user-account.sign-out}}</a>

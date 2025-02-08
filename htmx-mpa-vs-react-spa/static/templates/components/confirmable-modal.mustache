@@ -2,9 +2,9 @@
     <div class="w-11/12 md:w-8/12 xl:w-6/12 px-8 pt-8 pb-12 m-auto relative rounded-lg bg-slate-200">
         <span class="text-4xl absolute top-0 right-2 hover:text-zinc-400 cursor-pointer">&times;</span>
         <div class="text-2xl font-medium">{{confirmableModalTitle}}</div>
-        <div class="text-lg pt-4 pb-12">{{confirmableModalContent}}</div>
-        <span class="absolute bottom-0 left-0 p-4 cursor-pointer text-xl">{{confirmableModalLeft}}</span>
-        <span class="absolute bottom-0 right-0 p-4 cursor-pointer text-xl">{{confirmableModalRight}}</span>
+        <div class="text-lg pt-4 pb-4">{{confirmableModalContent}}</div>
+        <span class="absolute bottom-0 left-0 p-4 ml-4 cursor-pointer text-xl">{{confirmableModalLeft}}</span>
+        <span class="absolute bottom-0 right-0 p-4 mr-4 cursor-pointer text-xl">{{confirmableModalRight}}</span>
     </div>
 </div>
 
@@ -15,7 +15,6 @@
         const [hide, left, right] = modal.querySelectorAll("span");
 
         document.addEventListener('confirmable-modal-show', e => {
-            console.log("Should show confirmable modal!", e);
             const config = e.detail;
             if (config && config.title) {
                 title.innerHTML = config.title;

@@ -1,7 +1,5 @@
 package com.binaryigor.htmxvsreact.shared.html;
 
-import com.binaryigor.htmxvsreact.shared.Translations;
-
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,10 +8,12 @@ public class HTMLTemplates {
 
     private final TemplateFactory factory;
     private final HTMLConfig htmlConfig;
+    private final Translations translations;
 
-    public HTMLTemplates(TemplateFactory factory, HTMLConfig htmlConfig) {
+    public HTMLTemplates(TemplateFactory factory, HTMLConfig htmlConfig, Translations translations) {
         this.factory = factory;
         this.htmlConfig = htmlConfig;
+        this.translations = translations;
     }
 
     public String renderPage(String template, Map<String, Object> params) {
@@ -52,7 +52,7 @@ public class HTMLTemplates {
         enrichedParams.put("cssPath", htmlConfig.cssPath());
         enrichedParams.put("htmxPath", htmlConfig.htmxPath());
         enrichedParams.put("content", content);
-        enrichedParams.put("errorModalTitle", Translations.message("error-modal-title"));
-        return Translations.enrich(enrichedParams, "navigation");
+        enrichedParams.put("errorModalTitle", translations.message("error-modal-title"));
+        return translations.enrich(enrichedParams, "navigation");
     }
 }

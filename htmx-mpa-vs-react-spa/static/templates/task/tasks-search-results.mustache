@@ -1,23 +1,14 @@
 {{#tasks}}
     <div id="t-{{id}}" class="relative border rounded border-black max-w-80 cursor-pointer">
-        <div class="p-8" onclick='goToTask("{{id}}")'>{{name}}, {{tasks.status}}: {{status}}</div>
+        <div class="p-4" onclick='goToTask("{{id}}")'>{{name}}, {{tasks.status}}: {{status}}</div>
+        <span class="absolute top-0 right-0 text-3xl p-2 cursor-pointer"
+              hx-delete="/tasks/{{id}}"
+              hx-confirm="{{name}}"
+              hx-target="#t-{{id}}"
+              hx-swap="delete">&times;
+        </span>
     </div>
 {{/tasks}}
 {{^tasks}}
     <div>{{tasks.no-tasks}}</div>
 {{/tasks}}
-
-<script>
-    function goToTask(id) {
-        let url = "/tasks/" + id;
-        const scrollPosition = document.documentElement.scrollTop;
-        if (location.search) {
-            const tasksSearch = btoa(location.search.substr(1));
-            url = url + "?tasksSearch=" + tasksSearch;
-        }
-
-        sessionStorage.setItem("tasks-scroll", scrollPosition);
-
-        location.href = url;
-    }
-</script>

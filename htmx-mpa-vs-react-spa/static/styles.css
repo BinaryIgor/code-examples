@@ -4,7 +4,7 @@
 
 @layer components {
     .button-like {
-        @apply border rounded border-black;
+        @apply border-2 rounded border-black;
     }
 
     .error {

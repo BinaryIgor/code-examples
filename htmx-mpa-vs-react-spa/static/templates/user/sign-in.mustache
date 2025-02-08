@@ -1,13 +1,35 @@
 <h1 class="text-2xl my-8">{{sign-in.title}}</h1>
 
 <form hx-post="/sign-in" hx-swap="none">
-    <input class="block p-2" type="email" placeholder="{{sign-in.email-placeholder}}" name="email" value="{{emailValue}}">
+    <input class="block p-4" type="email" placeholder="{{sign-in.email-placeholder}}" name="email" value="{{emailValue}}">
     <p class="error mb-2 hidden">{{emailError}}</p>
-    <input class="block p-2" type="password" placeholder="{{sign-in.password-placeholder}}" name="password" value="{{passwordValue}}">
+    <input class="block p-4 mt-4" type="password" placeholder="{{sign-in.password-placeholder}}" name="password" value="{{passwordValue}}">
     <p class="error mb-2 hidden">{{passwordError}}</p>
     <input class="button-like px-8 py-2 mt-4" type="submit" value="{{sign-in.sign-in}}">
 </form>
 
 <script>
-    document.addEventListener("replace-url", e => location.replace(e.detail.value));
+    const form = document.querySelector("form");
+    const [emailInput, passwordInput] = form.querySelectorAll("input");
+    const [emailError, passwordError] = form.querySelectorAll("p");
+
+    emailInput.oninput = e => {
+        const email = emailInput.value;
+        if (!email || email.length < 10 || email.length > 100 ||
+            email.indexOf('@') < 2 ||
+            !email.includes('.') || email.indexOf('.') >= (email.length - 1)) {
+            emailError.classList.remove("hidden");
+        } else {
+            emailError.classList.add("hidden");
+        }
+    };
+
+    passwordInput.oninput = e => {
+        const password = passwordInput.value;
+        if (!password || password.length < 8 || password.length > 50) {
+            passwordError.classList.remove("hidden");
+        } else {
+            passwordError.classList.add("hidden");
+        }
+    };
 </script>

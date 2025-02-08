@@ -1,19 +1,11 @@
 package com.binaryigor.htmxvsreact;
 
-import com.binaryigor.htmxvsreact.project.ProjectRepository;
-import com.binaryigor.htmxvsreact.project.ProjectService;
-import com.binaryigor.htmxvsreact.project.db.SqlProjectRepository;
-import com.binaryigor.htmxvsreact.shared.contracts.ProjectClient;
-import com.binaryigor.htmxvsreact.shared.contracts.TaskClient;
+import com.binaryigor.htmxvsreact.project.domain.ProjectRepository;
+import com.binaryigor.htmxvsreact.shared.error.WebExceptionHandler;
 import com.binaryigor.htmxvsreact.shared.contracts.UserClient;
-import com.binaryigor.htmxvsreact.shared.html.HTMLConfig;
-import com.binaryigor.htmxvsreact.shared.html.HTMLTemplates;
-import com.binaryigor.htmxvsreact.shared.html.NoCacheTemplateFactory;
-import com.binaryigor.htmxvsreact.shared.html.TemplateFactory;
-import com.binaryigor.htmxvsreact.task.TaskRepository;
-import com.binaryigor.htmxvsreact.task.TaskService;
-import com.binaryigor.htmxvsreact.task.db.SqlTaskRepository;
-import com.binaryigor.htmxvsreact.user.TheUserClient;
+import com.binaryigor.htmxvsreact.shared.html.*;
+import com.binaryigor.htmxvsreact.user.domain.UserRepository;
+import com.binaryigor.htmxvsreact.user.domain.PasswordHasher;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.resolver.FileSystemResolver;
 import com.zaxxer.hikari.HikariConfig;
@@ -24,7 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.context.annotation.Profile;
 import org.sqlite.SQLiteDataSource;
 
 import java.time.Clock;
@@ -41,44 +33,36 @@ public class HtmxVsReactApp {
         return Clock.systemUTC();
     }
 
+    @Profile("dev")
     @Bean
-    TemplateFactory templateFactory() {
+    TemplateFactory devTemplateFactory() {
         return new NoCacheTemplateFactory(() -> new DefaultMustacheFactory(new FileSystemResolver()));
     }
 
+    @Profile("!dev")
     @Bean
-    HTMLTemplates htmlTemplates(TemplateFactory templateFactory, HTMLConfig htmlConfig) {
-        return new HTMLTemplates(templateFactory, htmlConfig);
+    TemplateFactory templateFactory() {
+        var mustacheFactory = new DefaultMustacheFactory();
+        return mustacheFactory::compile;
     }
 
     @Bean
-    UserClient userClient() {
-        return new TheUserClient();
+    Translations translations(UserClient userClient) {
+        return new Translations(userClient::currentLanguage);
     }
 
     @Bean
-    ProjectRepository projectRepository(JdbcClient jdbcClient, Clock clock) {
-        return new SqlProjectRepository(jdbcClient, clock);
+    HTMLTemplates htmlTemplates(TemplateFactory templateFactory, HTMLConfig htmlConfig, Translations translations) {
+        return new HTMLTemplates(templateFactory, htmlConfig, translations);
     }
 
     @Bean
-    ProjectService projectService(ProjectRepository projectRepository, TaskClient taskClient) {
-        return new ProjectService(projectRepository, taskClient);
+    WebExceptionHandler webExceptionHandler(HTMLTemplates htmlTemplates, Translations translations) {
+        return new WebExceptionHandler(htmlTemplates, translations);
     }
 
     @Bean
-    SqlTaskRepository taskRepository(JdbcClient jdbcClient) {
-        return new SqlTaskRepository(jdbcClient);
-    }
-
-    @Bean
-    TaskService taskService(TaskRepository taskRepository, ProjectClient projectClient) {
-        return new TaskService(taskRepository, projectClient);
-    }
-
-    @Bean
-    HikariDataSource dataSource(@Value("${spring.datasource.url}") String url,
-                                SQLiteProperties sqliteProperties) {
+    HikariDataSource dataSource(@Value("${spring.datasource.url}") String url, SQLiteProperties sqliteProperties) {
         var dataSource = new SQLiteDataSource();
         dataSource.setBusyTimeout(sqliteProperties.busyTimeout);
         dataSource.setEnforceForeignKeys(true);
@@ -92,6 +76,11 @@ public class HtmxVsReactApp {
         config.setDataSource(dataSource);
 
         return new HikariDataSource(config);
+    }
+
+    @Bean
+    DemoDataInitializer demoDataInitializer(UserRepository userRepository, ProjectRepository projectRepository, PasswordHasher passwordHasher) {
+        return new DemoDataInitializer(userRepository, projectRepository, passwordHasher);
     }
 
     @ConfigurationProperties("spring.datasource.sqlite")

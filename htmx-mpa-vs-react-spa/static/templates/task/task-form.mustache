@@ -1,12 +1,13 @@
 <form {{{taskFormAttrs}}} hx-swap="none">
-    <input class="block p-2" type="text" placeholder="Name" name="name" value="{{nameValue}}">
-    <p class="error mb-2 {{#nameErrorHidden}}hidden{{/nameErrorHidden}}">{{nameError}}</p>
-    <input class="block p-2 mt-4" type="text" placeholder="Project name" name="project" value="{{projectValue}}">
-    <p class="error mb-2 {{#projectErrorHidden}}hidden{{/projectErrorHidden}}">{{projectError}}</p>
+    <input class="block p-4" type="text" placeholder="{{namePlaceholder}}" name="name" value="{{nameValue}}">
+    <p class="error mb-2 hidden">{{nameError}}</p>
+    <input class="block p-4 mt-4" type="text" placeholder="{{projectPlaceholder}}" name="project" value="{{projectValue}}">
+    <p id="project-options" class="italic">{{projectOptions}}: {{projectAllowedValues}}</p>
+    <p class="error mb-2 hidden">{{projectError}}</p>
     {{#statusValue}}
-        <input class="block p-2 mt-4" type="text" placeholder="Status" name="status" value="{{statusValue}}"
-            data-status-allowed-values="{{statusAllowedValues}}">
-        <p class="error mb-2 {{#statusErrorHidden}}hidden{{/statusErrorHidden}}">{{statusError}}</p>
+        <input class="block p-4 mt-4" type="text" placeholder="{{statusPlaceholder}}" name="status" value="{{statusValue}}">
+        <p id="status-options" class="italic">{{statusOptions}}: {{statusAllowedValues}}</p>
+        <p class="error mb-2 hidden">{{statusError}}</p>
     {{/statusValue}}
     <input class="button-like px-8 py-2 mt-4" type="submit" value="{{submitValue}}">
 </form>
@@ -15,34 +16,41 @@
     (function () {
         const form = document.querySelector("form");
         const [nameInput, projectInput, statusInput] = form.querySelectorAll("input:not([type='submit'])");
-        const [nameError, projectError, statusError] = form.querySelectorAll("p");
+        const [nameError, projectError, statusError] = form.querySelectorAll(".error");
 
         nameInput.oninput = e => {
             const name = nameInput.value;
-            if (!name || name.length < 3 || name.length > 100) {
+            if (!name || name.length < 3 || name.length > 50) {
                 nameError.classList.remove("hidden");
             } else {
                 nameError.classList.add("hidden");
             }
         };
+
+        const projectOptions = document.getElementById("project-options");
+        const projectAllowedValues = "{{projectAllowedValues}}".split(",").map(p => p.trim());
         projectInput.oninput = e => {
             const project = projectInput.value;
-            if (!project || project.length < 3 || project.length > 100) {
+            if (project && !projectAllowedValues.includes(project)) {
                 projectError.classList.remove("hidden");
+                projectOptions.classList.add("hidden");
             } else {
                 projectError.classList.add("hidden");
+                projectOptions.classList.remove("hidden");
             }
         };
 
         if (statusInput) {
-            const statusAllowedValues = statusInput.getAttribute("data-status-allowed-values").split(",");
+            const statusOptions = document.getElementById("status-options");
+            const statusAllowedValues = "{{statusAllowedValues}}".split(",").map(s => s.trim());
             statusInput.oninput = e => {
                 const status = statusInput.value;
-                console.log("Allowed values", statusAllowedValues);
-                if (!status || !statusAllowedValues.includes(status)) {
+                if (status && !statusAllowedValues.includes(status)) {
                     statusError.classList.remove("hidden");
+                    statusOptions.classList.add("hidden");
                 } else {
                     statusError.classList.add("hidden");
+                    statusOptions.classList.remove("hidden");
                 }
             };
         }
