@@ -3,21 +3,16 @@ package com.binaryigor.htmxvsreact.user;
 import com.binaryigor.htmxvsreact.shared.error.WebExceptionHandler;
 import com.binaryigor.htmxvsreact.shared.contracts.UserClient;
 import com.binaryigor.htmxvsreact.shared.html.Translations;
-import com.binaryigor.htmxvsreact.user.domain.AuthTokenAuthenticator;
-import com.binaryigor.htmxvsreact.user.domain.AuthenticatedUser;
-import com.binaryigor.htmxvsreact.user.domain.PasswordHasher;
+import com.binaryigor.htmxvsreact.user.domain.*;
 import com.binaryigor.htmxvsreact.user.infra.AuthProperties;
 import com.binaryigor.htmxvsreact.user.infra.JWTAuthTokens;
 import com.binaryigor.htmxvsreact.user.infra.BCryptPasswordHasher;
 import com.binaryigor.htmxvsreact.user.app.SecurityFilter;
 import com.binaryigor.htmxvsreact.user.app.SecurityRules;
 import com.binaryigor.htmxvsreact.user.infra.SqlUserRepository;
-import com.binaryigor.htmxvsreact.user.domain.TheUserClient;
-import com.binaryigor.htmxvsreact.user.domain.UserRepository;
-import com.binaryigor.htmxvsreact.user.domain.UserService;
-import com.binaryigor.htmxvsreact.user.domain.exception.UserEmailException;
+import com.binaryigor.htmxvsreact.user.domain.exception.UserEmailValidationException;
 import com.binaryigor.htmxvsreact.user.domain.exception.UserIncorrectPasswordException;
-import com.binaryigor.htmxvsreact.user.domain.exception.UserPasswordException;
+import com.binaryigor.htmxvsreact.user.domain.exception.UserPasswordValidationException;
 import com.binaryigor.htmxvsreact.user.infra.web.Cookies;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
@@ -32,8 +27,8 @@ public class UserModuleConfig {
     @Bean
     InitializingBean userTranslationsInitializer(Translations translations) {
         return () -> {
-            translations.register(UserEmailException.class, (l, e) -> "Given email is not valid. It must contain '@' sign and a valid domain");
-            translations.register(UserPasswordException.class, (l, e) -> "Invalid password. It must have between 8 and 50 characters");
+            translations.register(UserEmailValidationException.class, (l, e) -> "Given email is not valid. It must contain '@' sign and a valid domain");
+            translations.register(UserPasswordValidationException.class, (l, e) -> "Invalid password. It must have between 8 and 50 characters");
             translations.register(UserIncorrectPasswordException.class, (l, e) -> "Password is incorrect");
         };
     }
@@ -76,8 +71,9 @@ public class UserModuleConfig {
     }
 
     @Bean
-    UserService userService(UserRepository userRepository, PasswordHasher passwordHasher) {
-        return new UserService(userRepository, passwordHasher);
+    UserService userService(UserRepository userRepository, PasswordHasher passwordHasher,
+                            AuthTokenCreator authTokenCreator) {
+        return new UserService(userRepository, passwordHasher, authTokenCreator);
     }
 
     @Bean

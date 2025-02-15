@@ -27,17 +27,22 @@ public class ProjectAPIController {
         return projectService.userProjects(userClient.currentUserId());
     }
 
+    @GetMapping("/names")
+    List<String> projectNames() {
+        return projectService.userProjectNames(userClient.currentUserId());
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    Project create(@RequestParam String name) {
-        var project = Project.newOne(name, userClient.currentUserId());
+    Project create(@RequestBody CreateProjectRequest request) {
+        var project = Project.newOne(request.name(), userClient.currentUserId());
         projectService.create(project);
         return project;
     }
 
     @PutMapping("{id}")
-    Project update(@PathVariable("id") UUID id, @RequestParam String name) {
-        var project = new Project(id, name, userClient.currentUserId());
+    Project update(@PathVariable("id") UUID id, @RequestBody UpdateProjectRequest request) {
+        var project = new Project(id, request.name(), userClient.currentUserId());
         projectService.update(project);
         return project;
     }
@@ -50,5 +55,11 @@ public class ProjectAPIController {
     @GetMapping("{id}")
     Project get(@PathVariable("id") UUID id) {
         return projectService.get(id, userClient.currentUserId());
+    }
+
+    record CreateProjectRequest(String name) {
+    }
+
+    record UpdateProjectRequest(String name) {
     }
 }

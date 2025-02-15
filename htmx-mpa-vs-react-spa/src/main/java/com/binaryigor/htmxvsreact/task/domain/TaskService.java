@@ -5,6 +5,7 @@ import com.binaryigor.htmxvsreact.shared.contracts.ProjectView;
 import com.binaryigor.htmxvsreact.task.domain.exception.TaskDoestNotExistException;
 import com.binaryigor.htmxvsreact.task.domain.exception.TaskOwnerException;
 import com.binaryigor.htmxvsreact.task.domain.exception.TaskProjectOwnerException;
+import com.binaryigor.htmxvsreact.task.domain.exception.TaskProjectRequiredException;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class TaskService {
             projectIds = projectClient.idsOfNames(projectNames);
         }
 
-        if (projectIds == null || projectIds.isEmpty()) {
+        if (userProjects.isEmpty()) {
             return TasksSearchResult.empty();
         }
 
@@ -41,12 +42,20 @@ public class TaskService {
     }
 
     public Task create(CreateTaskCommand command) {
+        validateTaskProjectPresent(command.project());
+
         var project = projectClient.ofName(command.project());
         validateProjectOwnedByUser(project, command.ownerId());
 
         var task = new Task(UUID.randomUUID(), command.name(), project.id(), command.ownerId(), TaskStatus.TODO);
         taskRepository.save(task);
         return task;
+    }
+
+    private void validateTaskProjectPresent(String project) {
+        if (project == null || project.isBlank()) {
+            throw new TaskProjectRequiredException();
+        }
     }
 
     private void validateProjectOwnedByUser(ProjectView project, UUID userId) {
@@ -57,6 +66,8 @@ public class TaskService {
 
     public Task update(UpdateTaskCommand command) {
         get(command.id(), command.userId());
+
+        validateTaskProjectPresent(command.project());
 
         var project = projectClient.ofName(command.project());
         validateProjectOwnedByUser(project, command.userId());

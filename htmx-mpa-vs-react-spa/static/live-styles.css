@@ -764,6 +764,10 @@ video {
   width: 100vw;
 }
 
+.w-2 {
+  width: 0.5rem;
+}
+
 .min-w-40 {
   min-width: 10rem;
 }
@@ -846,6 +850,12 @@ video {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.select-none {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .resize {
@@ -1189,7 +1199,7 @@ video {
 }
 
 @media (min-width: 1280px) {
-  .xl\:w-6\/12 {
-    width: 50%;
+  .xl\:w-2\/5 {
+    width: 40%;
   }
 }

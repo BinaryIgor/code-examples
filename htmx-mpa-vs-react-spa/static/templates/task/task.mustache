@@ -1,7 +1,7 @@
 <h1 class="text-2xl my-8">{{task.name}} {{task.task}}</h1>
 <div>{{task.project-label}}: {{projectValue}}</div>
 <div>{{task.status-label}}: {{task.status}}</div>
-<div class="text-xl my-8 underline cursor-pointer"
+<div class="text-xl my-8 underline cursor-pointer select-none"
      onclick="taskForm.classList.toggle('hidden')">{{task.edit}}</div>
 <div id="task-form" class="hidden mb-8">{{>task-form}}</div>
 <a class="text-xl my-4 underline block" href="{{tasksUrl}}">{{task.tasks}}</a>

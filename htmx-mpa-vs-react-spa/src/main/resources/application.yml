@@ -5,7 +5,7 @@ spring:
     url: "${DB_URL:jdbc:sqlite:/tmp/htmx-vs-react.db}"
     sqlite:
       pool-size: 10
-      busy-timeout: 5000
+      busy-timeout: 3000
       journal-mode: WAL
       # multiple of page size; default page size is 4096 bytes
       # https://www.sqlite.org/pragma.html#pragma_cache_size
@@ -14,6 +14,9 @@ spring:
   threads:
     virtual:
       enabled: true
+
+cors:
+  enabled: false
 
 server:
   port: 8080
@@ -24,7 +27,7 @@ html:
 
 auth:
   issuer: htmx-mpa-vs-react-spa
-  token-key: "${AUTH_TOKEN_KEY:c2VjcmV0Cg==}"
+  token-key: "${AUTH_TOKEN_KEY:c2VjcmV0Mgo=}"
   # 7 days
   token-duration: "PT168H"
   issue-new-token-before-expiration-duration: "PT167H"

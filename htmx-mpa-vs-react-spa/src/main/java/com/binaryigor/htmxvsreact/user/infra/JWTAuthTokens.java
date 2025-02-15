@@ -100,16 +100,14 @@ public class JWTAuthTokens implements AuthTokenCreator, AuthTokenAuthenticator {
         var issuedAt = clock.instant();
         var expiresAt = issuedAt.plus(tokenDuration);
 
-        var token = newToken(issuer, id, issuedAt, expiresAt, algorithm);
+        var token = newToken(id, issuedAt, expiresAt);
 
         return new AuthToken(token, expiresAt);
     }
 
-    public String newToken(String issuer,
-                           UUID subject,
-                           Instant issuedAt,
-                           Instant expiresAt,
-                           Algorithm algorithm) {
+    private String newToken(UUID subject,
+                            Instant issuedAt,
+                            Instant expiresAt) {
         return JWT.create()
             .withIssuer(issuer)
             .withSubject(subject.toString())

@@ -1,11 +1,12 @@
 package com.binaryigor.htmxvsreact;
 
 import com.binaryigor.htmxvsreact.project.domain.ProjectRepository;
-import com.binaryigor.htmxvsreact.shared.error.WebExceptionHandler;
 import com.binaryigor.htmxvsreact.shared.contracts.UserClient;
+import com.binaryigor.htmxvsreact.shared.error.WebExceptionHandler;
 import com.binaryigor.htmxvsreact.shared.html.*;
-import com.binaryigor.htmxvsreact.user.domain.UserRepository;
 import com.binaryigor.htmxvsreact.user.domain.PasswordHasher;
+import com.binaryigor.htmxvsreact.user.domain.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.resolver.FileSystemResolver;
 import com.zaxxer.hikari.HikariConfig;
@@ -17,13 +18,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.sqlite.SQLiteDataSource;
 
 import java.time.Clock;
 
 @ConfigurationPropertiesScan
 @SpringBootApplication
-public class HtmxVsReactApp {
+public class HtmxVsReactApp implements WebMvcConfigurer {
+
+    private final boolean corsEnabled;
+
+    public HtmxVsReactApp(@Value("${cors.enabled}") boolean corsEnabled) {
+        this.corsEnabled = corsEnabled;
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(HtmxVsReactApp.class, args);
     }
@@ -57,8 +67,8 @@ public class HtmxVsReactApp {
     }
 
     @Bean
-    WebExceptionHandler webExceptionHandler(HTMLTemplates htmlTemplates, Translations translations) {
-        return new WebExceptionHandler(htmlTemplates, translations);
+    WebExceptionHandler webExceptionHandler(HTMLTemplates htmlTemplates, Translations translations, ObjectMapper objectMapper) {
+        return new WebExceptionHandler(htmlTemplates, translations, objectMapper);
     }
 
     @Bean
@@ -81,6 +91,18 @@ public class HtmxVsReactApp {
     @Bean
     DemoDataInitializer demoDataInitializer(UserRepository userRepository, ProjectRepository projectRepository, PasswordHasher passwordHasher) {
         return new DemoDataInitializer(userRepository, projectRepository, passwordHasher);
+    }
+
+    // Allows everything and everyone, if enabled - change according to your needs
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        if (corsEnabled) {
+            registry.addMapping("/**")
+                .allowedOriginPatterns("*")
+                .allowedHeaders("*")
+                .allowedMethods("*")
+                .allowCredentials(true);
+        }
     }
 
     @ConfigurationProperties("spring.datasource.sqlite")

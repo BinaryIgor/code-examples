@@ -1,6 +1,6 @@
 package com.binaryigor.htmxvsreact.project.domain;
 
-import com.binaryigor.htmxvsreact.project.domain.exception.ProjectDoestNotExistException;
+import com.binaryigor.htmxvsreact.project.domain.exception.ProjectDoesNotExistException;
 import com.binaryigor.htmxvsreact.project.domain.exception.ProjectNameConflictException;
 import com.binaryigor.htmxvsreact.project.domain.exception.ProjectOwnerException;
 import com.binaryigor.htmxvsreact.shared.contracts.ProjectClient;
@@ -25,6 +25,10 @@ public class ProjectService implements ProjectClient {
         var projects = projectRepository.userProjects(userId);
         var projectsTasks = taskClient.tasksCountOfProjects(projects.stream().map(Project::id).toList());
         return projects.stream().map(p -> new ProjectWithTasks(p, projectsTasks.getOrDefault(p.id(), 0))).toList();
+    }
+
+    public List<String> userProjectNames(UUID userId) {
+        return projectRepository.userProjects(userId).stream().map(Project::name).toList();
     }
 
     public void create(Project project) {
@@ -57,7 +61,7 @@ public class ProjectService implements ProjectClient {
 
     public Project get(UUID projectId, UUID userId) {
         var project = projectRepository.ofId(projectId)
-            .orElseThrow(() -> ProjectDoestNotExistException.ofId(projectId));
+            .orElseThrow(() -> ProjectDoesNotExistException.ofId(projectId));
 
         if (!project.ownerId().equals(userId)) {
             throw ProjectOwnerException.ofCurrentUser(userId);
@@ -80,13 +84,13 @@ public class ProjectService implements ProjectClient {
     public ProjectView ofId(UUID id) {
         return projectRepository.ofId(id)
             .map(Project::toView)
-            .orElseThrow(() -> ProjectDoestNotExistException.ofId(id));
+            .orElseThrow(() -> ProjectDoesNotExistException.ofId(id));
     }
 
     @Override
     public ProjectView ofName(String name) {
         return projectRepository.ofName(name)
             .map(Project::toView)
-            .orElseThrow(() -> ProjectDoestNotExistException.ofName(name));
+            .orElseThrow(() -> ProjectDoesNotExistException.ofName(name));
     }
 }

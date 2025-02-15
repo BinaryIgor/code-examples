@@ -1,5 +1,6 @@
 package com.binaryigor.htmxvsreact.user.app;
 
+import com.binaryigor.htmxvsreact.shared.WebUtils;
 import com.binaryigor.htmxvsreact.shared.error.WebExceptionHandler;
 import com.binaryigor.htmxvsreact.user.domain.AuthTokenAuthenticator;
 import com.binaryigor.htmxvsreact.user.domain.AuthenticationResult;
@@ -96,7 +97,7 @@ public class SecurityFilter implements Filter {
                                        Throwable exception,
                                        boolean forceSignOut) {
         try {
-            if (status == HttpStatus.UNAUTHORIZED) {
+            if (status == HttpStatus.UNAUTHORIZED && WebUtils.shouldRespondWithHTML()) {
                 response.sendRedirect(securityRules.unauthorizedRedirect());
             } else {
                 webExceptionHandler.handle(response, status, exception);

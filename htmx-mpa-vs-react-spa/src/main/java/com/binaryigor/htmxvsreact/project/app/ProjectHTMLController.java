@@ -3,7 +3,7 @@ package com.binaryigor.htmxvsreact.project.app;
 import com.binaryigor.htmxvsreact.project.domain.Project;
 import com.binaryigor.htmxvsreact.project.domain.ProjectService;
 import com.binaryigor.htmxvsreact.shared.html.HTMLTemplates;
-import com.binaryigor.htmxvsreact.project.domain.exception.ProjectNameException;
+import com.binaryigor.htmxvsreact.project.domain.exception.ProjectNameValidationException;
 import com.binaryigor.htmxvsreact.shared.HTMX;
 import com.binaryigor.htmxvsreact.shared.html.Translations;
 import com.binaryigor.htmxvsreact.shared.contracts.UserClient;
@@ -59,7 +59,7 @@ public class ProjectHTMLController {
                     "projectFormAttrs", "hx-post='/projects'",
                     "namePlaceholder", translations.message("create-project.name-placeholder"),
                     "nameValue", "",
-                    "nameError", translations.error(ProjectNameException.class),
+                    "nameError", translations.error(ProjectNameValidationException.class),
                     "submitValue", translations.message("create-project.create")),
                 "create-project"));
     }
@@ -96,7 +96,7 @@ public class ProjectHTMLController {
                     "projectFormAttrs", "hx-put='/projects/%s'".formatted(id),
                     "namePlaceholder", translations.message("project-page.name-placeholder"),
                     "nameValue", project.name(),
-                    "nameError", translations.error(ProjectNameException.class),
+                    "nameError", translations.error(ProjectNameValidationException.class),
                     "submitValue", translations.message("project-page.save")),
                 "project-page"));
     }

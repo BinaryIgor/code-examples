@@ -22,6 +22,7 @@ public class TaskModuleConfig {
     InitializingBean taskTranslationsInitializer(Translations translations) {
         return () -> {
             translations.register(TaskNameValidationException.class, (l, e) -> "Name can't be blank and needs to have between 3 and 50 characters");
+            translations.register(TaskProjectRequiredException.class, (l, e) -> "Task project is required");
             translations.register(TaskProjectValidationException.class, (l, e) -> "Invalid task project. Allowed projects are: %s".formatted(String.join(", ", e.allowedProjects)));
             translations.register(TaskStatusValidationException.class, (l, e) -> {
                 var validValues = Arrays.stream(TaskStatus.values()).map(Enum::name).collect(Collectors.joining(", "));

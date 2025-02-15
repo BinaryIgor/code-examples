@@ -15,4 +15,17 @@ public class WebUtils {
         }
         return Optional.empty();
     }
+
+    public static boolean shouldRespondWithHTML() {
+        return currentRequest()
+            .map(r -> {
+                var contentType = r.getHeader("content-type");
+                if (contentType != null && contentType.contains("json")) {
+                    return false;
+                }
+                var accept = r.getHeader("accept");
+                return accept == null || !accept.contains("json");
+            })
+            .orElse(true);
+    }
 }

@@ -1,6 +1,6 @@
 package com.binaryigor.htmxvsreact.project.domain;
 
-import com.binaryigor.htmxvsreact.project.domain.exception.ProjectNameException;
+import com.binaryigor.htmxvsreact.project.domain.exception.ProjectNameValidationException;
 import com.binaryigor.htmxvsreact.shared.FieldValidator;
 import com.binaryigor.htmxvsreact.shared.contracts.ProjectView;
 
@@ -10,7 +10,7 @@ public record Project(UUID id, String name, UUID ownerId) {
 
     public Project {
         if (!FieldValidator.isNameValid(name, 3, 50)) {
-            throw new ProjectNameException(name);
+            throw new ProjectNameValidationException(name);
         }
     }
 

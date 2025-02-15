@@ -1,5 +1,6 @@
 package com.binaryigor.htmxvsreact.task.app;
 
+import com.binaryigor.htmxvsreact.shared.contracts.ProjectClient;
 import com.binaryigor.htmxvsreact.shared.contracts.UserClient;
 import com.binaryigor.htmxvsreact.task.domain.*;
 import com.binaryigor.htmxvsreact.task.domain.exception.TaskStatusValidationException;
@@ -14,10 +15,12 @@ public class TaskAPIController {
 
     private final TaskService taskService;
     private final UserClient userClient;
+    private final ProjectClient projectClient;
 
-    public TaskAPIController(TaskService taskService, UserClient userClient) {
+    public TaskAPIController(TaskService taskService, UserClient userClient, ProjectClient projectClient) {
         this.taskService = taskService;
         this.userClient = userClient;
+        this.projectClient = projectClient;
     }
 
     @GetMapping
@@ -47,8 +50,11 @@ public class TaskAPIController {
     }
 
     @GetMapping("/{id}")
-    Task get(@PathVariable("id") UUID id) {
-        return taskService.get(id, userClient.currentUserId());
+    EnrichedTask get(@PathVariable("id") UUID id) {
+        var task = taskService.get(id, userClient.currentUserId());
+        var project = projectClient.ofId(task.projectId());
+
+        return new EnrichedTask(task, project.name());
     }
 
     @PutMapping("{id}")
@@ -67,5 +73,8 @@ public class TaskAPIController {
     }
 
     record UpdateTaskRequest(String name, String project, String status) {
+    }
+
+    record EnrichedTask(Task task, String projectName) {
     }
 }
