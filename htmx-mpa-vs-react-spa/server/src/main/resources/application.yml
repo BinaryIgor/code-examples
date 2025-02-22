@@ -27,7 +27,7 @@ html:
 
 auth:
   issuer: htmx-mpa-vs-react-spa
-  token-key: "${AUTH_TOKEN_KEY:c2VjcmV0Mgo=}"
+  token-key: "${AUTH_TOKEN_KEY:c2VjcmV0Cg==}"
   # 7 days
   token-duration: "PT168H"
   issue-new-token-before-expiration-duration: "PT167H"

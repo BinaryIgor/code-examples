@@ -739,6 +739,10 @@ video {
   width: 91.666667%;
 }
 
+.w-2 {
+  width: 0.5rem;
+}
+
 .w-5 {
   width: 1.25rem;
 }
@@ -762,10 +766,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-2 {
-  width: 0.5rem;
 }
 
 .min-w-40 {

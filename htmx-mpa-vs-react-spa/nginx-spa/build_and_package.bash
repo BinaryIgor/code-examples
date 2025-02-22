@@ -14,13 +14,13 @@ mkdir dist
 cd ..
 . "config_${ENV}.env"
 
-cd nginx-mpa
+cd nginx-spa
 . "config_${ENV}.env"
 
 echo "Building docker image..."
 
 export SERVER_PORT=${SERVER_PORT:-8080}
-export DOMAIN=${MPA_DOMAIN}
+export DOMAIN=${SPA_DOMAIN}
 
 envsubst '${SERVER_PORT} ${DOMAIN}' < template_nginx.conf > dist/nginx.conf
 
@@ -38,9 +38,11 @@ if [ $ENV = 'local' ]; then
 else
   CERTS_VOLUME="-v ${CERTS_VOLUME}"
 fi
+STATIC_RESOURCES_VOLUME="${STATIC_PATH}:/usr/share/nginx/site:ro"
 
 export docker_run_params="--network host \\
 ${CERTS_VOLUME} \\
+-v ${STATIC_RESOURCES_VOLUME} \\
 --restart ${DOCKER_RESTART}"
 
 export app=$app
@@ -48,7 +50,7 @@ export tag=$tag
 export run_cmd="docker run -d $docker_run_params --name $app $tagged_image"
 
 cd ..
-envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > nginx-mpa/dist/load_and_run_app.bash
-envsubst '${app} ${run_cmd}' < scripts/template_run_app.bash > nginx-mpa/dist/run_app.bash
+envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > nginx-spa/dist/load_and_run_app.bash
+envsubst '${app} ${run_cmd}' < scripts/template_run_app.bash > nginx-spa/dist/run_app.bash
 
 echo "Package prepared."

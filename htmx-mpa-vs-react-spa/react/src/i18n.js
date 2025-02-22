@@ -92,7 +92,8 @@ const enTranslations = {
 		TaskProjectOwnerException: "Task project doesn't belong to the current user",
 		UserEmailValidationException: "Given email is not valid. It must contain '@' sign and a valid domain",
 		UserPasswordValidationException: "Invalid password. It must have between 8 and 50 characters",
-		UserIncorrectPasswordException: "Password is incorrect"
+		UserIncorrectPasswordException: "Password is incorrect",
+    ApiUnavailable: "Server not available"
 	}
 };
 

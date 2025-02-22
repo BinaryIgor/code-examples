@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-app="htmx-mpa-vs-react-spa"
+app="htmx-mpa-vs-react-spa-server"
 tag="${TAG:-latest}"
 tagged_image="${app}:${tag}"
 
@@ -11,7 +11,8 @@ echo "Preparing dist dir..."
 rm -r -f dist
 mkdir dist
 
-. "config_${ENV}.env"
+
+. ../"config_${ENV}.env"
 
 echo "Building static resources..."
 
@@ -31,7 +32,7 @@ cp -r static/templates $package_static_resources/templates
 echo
 echo "Building image..."
 
-echo "Building jar locally first..."
+echo "Building jar first..."
 cp pom.xml dist/pom.xml
 cp -r src dist/src
 mv dist/static dist/src/main/resources
@@ -62,14 +63,18 @@ css_path_env="CSS_PATH=/$hashed_css"
 
 export app=$app
 export tag=$tag
-export run_cmd="export AUTH_TOKEN_KEY=\$(cat $SECRETS_PATH/auth-token-key.txt)
+export run_cmd="
+export AUTH_TOKEN_KEY=\$(cat $SECRETS_PATH/auth-token-key.txt)
+export DB_URL='jdbc:sqlite:/db/app.db'
 
-docker run -d --network host \\
+docker run -d --network host -v '${DB_VOLUME_PATH}:/db' \\
 -e $spring_profile_env -e $css_path_env \\
--e AUTH_TOKEN_KEY -e DB_PASSWORD \\
+-e AUTH_TOKEN_KEY -e DB_URL \\
 --name $app $tagged_image"
 
-envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > dist/load_and_run_app.bash
-envsubst '${app} ${run_cmd}' < scripts/template_run_app.bash > dist/run_app.bash
+cd ..
+
+envsubst '${app} ${tag}' < scripts/template_load_and_run_app.bash > server/dist/load_and_run_app.bash
+envsubst '${app} ${run_cmd}' < scripts/template_run_app.bash > server/dist/run_app.bash
 
 echo "Package prepared."

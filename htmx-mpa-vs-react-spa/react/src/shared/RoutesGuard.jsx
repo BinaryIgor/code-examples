@@ -40,12 +40,12 @@ export default function RoutesGuard({ children }) {
 }
 
 async function getCurrentUser(setUser) {
-	const response = await api.get("user-info");
+	const response = await api.get("/user-info");
 	if (response.success) {
 		const user = response.data;
 		setUser(CurrentUser.loaded(user));
 	} else {
 		setUser(CurrentUser.loaded(null));
-		Events.showErrorModal(response.errors());
+		Events.showErrorModal(response.error());
 	}
 }

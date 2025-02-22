@@ -97,15 +97,13 @@ public class SecurityFilter implements Filter {
                                        Throwable exception,
                                        boolean forceSignOut) {
         try {
+            if (forceSignOut) {
+                response.addCookie(cookies.expiredToken());
+            }
             if (status == HttpStatus.UNAUTHORIZED && WebUtils.shouldRespondWithHTML()) {
                 response.sendRedirect(securityRules.unauthorizedRedirect());
             } else {
                 webExceptionHandler.handle(response, status, exception);
-            }
-
-            if (forceSignOut) {
-                cookies.tokenValue(request.getCookies())
-                    .ifPresent(t -> response.addCookie(cookies.expiredToken()));
             }
         } catch (Exception e) {
             logger.error("Problem while writing response body to HttpServletResponse", e);

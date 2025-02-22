@@ -4,7 +4,7 @@ found_container=$(docker ps -q -f name="${app}")
 
 if [ "$found_container" ]; then
   echo "Stopping previous ${app} version..."
-  docker stop ${app} --time ${stop_timeout}
+  docker stop ${app} --timeout ${stop_timeout}
 fi
 
 echo "Removing previous container..."
