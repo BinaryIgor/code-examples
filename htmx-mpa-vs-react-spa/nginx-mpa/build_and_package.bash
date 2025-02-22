@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-export app="htmx-mpa-vs-react-spa-nginx"
+export app="htmx-mpa-vs-react-spa-nginx-mpa"
 export tag="${TAG:-latest}"
 tagged_image="${app}:${tag}"
 

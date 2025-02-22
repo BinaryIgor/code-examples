@@ -1,1 +1,0 @@
-docker start htmx-mpa-vs-react-spa-nginx
