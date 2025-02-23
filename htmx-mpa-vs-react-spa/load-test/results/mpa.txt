@@ -1,0 +1,194 @@
+Starting MpaVsSpaLoadTest!
+
+Test case: MPA
+About to make 2000 requests with 100/s rate to https://htmx-mpa.local host
+Timeouts are 5000 ms for connect and 5000 ms for request
+Max concurrency is capped at: 150
+
+Endpoints to test (chosen randomly):
+GET:js/htmx.2.0.4.min.js
+GET:styles_0fa10b700026d18a.css
+GET:projects
+GET:tasks
+GET:account
+
+...
+
+2025-02-23T21:11:17.290595756, 100/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:19.287024086, 200/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:20.289551857, 300/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:21.291028156, 400/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:23.228437629, 500/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:24.231023194, 600/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:25.232742522, 700/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:27.227457679, 800/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:28.228864700, 900/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:29.230283494, 1000/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:31.225565075, 1100/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:32.228246829, 1200/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:33.229330403, 1300/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:35.197838060, 1400/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:36.198712629, 1500/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:37.200510093, 1600/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:39.204140921, 1700/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:40.205552382, 1800/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:11:41.206956051, 1900/2000 requests were issued, waiting 1s before sending next batch...
+
+...
+
+2000 requests with 100 per second rate took PT26.965S
+
+...
+
+Executed requests: 2000, with 100/s rate
+Requests with connect timeout [5000]: 0, as percentage: 0
+Requests with request timeout [5000]: 0, as percentage: 0
+
+Min: 0.001 s
+Max: 0.415 s
+Mean: 0.009 s
+
+Percentile 50 (Median): 0.004 s
+Percentile 75: 0.006 s
+Percentile 90: 0.008 s
+Percentile 95: 0.009 s
+Percentile 99: 0.231 s
+
+...
+
+Endpoints:
+
+GET:js/htmx.2.0.4.min.js
+Requests: 399, which is 20% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=399}
+
+Min: 0.002 s
+Max: 0.367 s
+Mean: 0.01 s
+
+Percentile 50 (Median): 0.007 s
+Percentile 75: 0.008 s
+Percentile 90: 0.01 s
+Percentile 95: 0.011 s
+Percentile 99: 0.18 s
+
+...
+
+GET:styles_0fa10b700026d18a.css
+Requests: 363, which is 18% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=363}
+
+Min: 0.001 s
+Max: 0.381 s
+Mean: 0.01 s
+
+Percentile 50 (Median): 0.004 s
+Percentile 75: 0.005 s
+Percentile 90: 0.007 s
+Percentile 95: 0.007 s
+Percentile 99: 0.303 s
+
+...
+
+GET:projects
+Requests: 405, which is 20% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=405}
+
+Min: 0.001 s
+Max: 0.35 s
+Mean: 0.007 s
+
+Percentile 50 (Median): 0.004 s
+Percentile 75: 0.005 s
+Percentile 90: 0.006 s
+Percentile 95: 0.007 s
+Percentile 99: 0.195 s
+
+...
+
+GET:tasks
+Requests: 435, which is 22% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=435}
+
+Min: 0.001 s
+Max: 0.415 s
+Mean: 0.008 s
+
+Percentile 50 (Median): 0.005 s
+Percentile 75: 0.006 s
+Percentile 90: 0.007 s
+Percentile 95: 0.008 s
+Percentile 99: 0.19 s
+
+...
+
+GET:account
+Requests: 398, which is 20% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=398}
+
+Min: 0.001 s
+Max: 0.386 s
+Mean: 0.01 s
+
+Percentile 50 (Median): 0.004 s
+Percentile 75: 0.005 s
+Percentile 90: 0.006 s
+Percentile 95: 0.008 s
+Percentile 99: 0.284 s
+
+...
+
+Pages:
+
+Projects = (worst of: GET:js/htmx.2.0.4.min.js, GET:styles_0fa10b700026d18a.css) + GET:projects
+
+Min: 0.002 s
+Max: 0.731 s
+Mean: 0.017 s
+
+Percentile 50 (Median): 0.008 s
+Percentile 75: 0.01 s
+Percentile 90: 0.013 s
+Percentile 95: 0.014 s
+Percentile 99: 0.498 s
+
+...
+
+Account = (worst of: GET:js/htmx.2.0.4.min.js, GET:styles_0fa10b700026d18a.css) + GET:account
+
+Min: 0.002 s
+Max: 0.767 s
+Mean: 0.02 s
+
+Percentile 50 (Median): 0.008 s
+Percentile 75: 0.01 s
+Percentile 90: 0.013 s
+Percentile 95: 0.015 s
+Percentile 99: 0.587 s
+
+...
+
+Tasks = (worst of: GET:js/htmx.2.0.4.min.js, GET:styles_0fa10b700026d18a.css) + GET:tasks
+
+Min: 0.002 s
+Max: 0.796 s
+Mean: 0.018 s
+
+Percentile 50 (Median): 0.009 s
+Percentile 75: 0.011 s
+Percentile 90: 0.014 s
+Percentile 95: 0.015 s
+Percentile 99: 0.493 s
+
+...
+

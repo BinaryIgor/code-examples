@@ -13,7 +13,7 @@ NAME = "name"
 
 # Customize this params for your needs
 # full machine slugs reference: https://slugs.do-api.dev/
-MACHINE_SLUG = "s-1vcpu-1gb-amd"
+MACHINE_SLUG = "s-1vcpu-2gb-amd"
 REGION = "fra1"
 MACHINE_NAME = "htmx-mpa-vs-react-spa"
 FIREWALL_NAME = f"{MACHINE_NAME}-firewall"

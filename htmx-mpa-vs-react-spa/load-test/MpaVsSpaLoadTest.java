@@ -13,19 +13,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class MpaVsSpaLoadTest {
 
-    static final int REQUESTS = envIntValueOrDefault("REQUESTS", 1000);
+    static final int REQUESTS = envIntValueOrDefault("REQUESTS", 2000);
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", 100);
-    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 200);
+    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 150);
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     static final String HOST = envValueOrThrow("HOST");
     static final TestCase TEST_CASE;
-    static final List<Endpoint> ENDPOINTS;
+    static final Endpoints ENDPOINTS;
     static final Random RANDOM = new Random();
     static final int MAX_TO_LOG_ISSUES = 10;
     static final AtomicInteger LOGGED_ISSUES = new AtomicInteger(0);
@@ -43,10 +43,11 @@ public class MpaVsSpaLoadTest {
     }
 
     public static void main(String[] args) throws Exception {
-        var endpointsStats = ENDPOINTS.stream().collect(Collectors.toMap(Endpoint::id, k -> EndpointStats.empty(), (p, k) -> p));
+        var endpointsStats = ENDPOINTS.endpoints().stream().collect(Collectors.toMap(Endpoint::id, k -> EndpointStats.empty(), (p, k) -> p, LinkedHashMap::new));
 
         System.out.println("Starting MpaVsSpaLoadTest!");
         System.out.println();
+        System.out.println("Test case: " + TEST_CASE);
         System.out.printf("About to make %d requests with %d/s rate to %s host%n", REQUESTS, REQUESTS_PER_SECOND, HOST);
         System.out.printf("Timeouts are %d ms for connect and %d ms for request%n", CONNECT_TIMEOUT, REQUEST_TIMEOUT);
         System.out.println("Max concurrency is capped at: " + MAX_CONCURRENCY);
@@ -57,7 +58,7 @@ public class MpaVsSpaLoadTest {
 
         var start = System.currentTimeMillis();
 
-        var httpClient = newHttpClient();
+        var httpClientSupplier = httpClientSupplier();
 
         var results = new LinkedList<EndpointResult>();
         var resultFutures = new LinkedList<Future<EndpointResult>>();
@@ -65,7 +66,7 @@ public class MpaVsSpaLoadTest {
         var executor = Executors.newVirtualThreadPerTaskExecutor();
 
         for (var i = 0; i < REQUESTS; i++) {
-            var result = executor.submit(() -> task(httpClient, endpointsStats));
+            var result = executor.submit(() -> task(httpClientSupplier.get(), endpointsStats));
             resultFutures.add(result);
 
             var issuedRequests = i + 1;
@@ -98,9 +99,25 @@ public class MpaVsSpaLoadTest {
 
         printDelimiter();
 
+        System.out.println("Endpoints:");
+        System.out.println();
+
+        var resultsByEndpoint = results.stream().collect(Collectors.groupingBy(EndpointResult::id));
+        var sortedResultsByEndpoint = resultsByEndpoint.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                e -> e.getValue().stream().map(EndpointResult::time).sorted().toList()));
+
         endpointsStats.forEach((id, stats) -> {
-            var endpointSortedResults = results.stream().filter(r -> r.id().equals(id)).map(EndpointResult::time).sorted().toList();
-            printEndpointStats(id, stats, sortedResults.size(), endpointSortedResults);
+            printEndpointStats(id, stats, sortedResults.size(), sortedResultsByEndpoint.get(id));
+            printDelimiter();
+        });
+
+        System.out.println("Pages:");
+        System.out.println();
+
+        ENDPOINTS.pages().forEach((page, endpoints) -> {
+            printPageStats(page, endpoints, sortedResultsByEndpoint);
             printDelimiter();
         });
     }
@@ -125,34 +142,56 @@ public class MpaVsSpaLoadTest {
         System.out.println();
     }
 
-    static List<Endpoint> endpoints() {
-        // TODO: handle compression
-        var jsPath = envValueOrThrow("JS_PATH");
-        var cssPath = envValueOrThrow("CSS_PATH");
+    static Endpoints endpoints() {
         return switch (TEST_CASE) {
             case MPA -> {
-                yield Stream.of(
-                    Stream.of(new Endpoint("GET", jsPath), new Endpoint("GET", cssPath)),
-                    Stream.generate(() -> new Endpoint("GET", "projects")).limit(3),
-                    Stream.generate(() -> new Endpoint("GET", "tasks")).limit(3),
-                    Stream.generate(() -> new Endpoint("GET", "account")).limit(3)
-                ).flatMap(s -> s).toList();
+                var jsEndpoint = new Endpoint("GET", envValueOrThrow("MPA_JS_PATH"));
+                var cssEndpoint = new Endpoint("GET", envValueOrThrow("MPA_CSS_PATH"));
+                var projectsHtmlEndpoint = new Endpoint("GET", "projects");
+                var tasksHtmlEndpoint = new Endpoint("GET", "tasks");
+                var accountHtmlEndpoint = new Endpoint("GET", "account");
+
+                yield new Endpoints(
+                    List.of(jsEndpoint, cssEndpoint, projectsHtmlEndpoint, tasksHtmlEndpoint, accountHtmlEndpoint),
+                    Map.of(
+                        "Projects", pageEndpoints(projectsHtmlEndpoint, List.of(jsEndpoint, cssEndpoint)),
+                        "Tasks", pageEndpoints(tasksHtmlEndpoint, List.of(jsEndpoint, cssEndpoint)),
+                        "Account", pageEndpoints(accountHtmlEndpoint, List.of(jsEndpoint, cssEndpoint)))
+                );
             }
             case SPA -> {
-                yield Stream.of(
-                    Stream.of(new Endpoint("GET", jsPath), new Endpoint("GET", cssPath)),
-                    Stream.generate(() -> new Endpoint("GET", "/api/projects")).limit(3),
-                    Stream.generate(() -> new Endpoint("GET", "/api/tasks")).limit(3),
-                    Stream.generate(() -> new Endpoint("GET", "/api/user-info")).limit(3)
-                ).flatMap(s -> s).toList();
+                var jsEndpoint = new Endpoint("GET", envValueOrThrow("SPA_JS_PATH"));
+                var cssEndpoint = new Endpoint("GET", envValueOrThrow("SPA_CSS_PATH"));
+                // Home page with empty index.html, JS takes over from there (can be any page really, just empty, JS-driven HTML page)
+                var htmlPageEndpoint = new Endpoint("GET", "");
+                var projectsApiEndpoint = new Endpoint("GET", "api/projects");
+                var tasksApiEndpoint = new Endpoint("GET", "api/tasks");
+                var accountApiEndpoint = new Endpoint("GET", "api/user-info");
+
+                yield new Endpoints(
+                    List.of(jsEndpoint, cssEndpoint, htmlPageEndpoint, projectsApiEndpoint, tasksApiEndpoint, accountApiEndpoint),
+                    Map.of(
+                        "Projects", pageEndpoints(htmlPageEndpoint, List.of(jsEndpoint, cssEndpoint), projectsApiEndpoint),
+                        "Tasks", pageEndpoints(htmlPageEndpoint, List.of(jsEndpoint, cssEndpoint), tasksApiEndpoint),
+                        "Account", pageEndpoints(htmlPageEndpoint, List.of(jsEndpoint, cssEndpoint), accountApiEndpoint)
+                    )
+                );
             }
         };
     }
 
-    static HttpClient newHttpClient() throws Exception {
+    static List<List<Endpoint>> pageEndpoints(Endpoint endpoint, List<Endpoint> group) {
+        return List.of(group, List.of(endpoint));
+    }
+
+    static List<List<Endpoint>> pageEndpoints(Endpoint endpoint1, List<Endpoint> group, Endpoint endpoint2) {
+        return List.of(List.of(endpoint1), group, List.of(endpoint2));
+    }
+
+    static Supplier<HttpClient> httpClientSupplier() throws Exception {
         var builder = HttpClient.newBuilder();
 
-        var disableCertsVerification = Boolean.parseBoolean(envValueOrDefault("DISABLE_CERTS_VERIFICATION", "false")) || HOST.contains("localhost");
+        var disableCertsVerification = Boolean.parseBoolean(envValueOrDefault("DISABLE_CERTS_VERIFICATION", "false")) || HOST.contains("local");
         if (disableCertsVerification) {
             // For self-signed certs on localhost to work
             System.setProperty("jdk.internal.httpclient.disableHostnameVerification", Boolean.TRUE.toString());
@@ -180,10 +219,13 @@ public class MpaVsSpaLoadTest {
             builder.sslContext(sslContext);
         }
 
-        return builder
-            .followRedirects(HttpClient.Redirect.NEVER)
-            .connectTimeout(Duration.ofMillis(CONNECT_TIMEOUT))
-            .build();
+        builder.followRedirects(HttpClient.Redirect.NEVER)
+            .connectTimeout(Duration.ofMillis(CONNECT_TIMEOUT));
+
+        // Nginx throws java.io.IOException: /127.0.0.1:45494: GOAWAY received after ~ 1000 requests for one connection;
+        // Simple hack to handle this is to have a few clients and rotate them
+        var clients = List.of(builder.build(), builder.build(), builder.build());
+        return () -> randomChoice(clients);
     }
 
     static EndpointResult task(HttpClient httpClient, Map<String, EndpointStats> endpointsStats) {
@@ -192,7 +234,7 @@ public class MpaVsSpaLoadTest {
 
         var start = System.currentTimeMillis();
 
-        var endpoint = randomChoice(ENDPOINTS);
+        var endpoint = randomChoice(ENDPOINTS.endpoints());
         var endpointStats = endpointsStats.get(endpoint.id());
 
         endpointStats.incrementRequests();
@@ -265,64 +307,23 @@ public class MpaVsSpaLoadTest {
     }
 
     static void printStats(List<Long> sortedResults) {
-        var min = sortedResults.getFirst();
-        var max = sortedResults.getLast();
+        printStats(AggregatedStats.fromSortedResults(sortedResults));
+    }
 
-        var mean = sortedResults.stream().mapToLong(Long::longValue).average().getAsDouble();
-        var percentile50 = percentile(sortedResults, 50);
-        var percentile75 = percentile(sortedResults, 75);
-        var percentile90 = percentile(sortedResults, 90);
-        var percentile99 = percentile(sortedResults, 99);
-
-        System.out.println("Min: " + formattedSeconds(min));
-        System.out.println("Max: " + formattedSeconds(max));
-        System.out.println("Mean: " + formattedSeconds(mean));
+    static void printStats(AggregatedStats stats) {
+        System.out.println("Min: " + formattedSeconds(stats.min));
+        System.out.println("Max: " + formattedSeconds(stats.max));
+        System.out.println("Mean: " + formattedSeconds(stats.mean));
         System.out.println();
-        System.out.println("Percentile 50 (Median): " + formattedSeconds(percentile50));
-        System.out.println("Percentile 75: " + formattedSeconds(percentile75));
-        System.out.println("Percentile 90: " + formattedSeconds(percentile90));
-        System.out.println("Percentile 99: " + formattedSeconds(percentile99));
+        System.out.println("Percentile 50 (Median): " + formattedSeconds(stats.percentile50));
+        System.out.println("Percentile 75: " + formattedSeconds(stats.percentile75));
+        System.out.println("Percentile 90: " + formattedSeconds(stats.percentile90));
+        System.out.println("Percentile 95: " + formattedSeconds(stats.percentile95));
+        System.out.println("Percentile 99: " + formattedSeconds(stats.percentile99));
     }
 
     static String formattedSeconds(double milliseconds) {
         return (Math.round(milliseconds) / 1000.0) + " s";
-    }
-
-    static double percentile(List<Long> data, double percentile) {
-        if (data.isEmpty()) {
-            throw new RuntimeException("no percentile for empty data");
-        }
-
-        if (percentile >= 100) {
-            return data.getLast();
-        }
-
-        if (percentile <= 1) {
-            return data.getFirst();
-        }
-
-        var index = data.size() * percentile / 100;
-
-        if (isInteger(index)) {
-            return data.get((int) index);
-        }
-
-        var lowerIdx = (int) Math.floor(index);
-        var upperIdx = (int) Math.ceil(index);
-
-        if (lowerIdx < 0) {
-            return data.get(upperIdx);
-        }
-
-        if (upperIdx >= data.size()) {
-            return data.get(lowerIdx);
-        }
-
-        return (data.get(lowerIdx) + data.get(upperIdx)) / 2.0;
-    }
-
-    static boolean isInteger(double value) {
-        return Math.round(value) - value <= 10e6;
     }
 
     static void printEndpointStats(String endpointId, EndpointStats endpointStats,
@@ -341,6 +342,36 @@ public class MpaVsSpaLoadTest {
         return Math.round(number * 100.0 / total) + "%";
     }
 
+    static void printPageStats(String page,
+                               List<List<Endpoint>> endpoints,
+                               Map<String, List<Long>> sortedResultsByEndpoint) {
+        var endpointsFormula = endpoints.stream().map(e -> {
+            if (e.size() == 1) {
+                return e.getFirst().id();
+            }
+            return "(worst of: %s)".formatted(e.stream().map(Endpoint::id).collect(Collectors.joining(", ")));
+        }).collect(Collectors.joining(" + "));
+        var pageDescription = page + " = " + endpointsFormula;
+
+        System.out.println(pageDescription);
+        System.out.println();
+
+        var pageAggregatedStats = endpoints.stream()
+            .map(es -> {
+                if (es.size() == 1) {
+                    return AggregatedStats.fromSortedResults(sortedResultsByEndpoint.get(es.getFirst().id()));
+                }
+
+                var eAggregatedStats = es.stream().map(e -> AggregatedStats.fromSortedResults(sortedResultsByEndpoint.get(e.id()))).toList();
+                return AggregatedStats.worstOf(eAggregatedStats);
+            })
+            .toList();
+
+        var aggregatedStats = AggregatedStats.sum(pageAggregatedStats);
+
+        printStats(aggregatedStats);
+    }
+
     enum TestCase {
         MPA, SPA
     }
@@ -348,12 +379,15 @@ public class MpaVsSpaLoadTest {
     record EndpointResult(String id, long time) {
     }
 
-    record Endpoint(String method, String path) {
-        String id() {
-            return method + ":" + path;
-        }
+    record Endpoints(List<Endpoint> endpoints,
+                     Map<String, List<List<Endpoint>>> pages) {
     }
 
+    record Endpoint(String method, String path) {
+        String id() {
+            return method + ":" + (path.isEmpty() ? "/" : path);
+        }
+    }
 
     record EndpointStats(AtomicInteger requests,
                          AtomicInteger connectTimeoutRequests,
@@ -381,6 +415,103 @@ public class MpaVsSpaLoadTest {
 
         void incrementRequestStatus(int status) {
             requestsByStatus.computeIfAbsent(status, k -> new AtomicInteger(0)).getAndIncrement();
+        }
+    }
+
+    record AggregatedStats(long min, long max, double mean,
+                           double percentile50,
+                           double percentile75,
+                           double percentile90,
+                           double percentile95,
+                           double percentile99) {
+
+        static AggregatedStats fromSortedResults(List<Long> sortedResults) {
+            var min = sortedResults.getFirst();
+            var max = sortedResults.getLast();
+
+            var mean = sortedResults.stream().mapToLong(Long::longValue).average().getAsDouble();
+            var percentile50 = percentile(sortedResults, 50);
+            var percentile75 = percentile(sortedResults, 75);
+            var percentile90 = percentile(sortedResults, 90);
+            var percentile95 = percentile(sortedResults, 95);
+            var percentile99 = percentile(sortedResults, 99);
+
+            return new AggregatedStats(min, max, mean,
+                percentile50, percentile75, percentile90, percentile95, percentile99);
+        }
+
+        static AggregatedStats sum(Collection<AggregatedStats> stats) {
+            long min = 0;
+            long max = 0;
+            double mean = 0;
+            double percentile50 = 0;
+            double percentile75 = 0;
+            double percentile90 = 0;
+            double percentile95 = 0;
+            double percentile99 = 0;
+
+            for (var s : stats) {
+                min += s.min;
+                max += s.max;
+                mean += s.mean;
+                percentile50 += s.percentile50;
+                percentile75 += s.percentile75;
+                percentile90 += s.percentile90;
+                percentile95 += s.percentile95;
+                percentile99 += s.percentile99;
+            }
+
+            return new AggregatedStats(min, max, mean, percentile50, percentile75, percentile90, percentile95, percentile99);
+        }
+
+        static AggregatedStats worstOf(List<AggregatedStats> stats) {
+            if (stats.isEmpty()) {
+                throw new RuntimeException("No worst stats of empty candidates");
+            }
+            var worst = stats.getFirst();
+            for (var s : stats) {
+                if (s.percentile99 > worst.percentile99) {
+                    worst = s;
+                }
+            }
+            return worst;
+        }
+
+        static double percentile(List<Long> data, double percentile) {
+            if (data.isEmpty()) {
+                throw new RuntimeException("No percentile for empty data");
+            }
+
+            if (percentile >= 100) {
+                return data.getLast();
+            }
+
+            if (percentile <= 1) {
+                return data.getFirst();
+            }
+
+            var index = data.size() * percentile / 100;
+
+            if (isInteger(index)) {
+                return data.get((int) index);
+            }
+
+            var lowerIdx = (int) Math.floor(index);
+            var upperIdx = (int) Math.ceil(index);
+
+            if (lowerIdx < 0) {
+                return data.get(upperIdx);
+            }
+
+            if (upperIdx >= data.size()) {
+                return data.get(lowerIdx);
+            }
+
+            return (data.get(lowerIdx) + data.get(upperIdx)) / 2.0;
+        }
+
+        static boolean isInteger(double value) {
+            return Math.round(value) - value <= 10e6;
         }
     }
 }

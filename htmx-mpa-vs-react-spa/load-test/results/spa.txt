@@ -1,0 +1,213 @@
+Starting MpaVsSpaLoadTest!
+
+Test case: SPA
+About to make 2000 requests with 100/s rate to https://react-spa.local host
+Timeouts are 5000 ms for connect and 5000 ms for request
+Max concurrency is capped at: 150
+
+Endpoints to test (chosen randomly):
+GET:assets/index-S7e9TcxU.js
+GET:assets/index-BWhT5uIM.css
+GET:/
+GET:api/projects
+GET:api/tasks
+GET:api/user-info
+
+...
+
+2025-02-23T21:08:52.885925895, 100/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:08:54.889784461, 200/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:08:55.891335789, 300/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:08:56.894085150, 400/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:08:58.861957940, 500/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:08:59.863666965, 600/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:00.879378964, 700/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:02.884778645, 800/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:03.890423282, 900/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:04.891142842, 1000/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:06.875897046, 1100/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:07.876964398, 1200/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:08.878854651, 1300/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:10.889783202, 1400/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:11.891176771, 1500/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:12.892483683, 1600/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:14.890960339, 1700/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:15.891824509, 1800/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-23T21:09:16.892825355, 1900/2000 requests were issued, waiting 1s before sending next batch...
+
+...
+
+2000 requests with 100 per second rate took PT27.168S
+
+...
+
+Executed requests: 2000, with 100/s rate
+Requests with connect timeout [5000]: 0, as percentage: 0
+Requests with request timeout [5000]: 0, as percentage: 0
+
+Min: 0.0 s
+Max: 0.346 s
+Mean: 0.008 s
+
+Percentile 50 (Median): 0.004 s
+Percentile 75: 0.006 s
+Percentile 90: 0.017 s
+Percentile 95: 0.019 s
+Percentile 99: 0.157 s
+
+...
+
+Endpoints:
+
+GET:assets/index-S7e9TcxU.js
+Requests: 348, which is 17% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=348}
+
+Min: 0.005 s
+Max: 0.238 s
+Mean: 0.016 s
+
+Percentile 50 (Median): 0.016 s
+Percentile 75: 0.018 s
+Percentile 90: 0.02 s
+Percentile 95: 0.025 s
+Percentile 99: 0.07 s
+
+...
+
+GET:assets/index-BWhT5uIM.css
+Requests: 332, which is 17% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=332}
+
+Min: 0.0 s
+Max: 0.346 s
+Mean: 0.007 s
+
+Percentile 50 (Median): 0.002 s
+Percentile 75: 0.003 s
+Percentile 90: 0.005 s
+Percentile 95: 0.014 s
+Percentile 99: 0.197 s
+
+...
+
+GET:/
+Requests: 305, which is 15% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=305}
+
+Min: 0.0 s
+Max: 0.277 s
+Mean: 0.007 s
+
+Percentile 50 (Median): 0.002 s
+Percentile 75: 0.002 s
+Percentile 90: 0.007 s
+Percentile 95: 0.015 s
+Percentile 99: 0.248 s
+
+...
+
+GET:api/projects
+Requests: 326, which is 16% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=326}
+
+Min: 0.001 s
+Max: 0.051 s
+Mean: 0.005 s
+
+Percentile 50 (Median): 0.004 s
+Percentile 75: 0.005 s
+Percentile 90: 0.008 s
+Percentile 95: 0.016 s
+Percentile 99: 0.022 s
+
+...
+
+GET:api/tasks
+Requests: 340, which is 17% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=340}
+
+Min: 0.001 s
+Max: 0.338 s
+Mean: 0.008 s
+
+Percentile 50 (Median): 0.004 s
+Percentile 75: 0.005 s
+Percentile 90: 0.008 s
+Percentile 95: 0.016 s
+Percentile 99: 0.202 s
+
+...
+
+GET:api/user-info
+Requests: 349, which is 17% of all requests
+Connect timeouts: 0
+Request timeouts: 0
+Requests by status: {200=349}
+
+Min: 0.001 s
+Max: 0.302 s
+Mean: 0.007 s
+
+Percentile 50 (Median): 0.003 s
+Percentile 75: 0.004 s
+Percentile 90: 0.009 s
+Percentile 95: 0.019 s
+Percentile 99: 0.114 s
+
+...
+
+Pages:
+
+Account = GET:/ + (worst of: GET:assets/index-S7e9TcxU.js, GET:assets/index-BWhT5uIM.css) + GET:api/user-info
+
+Min: 0.001 s
+Max: 0.925 s
+Mean: 0.021 s
+
+Percentile 50 (Median): 0.007 s
+Percentile 75: 0.009 s
+Percentile 90: 0.021 s
+Percentile 95: 0.048 s
+Percentile 99: 0.559 s
+
+...
+
+Projects = GET:/ + (worst of: GET:assets/index-S7e9TcxU.js, GET:assets/index-BWhT5uIM.css) + GET:api/projects
+
+Min: 0.001 s
+Max: 0.674 s
+Mean: 0.019 s
+
+Percentile 50 (Median): 0.008 s
+Percentile 75: 0.01 s
+Percentile 90: 0.02 s
+Percentile 95: 0.045 s
+Percentile 99: 0.467 s
+
+...
+
+Tasks = GET:/ + (worst of: GET:assets/index-S7e9TcxU.js, GET:assets/index-BWhT5uIM.css) + GET:api/tasks
+
+Min: 0.001 s
+Max: 0.961 s
+Mean: 0.022 s
+
+Percentile 50 (Median): 0.008 s
+Percentile 75: 0.01 s
+Percentile 90: 0.02 s
+Percentile 95: 0.045 s
+Percentile 99: 0.647 s
+
+...
+
