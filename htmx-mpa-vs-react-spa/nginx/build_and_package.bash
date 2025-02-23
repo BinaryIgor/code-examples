@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-export app="htmx-mpa-vs-react-spa-nginx-spa"
+export app="htmx-mpa-vs-react-spa-nginx"
 export tag="${TAG:-latest}"
 tagged_image="${app}:${tag}"
 
@@ -14,15 +14,14 @@ mkdir dist
 cd ..
 . "config_${ENV}.env"
 
-cd nginx-spa
+cd nginx
 . "config_${ENV}.env"
 
 echo "Building docker image..."
 
 export SERVER_PORT=${SERVER_PORT:-8080}
-export DOMAIN=${SPA_DOMAIN}
 
-envsubst '${SERVER_PORT} ${DOMAIN}' < template_nginx.conf > dist/nginx.conf
+envsubst '${SERVER_PORT} ${MPA_DOMAIN} ${SPA_DOMAIN}' < template_nginx.conf > dist/nginx.conf
 
 docker build . -t ${tagged_image}
 
@@ -34,7 +33,8 @@ docker save ${tagged_image} | gzip > ${gzipped_image_path}
 
 if [ $ENV = 'local' ]; then
   cp -r ../scripts/fake-certs dist/fake-certs
-  CERTS_VOLUME="-v $PWD/dist/fake-certs/fullchain.pem:/etc/certs/live/${DOMAIN}/fullchain.pem  -v $PWD/dist/fake-certs/privkey.pem:/etc/certs/live/${DOMAIN}/privkey.pem"
+  CERTS_VOLUME="-v $PWD/dist/fake-certs/fullchain.pem:/etc/certs/live/${MPA_DOMAIN}/fullchain.pem  -v $PWD/dist/fake-certs/privkey.pem:/etc/certs/live/${MPA_DOMAIN}/privkey.pem \\
+  -v $PWD/dist/fake-certs/fullchain.pem:/etc/certs/live/${SPA_DOMAIN}/fullchain.pem  -v $PWD/dist/fake-certs/privkey.pem:/etc/certs/live/${SPA_DOMAIN}/privkey.pem"
 else
   CERTS_VOLUME="-v ${CERTS_VOLUME}"
 fi

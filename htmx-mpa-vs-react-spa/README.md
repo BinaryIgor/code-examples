@@ -1,14 +1,11 @@
 # HTMX MPA vs React SPA
 
-* User - sign in page
-* Drawer navigation: projects, tasks, profile
-* Projects - new page, list
-* Tasks - new page, list
-  * list with some simple filters
-  * task details - comment/history
-* Profile - new page
-  * stats
-  * sign out
+Let's compare Multi Page Application, boosted with HTMX for partial updates, with Single Page Application implemented with the help of React!
 
-## TODO
-* one vs two nginxes (/mpa and /spa)?
+We will mostly compare:
+* subjective user experience
+* page load speed & performance
+* code complexity
+
+What's there:
+* ??
