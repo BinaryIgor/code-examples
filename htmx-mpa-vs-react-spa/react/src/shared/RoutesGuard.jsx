@@ -12,7 +12,6 @@ export default function RoutesGuard({ children }) {
 	const { user, setUser } = useUser();
 
 	useEffect(() => {
-		console.log("Location...", location);
 		if (!user.data) {
 			getCurrentUser(setUser);
 		}

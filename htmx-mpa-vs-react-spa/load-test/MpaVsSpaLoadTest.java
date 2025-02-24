@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ public class MpaVsSpaLoadTest {
 
     static final int REQUESTS = envIntValueOrDefault("REQUESTS", 2000);
     static final int REQUESTS_PER_SECOND = envIntValueOrDefault("REQUESTS_PER_SECOND", 100);
-    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 150);
+    static final int MAX_CONCURRENCY = envIntValueOrDefault("MAX_CONCURRENCY", 200);
     static final int CONNECT_TIMEOUT = envIntValueOrDefault("CONNECT_TIMEOUT", 5000);
     static final int REQUEST_TIMEOUT = envIntValueOrDefault("REQUEST_TIMEOUT", 5000);
     static final String HOST = envValueOrThrow("HOST");
@@ -160,16 +161,16 @@ public class MpaVsSpaLoadTest {
                 );
             }
             case SPA -> {
-                var jsEndpoint = new Endpoint("GET", envValueOrThrow("SPA_JS_PATH"));
-                var cssEndpoint = new Endpoint("GET", envValueOrThrow("SPA_CSS_PATH"));
                 // Home page with empty index.html, JS takes over from there (can be any page really, just empty, JS-driven HTML page)
                 var htmlPageEndpoint = new Endpoint("GET", "");
+                var jsEndpoint = new Endpoint("GET", envValueOrThrow("SPA_JS_PATH"));
+                var cssEndpoint = new Endpoint("GET", envValueOrThrow("SPA_CSS_PATH"));
                 var projectsApiEndpoint = new Endpoint("GET", "api/projects");
                 var tasksApiEndpoint = new Endpoint("GET", "api/tasks");
                 var accountApiEndpoint = new Endpoint("GET", "api/user-info");
 
                 yield new Endpoints(
-                    List.of(jsEndpoint, cssEndpoint, htmlPageEndpoint, projectsApiEndpoint, tasksApiEndpoint, accountApiEndpoint),
+                    List.of(htmlPageEndpoint, jsEndpoint, cssEndpoint, projectsApiEndpoint, tasksApiEndpoint, accountApiEndpoint),
                     Map.of(
                         "Projects", pageEndpoints(htmlPageEndpoint, List.of(jsEndpoint, cssEndpoint), projectsApiEndpoint),
                         "Tasks", pageEndpoints(htmlPageEndpoint, List.of(jsEndpoint, cssEndpoint), tasksApiEndpoint),
@@ -251,6 +252,7 @@ public class MpaVsSpaLoadTest {
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
 
             endpointStats.incrementRequestStatus(response.statusCode());
+            endpointStats.addResponseSize(response.body().length);
         } catch (Exception e) {
             if (LOGGED_ISSUES.getAndIncrement() < MAX_TO_LOG_ISSUES) {
                 System.out.println("Timeout or another issue during request!");
@@ -334,6 +336,10 @@ public class MpaVsSpaLoadTest {
         System.out.println("Connect timeouts: " + endpointStats.connectTimeoutRequests);
         System.out.println("Request timeouts: " + endpointStats.requestTimeoutRequests);
         System.out.println("Requests by status: " + endpointStats.requestsByStatus);
+
+        var averageResponseSize = endpointStats.responseSizes.get() / endpointStats.requests.get();
+        System.out.println("Average response size: " + averageResponseSize);
+
         System.out.println();
         printStats(sortedResults);
     }
@@ -392,13 +398,15 @@ public class MpaVsSpaLoadTest {
     record EndpointStats(AtomicInteger requests,
                          AtomicInteger connectTimeoutRequests,
                          AtomicInteger requestTimeoutRequests,
-                         Map<Integer, AtomicInteger> requestsByStatus) {
+                         Map<Integer, AtomicInteger> requestsByStatus,
+                         AtomicLong responseSizes) {
 
         static EndpointStats empty() {
             return new EndpointStats(new AtomicInteger(0),
                 new AtomicInteger(0),
                 new AtomicInteger(0),
-                new ConcurrentHashMap<>());
+                new ConcurrentHashMap<>(),
+                new AtomicLong(0));
         }
 
         void incrementRequests() {
@@ -415,6 +423,10 @@ public class MpaVsSpaLoadTest {
 
         void incrementRequestStatus(int status) {
             requestsByStatus.computeIfAbsent(status, k -> new AtomicInteger(0)).getAndIncrement();
+        }
+
+        void addResponseSize(int size) {
+            responseSizes.addAndGet(size);
         }
     }
 

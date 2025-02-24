@@ -216,7 +216,7 @@ print("...")
 print()
 time.sleep(1)
 
-print("Droplet craeted, creating and assigning firewall if needed...")
+print("Droplet created, creating and assigning firewall if needed...")
 
 create_and_assign_firewall_if_needed(droplet_name_id)
 print()
@@ -225,4 +225,4 @@ print()
 
 print("Everything should be ready!")
 print()
-print("Get your machine addresses from DigitalOcean UI and start experimenting!")
+print("Get your machine address from DigitalOcean UI and start experimenting!")

@@ -9,7 +9,7 @@ cd $cwd
 app=$APP
 app_container="htmx-mpa-vs-react-spa-$app"
 app_dir="${APP_DIR:-$APP}"
-remote_host="$DEPLOY_USER@$DOMAIN"
+remote_host="$DEPLOY_USER@$MPA_DOMAIN"
 deploy_dir="$DEPLOY_DIR/$app"
 previous_deploy_dir="$deploy_dir/previous"
 latest_deploy_dir="$deploy_dir/latest"

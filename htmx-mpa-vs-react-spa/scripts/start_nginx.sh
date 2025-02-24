@@ -1,1 +1,1 @@
-docker start htmx-mpa-vs-react-spa-nginx
+docker start htmx-mpa-vs-react-spa-nginx || true

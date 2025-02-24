@@ -50,7 +50,6 @@ public class WebExceptionHandler {
                 "error", error));
     }
 
-    // TODO: JSON version?
     public void handle(HttpServletResponse response, HttpStatus status, Throwable throwable) {
         String responseContentType;
         String responseBody;

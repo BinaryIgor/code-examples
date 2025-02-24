@@ -5,6 +5,7 @@ app=$APP
 app_dir="${APP_DIR:-$APP}"
 
 echo "Building $app with ${ENV} env profile..."
+echo
 
 cd ..
 cd $app_dir
