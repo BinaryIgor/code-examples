@@ -20,7 +20,7 @@ Both versions - Java/HTMX MPA & React SPA - look exactly the same and have ident
 
 ## What is here
 
-* **Server**: Java 21 MPA + API. It implements MPA, serving fully rendered HTML pages with the help of Mustache templates and HTMX, CSS and JS assets. 
+* **Server**: Java 21 MPA + API. It implements MPA, serving fully rendered HTML pages with the help of Mustache templates and HTMX, CSS and JS assets.
  At the same time, it exposes API for the SPA app; it uses SQLite as a database
 * **Nginx**: serves as a reverse proxy for our server/api, requests rate limiter, ssl certificates handler and static files server (for SPA)
 * **React**: SPA version of the app
@@ -114,7 +114,6 @@ bash deploy_apps.bash
 
 That might also take a few minutes; after it finishes, we are ready for tests!
 
-
 ## User experience tests
 
 Just go to https://MPA_DOMAIN and https://SPA_DOMAIN and see whether you can catch any differences ;) 
@@ -167,17 +166,17 @@ GET:account
 
 ...
 
-2025-02-25T20:13:00.034533856, 100/2000 requests were issued, waiting 1s before sending next batch...
-2025-02-25T20:13:01.036568961, 200/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-26T19:21:43.759100691, 100/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-26T19:21:44.761466287, 200/2000 requests were issued, waiting 1s before sending next batch...
 
 ...
 
-2025-02-25T20:13:17.225227177, 1800/2000 requests were issued, waiting 1s before sending next batch...
-2025-02-25T20:13:18.243508946, 1900/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-26T19:22:00.892519982, 1800/2000 requests were issued, waiting 1s before sending next batch...
+2025-02-26T19:22:01.914235309, 1900/2000 requests were issued, waiting 1s before sending next batch...
 
 ...
 
-2000 requests with 100 per second rate took PT20.4S
+2000 requests with 100 per second rate took PT20.434S
 
 ...
 
@@ -186,14 +185,14 @@ Requests with connect timeout [5000]: 0, as percentage: 0
 Requests with request timeout [5000]: 0, as percentage: 0
 
 Min: 0.022 s
-Max: 0.406 s
-Mean: 0.034 s
+Max: 0.671 s
+Mean: 0.037 s
 
-Percentile 50 (Median): 0.028 s
-Percentile 75: 0.031 s
-Percentile 90: 0.035 s
-Percentile 95: 0.043 s
-Percentile 99: 0.263 s
+Percentile 50 (Median): 0.027 s
+Percentile 75: 0.028 s
+Percentile 90: 0.031 s
+Percentile 95: 0.034 s
+Percentile 99: 0.45 s
 
 ...
 
@@ -203,47 +202,48 @@ Endpoints:
 
 Pages:
 
+Tasks = (worst of: GET:js/htmx.2.0.4.min.js, GET:styles_cb92397d6961a772.css) + GET:tasks
+
+Min: 0.047 s
+Max: 1.246 s
+Mean: 0.074 s
+
+Percentile 50 (Median): 0.053 s
+Percentile 75: 0.055 s
+Percentile 90: 0.059 s
+Percentile 95: 0.064 s
+Percentile 99: 0.984 s
+
+...
+
 Projects = (worst of: GET:js/htmx.2.0.4.min.js, GET:styles_cb92397d6961a772.css) + GET:projects
 
 Min: 0.047 s
-Max: 0.741 s
-Mean: 0.065 s
+Max: 1.129 s
+Mean: 0.074 s
 
-Percentile 50 (Median): 0.055 s
-Percentile 75: 0.059 s
-Percentile 90: 0.068 s
-Percentile 95: 0.081 s
-Percentile 99: 0.431 s
+Percentile 50 (Median): 0.053 s
+Percentile 75: 0.055 s
+Percentile 90: 0.059 s
+Percentile 95: 0.066 s
+Percentile 99: 0.958 s
 
 ...
 
 Account = (worst of: GET:js/htmx.2.0.4.min.js, GET:styles_cb92397d6961a772.css) + GET:account
 
 Min: 0.046 s
-Max: 0.775 s
-Mean: 0.066 s
+Max: 1.188 s
+Mean: 0.07 s
 
-Percentile 50 (Median): 0.054 s
-Percentile 75: 0.058 s
-Percentile 90: 0.07 s
-Percentile 95: 0.088 s
-Percentile 99: 0.459 s
-
-...
-
-Tasks = (worst of: GET:js/htmx.2.0.4.min.js, GET:styles_cb92397d6961a772.css) + GET:tasks
-
-Min: 0.047 s
-Max: 0.759 s
-Mean: 0.068 s
-
-Percentile 50 (Median): 0.055 s
-Percentile 75: 0.06 s
-Percentile 90: 0.07 s
-Percentile 95: 0.084 s
-Percentile 99: 0.536 s
+Percentile 50 (Median): 0.051 s
+Percentile 75: 0.054 s
+Percentile 90: 0.058 s
+Percentile 95: 0.063 s
+Percentile 99: 0.873 s
 
 ...
+
 
 ```
 
