@@ -1,0 +1,21 @@
+<form {{{projectFormAttrs}}} hx-swap="none">
+    <input class="block p-4" type="text" placeholder="{{namePlaceholder}}" name="name" value="{{nameValue}}">
+    <p class="error mb-2 hidden">{{nameError}}</p>
+    <input class="button-like px-8 py-2 mt-4" type="submit" value="{{submitValue}}">
+</form>
+
+<script>
+    (function () {
+        const form = document.querySelector("form");
+        const nameInput = form.querySelector("input");
+        const nameError = form.querySelector("p");
+        nameInput.oninput = (e) => {
+            const name = nameInput.value;
+            if (!name || name.length < 3 || name.length > 50) {
+                nameError.classList.remove("hidden");
+            } else {
+                nameError.classList.add("hidden");
+            }
+        };
+    })();
+</script>

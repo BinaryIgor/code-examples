@@ -1,0 +1,13 @@
+spring:
+  web:
+    resources: # for live reload from local, but outside the classpath dir
+      static-locations: [ "file:static" ]
+      cache:
+        period: 0
+
+cors:
+  enabled: true
+
+html:
+  css-path: "/live-styles.css"
+

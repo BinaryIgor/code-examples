@@ -1,0 +1,41 @@
+<div id="{{confirmableModalId}}" class="top-0 right-0 fixed w-full h-screen z-50 pt-32 bg-black/60 hidden">
+    <div class="w-11/12 md:w-8/12 xl:w-2/5 px-8 pt-8 pb-12 m-auto relative rounded-lg bg-slate-200">
+        <span class="text-4xl absolute top-0 right-2 hover:text-zinc-400 cursor-pointer">&times;</span>
+        <div class="text-2xl font-medium">{{confirmableModalTitle}}</div>
+        <div class="text-lg pt-4 pb-4">{{confirmableModalContent}}</div>
+        <span class="absolute bottom-0 left-0 p-4 ml-4 cursor-pointer text-xl">{{confirmableModalLeft}}</span>
+        <span class="absolute bottom-0 right-0 p-4 mr-4 cursor-pointer text-xl">{{confirmableModalRight}}</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const modal = document.getElementById("{{confirmableModalId}}");
+        const [title, content] = modal.querySelector("div").querySelectorAll("div");
+        const [hide, left, right] = modal.querySelectorAll("span");
+
+        document.addEventListener('confirmable-modal-show', e => {
+            const config = e.detail;
+            if (config && config.title) {
+                title.innerHTML = config.title;
+            }
+            if (config && config.content) {
+                content.innerHTML = config.content;
+            }
+            modal.classList.remove("hidden");
+        });
+
+        function hideModal() {
+            modal.classList.add("hidden");
+        }
+
+        hide.onclick = hideModal;
+        left.onclick = () => {
+            hideModal();
+        };
+        right.onclick = () => {
+            document.dispatchEvent(new CustomEvent("confirmable-modal-right-clicked"));
+            hideModal();
+        }
+    })();
+</script>

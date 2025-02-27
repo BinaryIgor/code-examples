@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .button-like {
+        @apply border-2 rounded border-black;
+    }
+
+    .error {
+        @apply text-red-500;
+    }
+}

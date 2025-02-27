@@ -1,0 +1,48 @@
+<h1 class="text-2xl my-8">{{projectsTitle}}</h1>
+
+{{#hasProjects}}
+    <div id="projects-container" class="space-y-2">
+        {{#projects}}
+            <div id="p-{{project.id}}" class="relative border rounded border-black max-w-80 cursor-pointer">
+                <div class="p-4" onclick="location.href='/projects/{{project.id}}'">{{project.name}}, {{projects.tasks}}: {{tasks}}</div>
+                <span class="absolute top-0 right-0 text-3xl p-2 cursor-pointer"
+                      hx-delete="/projects/{{project.id}}"
+                      hx-confirm="{{project.name}}"
+                      hx-target="#p-{{project.id}}"
+                      hx-swap="delete">
+                        &times;
+                    </span>
+            </div>
+        {{/projects}}
+    </div>
+    {{> ../components/confirmable-modal}}
+{{/hasProjects}}
+
+{{^projects}}
+    <div>{{projects.no-projects}}</div>
+{{/projects}}
+
+<div class="my-8"><a class="underline" href="/projects/create">{{projects.add}}</a></div>
+
+<script>
+    let deleteProjectHTMXEvent;
+
+    document.addEventListener("confirmable-modal-right-clicked", e => {
+        deleteProjectHTMXEvent.detail.issueRequest(deleteProjectHTMXEvent);
+    });
+
+    const deleteProjectMessageTemplate = "{{deleteProjectMessageTemplate}}";
+    document.addEventListener("htmx:confirm", e => {
+        e.preventDefault();
+        deleteProjectHTMXEvent = e;
+        const deleteProjectName = e.detail.question;
+        const modalMessage = deleteProjectMessageTemplate.replace("{project}", deleteProjectName);
+        document.dispatchEvent(new CustomEvent('confirmable-modal-show', { detail: { content: modalMessage }}));
+    });
+
+    window.addEventListener("pageshow", e => {
+        if (e.persisted) {
+            location.reload();
+        }
+    });
+</script>
