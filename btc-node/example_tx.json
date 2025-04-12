@@ -1,0 +1,64 @@
+{
+  "txid": "73ca686a1e3a3dee44cb51948651484e02fb6f97ef74407ff71bcf6e48ce4ced",
+  "hash": "ba7a7dad0cb7904ac2e0abb0c32bdf6f92d8c3fe36d8a0e6542e88202d711552",
+  "version": 2,
+  "size": 365,
+  "vsize": 206,
+  "weight": 824,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "be84e1f2851cedd5e0265dca60df2517639231ee3df184758c66b0fc395692b8",
+      "vout": 2,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "txinwitness": [
+        "efde841b5a2605f18158367d0e57ada9f36bfb1b4cc9aba099dce4d46b3773fd51a039d2e6f69cf20e7f35a35e8d6d8bfb2ebbfe14ccd67915848d98172eec67",
+        "209dadb42b3269c958a0d6d74beb518dfb4c823c65ae8197184287c6000a10eeacac0063036f726401010a746578742f706c61696e00357b2270223a226272632d3230222c226f70223a226d696e74222c227469636b223a226d2d6169222c22616d74223a2231303030227d68",
+        "c09dadb42b3269c958a0d6d74beb518dfb4c823c65ae8197184287c6000a10eeac"
+      ],
+      "sequence": 4294967293
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.00000330,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "1 244b4800f2e51639a5f76467a47d4e1448758cdaaa086797d5f43a59e6b411fb",
+        "desc": "rawtr(244b4800f2e51639a5f76467a47d4e1448758cdaaa086797d5f43a59e6b411fb)#qaavjpje",
+        "hex": "5120244b4800f2e51639a5f76467a47d4e1448758cdaaa086797d5f43a59e6b411fb",
+        "address": "bc1py395sq8ju5trnf0hv3n6gl2wz3y8trx64gyx09747sa9ne45z8asgx8ph7",
+        "type": "witness_v1_taproot"
+      }
+    },
+    {
+      "value": 0.00000000,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "OP_RETURN 13 1310996",
+        "desc": "raw(6a5d0414011400)#cwmyltm8",
+        "hex": "6a5d0414011400",
+        "type": "nulldata"
+      }
+    },
+    {
+      "value": 0.00024695,
+      "n": 2,
+      "scriptPubKey": {
+        "asm": "1 2f27995cfb48b05c56bcea62fa0dd0cafea17b19a8ad0c6180bdfc26238c6a55",
+        "desc": "rawtr(2f27995cfb48b05c56bcea62fa0dd0cafea17b19a8ad0c6180bdfc26238c6a55)#xvxf6whs",
+        "hex": "51202f27995cfb48b05c56bcea62fa0dd0cafea17b19a8ad0c6180bdfc26238c6a55",
+        "address": "bc1p9unejh8mfzc9c44uaf305rwsetl2z7ce4zksccvqhh7zvguvdf2synvghw",
+        "type": "witness_v1_taproot"
+      }
+    }
+  ],
+  "hex": "02000000000101b8925639fcb0668c7584f13dee3192631725df60ca5d26e0d5ed1c85f2e184be0200000000fdffffff034a01000000000000225120244b4800f2e51639a5f76467a47d4e1448758cdaaa086797d5f43a59e6b411fb0000000000000000076a5d041401140077600000000000002251202f27995cfb48b05c56bcea62fa0dd0cafea17b19a8ad0c6180bdfc26238c6a550340efde841b5a2605f18158367d0e57ada9f36bfb1b4cc9aba099dce4d46b3773fd51a039d2e6f69cf20e7f35a35e8d6d8bfb2ebbfe14ccd67915848d98172eec676d209dadb42b3269c958a0d6d74beb518dfb4c823c65ae8197184287c6000a10eeacac0063036f726401010a746578742f706c61696e00357b2270223a226272632d3230222c226f70223a226d696e74222c227469636b223a226d2d6169222c22616d74223a2231303030227d6821c09dadb42b3269c958a0d6d74beb518dfb4c823c65ae8197184287c6000a10eeac00000000",
+  "blockhash": "00000000000000000001301ac63101c606dd07b8530261990f4ca27bf8bf6ff1",
+  "confirmations": 6,
+  "time": 1744470030,
+  "blocktime": 1744470030
+}

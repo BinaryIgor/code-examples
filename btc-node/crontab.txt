@@ -1,0 +1,1 @@
+0 * * * * . /home/bigor/scripts/btc_peers_report_job.bash

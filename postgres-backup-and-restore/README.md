@@ -1,6 +1,6 @@
 # Postgres backup and restore
 
-## Prepare inra
+## Prepare infra
 As we often do, let's use DigitalOcean (you can use whatever supports Virtual Machines and something similar to AWS S3 service). From `scripts`, run:
 ```
 bash init_python_env.bash
@@ -116,7 +116,7 @@ $$;
 CREATE TABLE
 CREATE PROCEDURE
 ```
-We will use this procedure to generate some data to backup; as of now, we don't have anything to backup:
+We will use this procedure to generate some data to back up; as of now, we don't have anything to back up:
 ```
 backup_db=> \dt
          List of relations
@@ -185,7 +185,7 @@ backup_db=> select pg_size_pretty(pg_database_size('backup_db'));
 (1 row)
 ```
 
-Now, let's backup!
+Now, let's back it up!
 
 ## Prepare db-backup-job
 
