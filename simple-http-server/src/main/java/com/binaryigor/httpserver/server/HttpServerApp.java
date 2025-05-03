@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 public class HttpServerApp {
 
     public static void main(String[] args) {
-        var server = new SimpleHttpServer(Executors.newVirtualThreadPerTaskExecutor(), 8080, 30_000);
+        var server = new SimpleHttpServer(Executors.newVirtualThreadPerTaskExecutor(), 8080);
 
         server.start(r -> {
             var body = """

@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class HtmlServer {
     public static void main(String[] args) {
-        var server = new SimpleHttpServer(8080, 300_000);
-        server.verbose(true);
+        var server = new SimpleHttpServer(8080)
+                .configure(c -> c.verboseMode = true);
 
         var subscriberRepository = new SubscriberRepository();
 
