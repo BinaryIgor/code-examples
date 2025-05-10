@@ -2,7 +2,6 @@ package com.binaryigor.httpserver.utils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -12,15 +11,15 @@ public class MultipartFormDataReader {
     private static final int TWO_DASHES_BYTES_SIZE = toAsciiBytes("--").length;
     private static final String HEADERS_SEPARATOR = "\r\n";
     private static final String HEAD_BODY_SEPARATOR = HEADERS_SEPARATOR + HEADERS_SEPARATOR;
-    private static final int PART_BYTES_PACKET_SIZE = 250_000;
+    private static final int PART_BYTES_PACKET_SIZE = 100_000;
     private static final int MAX_HEADERS_SIZE = 5_000;
 
     public static List<FormPart> read(Supplier<InputStream> source, Params params) {
         var dashedBoundary = "--" + params.boundary;
-        var dashedBoundaryByteSize = toAsciiBytes(dashedBoundary).length;
-        var firstBoundaryBytesSize = dashedBoundaryByteSize + TWO_DASHES_BYTES_SIZE;
+        var dashedBoundaryBytesSize = toAsciiBytes(dashedBoundary).length;
+        var firstBoundaryBytesSize = dashedBoundaryBytesSize + TWO_DASHES_BYTES_SIZE;
         var betweenOrLastBoundaryPrefixBytes = toAsciiBytes("\r\n" + dashedBoundary);
-        var betweenBoundaryBytesSize = TWO_DASHES_BYTES_SIZE + dashedBoundaryByteSize + TWO_DASHES_BYTES_SIZE;
+        var betweenBoundaryBytesSize = TWO_DASHES_BYTES_SIZE + dashedBoundaryBytesSize + TWO_DASHES_BYTES_SIZE;
         var lastBoundaryBytesSize = betweenBoundaryBytesSize + TWO_DASHES_BYTES_SIZE;
         var betweenBoundaryPostfixBytes = toAsciiBytes("\r\n");
         var lastBoundaryPostfixBytes = toAsciiBytes("--\r\n");
@@ -31,25 +30,8 @@ public class MultipartFormDataReader {
 
         long read = firstBoundaryBytesSize;
         int part = 0;
-        while (read < params.size) {
-            try (var is = source.get()) {
-                is.skip(read);
 
-                var partFile = Path.of(params.tmpFilesDir.getAbsolutePath(), multipartFilePrefix + part).toFile();
-                var formPart = readUntil(is, params.maxInMemorySize, partFile,
-                        betweenOrLastBoundaryPrefixBytes,
-                        betweenBoundaryPostfixBytes,
-                        lastBoundaryPostfixBytes);
-
-                rawParts.add(formPart);
-
-                var boundaryBytesSize = formPart.last() ? lastBoundaryBytesSize : betweenBoundaryBytesSize;
-                read = read + boundaryBytesSize + formPart.size();
-                part++;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+        // TODO
 
         return toFormParts(rawParts, params.defaultContentType);
     }
@@ -81,34 +63,7 @@ public class MultipartFormDataReader {
         var packet = new byte[PART_BYTES_PACKET_SIZE];
         var read = source.read(packet);
 
-        while (read > 0) {
-            int i = 0;
-            while (i < read) {
-                if (isPatternIndex(packet, read, i, boundaryPrefix)) {
-                    if (isPatternIndex(packet, read,
-                            i + boundaryPrefix.length, boundaryBetweenPartsPostfix)) {
-                        return rawFormPartFromMemoryOrFile(fileOutputStream.get(), buffer, tmpFile, false);
-                    }
-                    if (isPatternIndex(packet, read,
-                            i + boundaryPrefix.length,
-                            boundaryLastPartPostfix)) {
-                        return rawFormPartFromMemoryOrFile(fileOutputStream.get(), buffer, tmpFile, true);
-                    }
-                }
-
-                buffer.write(packet[i++]);
-
-                if (buffer.size() >= maxInMemorySize) {
-                    if (fileOutputStream.get() == null) {
-                        fileOutputStream.set(new FileOutputStream(tmpFile, true));
-                    }
-                    fileOutputStream.get().write(buffer.toByteArray());
-                    buffer.reset();
-                }
-            }
-
-            read = source.read(packet);
-        }
+        // TODO
 
         return rawFormPartFromMemoryOrFile(fileOutputStream.get(), buffer, tmpFile, false);
     }
@@ -129,7 +84,7 @@ public class MultipartFormDataReader {
             try {
                 fileOutputStream.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
     }
@@ -144,58 +99,21 @@ public class MultipartFormDataReader {
     private static FormPart toFormPart(RawFormPart formPart,
                                        String defaultContentType) {
         int bodyIdx;
-        String name = null;
-        String filename = null;
+        String name;
+        String filename;
         String contentType;
 
         try (var is = formPart.contentStream()) {
-            var headBytes = is.readNBytes(MAX_HEADERS_SIZE);
-            var headersString = new String(headBytes, StandardCharsets.US_ASCII);
-
-            bodyIdx = headersString.indexOf(HEAD_BODY_SEPARATOR);
-            if (bodyIdx < 0) {
-                throw new RuntimeException("Body index cannot be found in a part!");
-            }
-            bodyIdx += HEAD_BODY_SEPARATOR.length();
-
-            var headers = new HashMap<String, String>();
-
-            for (var l : headersString.split(HEADERS_SEPARATOR)) {
-                if (l.isBlank()) {
-                    break;
-                }
-                var kv = l.split(":", 2);
-                if (kv.length == 2) {
-                    headers.put(kv[0].strip().toLowerCase(), kv[1].strip());
-                }
-            }
+            var headersWithBodyIndex = headersWithBodyIndex(is);
+            var headers = headersWithBodyIndex.headers;
+            bodyIdx = headersWithBodyIndex.bodyIdx;
 
             contentType = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, defaultContentType);
 
-            var contentDispositionLine = headers.get("content-disposition");
-            if (contentDispositionLine == null) {
-                throw new RuntimeException("Content disposition is required but cannot be found");
-            }
+            var contentDisposition = contentDispositionData(headers);
 
-            for (var parts : contentDispositionLine.split(";")) {
-                var kv = parts.split("=", 2);
-                if (kv.length != 2) {
-                    continue;
-                }
-                var key = kv[0].strip();
-                var value = kv[1].strip();
-                if (value.startsWith("\"")) {
-                    value = value.substring(1);
-                }
-                if (value.endsWith("\"")) {
-                    value = value.substring(0, value.length() - 1);
-                }
-                if (key.equals("name")) {
-                    name = value;
-                } else if (key.equals("filename")) {
-                    filename = value;
-                }
-            }
+            name = contentDisposition.name;
+            filename = contentDisposition.filename;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -209,20 +127,49 @@ public class MultipartFormDataReader {
         return FormPart.ofFile(name, filename, contentType, body);
     }
 
+    private static HeadersWithBodyIndex headersWithBodyIndex(InputStream source) throws Exception {
+        int bodyIdx;
+        var headBytes = source.readNBytes(MAX_HEADERS_SIZE);
+        var headersString = new String(headBytes, StandardCharsets.US_ASCII);
+
+        bodyIdx = headersString.indexOf(HEAD_BODY_SEPARATOR);
+        if (bodyIdx < 0) {
+            throw new RuntimeException("Body index cannot be found in a part!");
+        }
+        bodyIdx += HEAD_BODY_SEPARATOR.length();
+
+        var headers = new HashMap<String, String>();
+
+        // TODO
+
+        return new HeadersWithBodyIndex(headers, bodyIdx);
+    }
+
+    private static ContentDispositionData contentDispositionData(Map<String, String> headers) {
+        var contentDispositionLine = headers.get("content-disposition");
+        if (contentDispositionLine == null) {
+            throw new RuntimeException("Content disposition is required but cannot be found");
+        }
+
+        String name = null;
+        String filename = null;
+
+        for (var parts : contentDispositionLine.split(";")) {
+            // TODO
+        }
+
+        return new ContentDispositionData(name, filename);
+    }
+
     private static byte[] formPartBytesContent(RawFormPart rawFormPart, int bodyIndex) {
-        return Arrays.copyOfRange(rawFormPart.contentBytes(), bodyIndex, rawFormPart.contentBytes().length);
+        // TODO
+        return null;
     }
 
     private static File formPartFileContent(RawFormPart rawFormPart, int bodyIndex) {
         var formBodyFile = new File(rawFormPart.contentFile().getAbsolutePath() + "-body");
-        try (var is = rawFormPart.contentStream();
-             var os = new FileOutputStream(formBodyFile)) {
-            is.skip(bodyIndex);
-            is.transferTo(os);
-            return formBodyFile;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // TODO
+        return null;
     }
 
     public record FormPart(String name,
@@ -260,10 +207,6 @@ public class MultipartFormDataReader {
             return contentBytes != null;
         }
 
-        public long size() {
-            return ofBytes() ? contentBytes.length : contentFile.length();
-        }
-
         public InputStream contentStream() {
             try {
                 if (ofBytes()) {
@@ -274,6 +217,12 @@ public class MultipartFormDataReader {
                 throw new RuntimeException("Failed to turn request body into bytes stream", e);
             }
         }
+    }
+
+    private record HeadersWithBodyIndex(Map<String, String> headers, int bodyIdx) {
+    }
+
+    private record ContentDispositionData(String name, String filename) {
     }
 
     public record Params(int size,

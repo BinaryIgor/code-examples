@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class HtmlMultipartFileUploadServer {
 
     private static final Path TMP_FILES_PATH = Path.of("/tmp/simple-http-server");
-    private static final int MAX_IN_MEMORY_PART_SIZE = 250_000;
+    private static final int MAX_IN_MEMORY_PART_SIZE = 100_000;
 
     public static void main(String[] args) {
         var server = new SimpleHttpServer(8080)

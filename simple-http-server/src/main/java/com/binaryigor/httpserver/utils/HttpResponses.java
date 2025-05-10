@@ -8,7 +8,6 @@ import java.util.Map;
 
 public class HttpResponses {
 
-
     public static HttpResponse text(int code, String text) {
         var textBytes = text.getBytes(StandardCharsets.UTF_8);
         return new HttpResponse(code,
