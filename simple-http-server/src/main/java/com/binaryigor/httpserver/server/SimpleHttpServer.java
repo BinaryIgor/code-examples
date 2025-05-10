@@ -30,7 +30,7 @@ public class SimpleHttpServer implements HttpServer {
     private final AtomicBoolean running = new AtomicBoolean(false);
     private boolean verboseMode = false;
     private int connectionTimeout = 300_000;
-    private int bodyAsFileThreshold = 250 * 1000;
+    private int bodyAsFileThreshold = 500_000;
     private Path tmpFilesPath = Path.of(System.getProperty("java.io.tmpdir"), "simple-http-server");
 
     public SimpleHttpServer(Executor requestsExecutor, int port) {
@@ -221,7 +221,7 @@ public class SimpleHttpServer implements HttpServer {
         return headers;
     }
 
-    private static byte[] readBody(InputStream stream, byte[] readBody, int expectedBodyLength) throws Exception {
+    private byte[] readBody(InputStream stream, byte[] readBody, int expectedBodyLength) throws Exception {
         if (readBody.length == expectedBodyLength) {
             return readBody;
         }
@@ -231,10 +231,10 @@ public class SimpleHttpServer implements HttpServer {
         return result.toByteArray();
     }
 
-    private static void transferBody(InputStream source,
-                                     OutputStream target,
-                                     byte[] readBody,
-                                     int expectedBodyLength) throws Exception {
+    private void transferBody(InputStream source,
+                              OutputStream target,
+                              byte[] readBody,
+                              int expectedBodyLength) throws Exception {
         target.write(readBody);
 
         var readBytes = readBody.length;

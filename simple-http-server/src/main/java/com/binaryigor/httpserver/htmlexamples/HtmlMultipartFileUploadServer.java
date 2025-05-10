@@ -17,12 +17,13 @@ import java.util.stream.Collectors;
 public class HtmlMultipartFileUploadServer {
 
     private static final Path TMP_FILES_PATH = Path.of("/tmp/simple-http-server");
-    private static final int MAX_IN_MEMORY_PART_SIZE = 250_000;
+    private static final int BODY_AS_FILE_THRESHOLD = 250_000;
+    private static final int MAX_IN_MEMORY_PART_SIZE = 100_000;
 
     public static void main(String[] args) {
         var server = new SimpleHttpServer(8080)
                 .configure(c -> {
-                    c.bodyAsFileThreshold = 250_000;
+                    c.bodyAsFileThreshold = BODY_AS_FILE_THRESHOLD;
                     c.tmpFilesPath = TMP_FILES_PATH;
                     c.verboseMode = true;
                 });
@@ -74,24 +75,21 @@ public class HtmlMultipartFileUploadServer {
         return HttpResponses.redirect("/&fileError=%s&descriptionError=%s".formatted(fileError, descriptionError));
     }
 
-    private static Optional<String> uploadedFileFromForm(List<MultipartFormDataReader.FormPart> formParts) {
-        return formParts.stream()
-                .filter(fp -> fp.name().equals("file") &&
-                        ((fp.contentBytes() != null && fp.contentBytes().length > 0 ) || fp.contentFile() != null))
+    private static Optional<String> uploadedFileFromForm(MultipartFormDataReader.Form form) {
+        return form.part("file")
+                .filter(fp -> (fp.contentBytes() != null && fp.contentBytes().length > 0 ) || fp.contentFile() != null)
                 .map(fp -> {
                     if (fp.ofBytes()) {
                         return new String(fp.contentBytes(), StandardCharsets.UTF_8);
                     }
                     return fp.contentFile().getAbsolutePath();
-                })
-                .findAny();
+                });
     }
 
-    private static Optional<String> uploadedDescriptionFromForm(List<MultipartFormDataReader.FormPart> formParts) {
-        return formParts.stream()
-                .filter(fp -> fp.name().equals("description") && fp.contentBytes() != null)
-                .map(fp -> new String(fp.contentBytes(), StandardCharsets.UTF_8))
-                .findAny();
+    private static Optional<String> uploadedDescriptionFromForm(MultipartFormDataReader.Form form) {
+        return form.part("description")
+                .filter(fp -> fp.contentBytes() != null)
+                .map(fp -> new String(fp.contentBytes(), StandardCharsets.UTF_8));
     }
 
     private static String indexHTML(String uploadForm, String uploadsList) {
