@@ -1,0 +1,14 @@
+Headers:
+Content-Type - multipart/form-data; boundary=----WebKitFormBoundaryJBmCImZnkAbRJb8U
+
+Body:
+------WebKitFormBoundaryJBmCImZnkAbRJb8U
+Content-Disposition: form-data; name="file"; filename=""
+Content-Type: application/octet-stream
+
+some-file-bytes
+------WebKitFormBoundaryJBmCImZnkAbRJb8U
+Content-Disposition: form-data; name="description"
+
+desc
+------WebKitFormBoundaryJBmCImZnkAbRJb8U--

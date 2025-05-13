@@ -1,16 +1,18 @@
 package com.binaryigor.httpserver.server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class SimpleHttpServer implements HttpServer {
 
@@ -24,23 +26,41 @@ public class SimpleHttpServer implements HttpServer {
 
     private final Executor requestsExecutor;
     private final int port;
-    private final int connectionTimeout;
     private final AtomicReference<ServerSocket> serverSocket = new AtomicReference<>();
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private final AtomicBoolean verboseMode = new AtomicBoolean(false);
+    private boolean verboseMode = false;
+    private int connectionTimeout = 300_000;
+    private int bodyAsFileThreshold = 500_000;
+    private Path tmpFilesPath = Path.of(System.getProperty("java.io.tmpdir"), "simple-http-server");
 
-    public SimpleHttpServer(Executor requestsExecutor, int port, int connectionTimeout) {
+    public SimpleHttpServer(Executor requestsExecutor, int port) {
         this.requestsExecutor = requestsExecutor;
         this.port = port;
-        this.connectionTimeout = connectionTimeout;
     }
 
-    public SimpleHttpServer(int port, int connectionTimeout) {
-        this(Executors.newVirtualThreadPerTaskExecutor(), port, connectionTimeout);
+    public SimpleHttpServer(int port) {
+        this(Executors.newVirtualThreadPerTaskExecutor(), port);
     }
 
-    public void verbose(boolean verbose) {
-        verboseMode.set(verbose);
+    public SimpleHttpServer configure(Consumer<Config> configurer) {
+        var config = new Config();
+        config.connectionTimeout = connectionTimeout;
+        config.verboseMode = verboseMode;
+        config.bodyAsFileThreshold = bodyAsFileThreshold;
+        config.tmpFilesPath = tmpFilesPath;
+
+        configurer.accept(config);
+
+        connectionTimeout = config.connectionTimeout;
+        verboseMode = config.verboseMode;
+        bodyAsFileThreshold = config.bodyAsFileThreshold;
+        tmpFilesPath = config.tmpFilesPath;
+
+        return this;
+    }
+
+    public Path tmpFilesPath() {
+        return tmpFilesPath;
     }
 
     @Override
@@ -91,19 +111,19 @@ public class SimpleHttpServer implements HttpServer {
             }
 
             var request = requestOpt.get();
-            if (verboseMode.get()) {
+            if (verboseMode) {
                 printRequest(request);
             }
 
             respondToRequest(connection, request, requestHandler);
 
             if (shouldReuseConnection(request.headers())) {
-                if (verboseMode.get()) {
+                if (verboseMode) {
                     System.out.println("Keeping connection alive");
                 }
                 handleRequest(connection, requestHandler);
             } else {
-                if (verboseMode.get()) {
+                if (verboseMode) {
                     System.out.println("Closing connection");
                 }
                 closeConnection(connection);
@@ -137,23 +157,26 @@ public class SimpleHttpServer implements HttpServer {
         var headers = readHeaders(lines);
 
         var bodyLength = getExpectedBodyLength(headers);
-
-        byte[] body;
-        if (bodyLength > 0) {
-            var bodyStartIndex = requestHead.indexOf(HTTP_HEAD_BODY_SEPARATOR);
-            if (bodyStartIndex > 0) {
-                var readBody = Arrays.copyOfRange(rawRequestHead,
-                        bodyStartIndex + HTTP_HEAD_BODY_SEPARATOR_BYTES,
-                        rawRequestHead.length);
-                body = readBody(stream, readBody, bodyLength);
-            } else {
-                body = new byte[0];
-            }
-        } else {
-            body = new byte[0];
+        if (bodyLength <= 0) {
+            return Optional.of(new HttpRequest(method, url, headers));
         }
 
-        return Optional.of(new HttpRequest(method, url, headers, body));
+        var bodyStartIndex = requestHead.indexOf(HTTP_HEAD_BODY_SEPARATOR);
+        if (bodyStartIndex < 0) {
+            return Optional.of(new HttpRequest(method, url, headers));
+        }
+
+        var readBody = Arrays.copyOfRange(rawRequestHead,
+                bodyStartIndex + HTTP_HEAD_BODY_SEPARATOR_BYTES,
+                rawRequestHead.length);
+
+        if (bodyLength <= bodyAsFileThreshold) {
+            var body = readBody(stream, readBody, bodyLength);
+            return Optional.of(new HttpRequest(method, url, headers, body));
+        }
+
+        var bodyFile = readBodyToFile(stream, readBody, bodyLength);
+        return Optional.of(new HttpRequest(method, url, headers, bodyFile));
     }
 
     private int getExpectedBodyLength(Map<String, List<String>> headers) {
@@ -198,28 +221,43 @@ public class SimpleHttpServer implements HttpServer {
         return headers;
     }
 
-    private static byte[] readBody(InputStream stream, byte[] readBody, int expectedBodyLength) throws Exception {
+    private byte[] readBody(InputStream stream, byte[] readBody, int expectedBodyLength) throws Exception {
         if (readBody.length == expectedBodyLength) {
             return readBody;
         }
 
         var result = new ByteArrayOutputStream(expectedBodyLength);
-        result.write(readBody);
+        transferBody(stream, result, readBody, expectedBodyLength);
+        return result.toByteArray();
+    }
+
+    private void transferBody(InputStream source,
+                              OutputStream target,
+                              byte[] readBody,
+                              int expectedBodyLength) throws Exception {
+        target.write(readBody);
 
         var readBytes = readBody.length;
         var buffer = new byte[DEFAULT_PACKET_SIZE];
 
         while (readBytes < expectedBodyLength) {
-            var read = stream.read(buffer);
+            var read = source.read(buffer);
             if (read > 0) {
-                result.write(buffer, 0, read);
+                target.write(buffer, 0, read);
                 readBytes += read;
             } else {
                 break;
             }
         }
+    }
 
-        return result.toByteArray();
+    private File readBodyToFile(InputStream stream, byte[] readBody, int expectedBodyLength) throws Exception {
+        var bodyFile = tmpFilesPath.resolve("request-body-" + UUID.randomUUID()).toFile();
+        Files.createDirectories(tmpFilesPath);
+        try (var os = new FileOutputStream(bodyFile)) {
+            transferBody(stream, os, readBody, expectedBodyLength);
+        }
+        return bodyFile;
     }
 
     private void closeConnection(Socket connection) {
@@ -274,10 +312,12 @@ public class SimpleHttpServer implements HttpServer {
         System.out.println("Url: " + req.url());
         System.out.println("Headers:");
         req.headers().forEach((k, v) -> {
-            System.out.println("%s - %s".formatted(k, v));
+            System.out.printf("%s - %s%n", k, v);
         });
         System.out.println("Body:");
-        if (req.body().length > 0) {
+        if (req.hasBodyInFile()) {
+            System.out.printf("Large body, stored in tmp file under %s path%n", req.bodyFile());
+        } else if (req.hasBody()) {
             System.out.println(new String(req.body(), StandardCharsets.UTF_8));
         } else {
             System.out.println("Body is empty");
@@ -296,5 +336,12 @@ public class SimpleHttpServer implements HttpServer {
                 running.set(false);
             }
         }
+    }
+
+    public static class Config {
+        public boolean verboseMode;
+        public int connectionTimeout;
+        public int bodyAsFileThreshold;
+        public Path tmpFilesPath;
     }
 }

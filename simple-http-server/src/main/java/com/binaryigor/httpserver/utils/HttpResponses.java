@@ -8,11 +8,23 @@ import java.util.Map;
 
 public class HttpResponses {
 
+    public static HttpResponse text(int code, String text) {
+        var textBytes = text.getBytes(StandardCharsets.UTF_8);
+        return new HttpResponse(code,
+                Map.of(HttpHeaders.CONTENT_TYPE, List.of("text/plain"),
+                        HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(textBytes.length))),
+                textBytes);
+    }
+
     public static HttpResponse html(int code, String html) {
+        return html(code, html, "utf-8");
+    }
+
+    public static HttpResponse html(int code, String html, String charset) {
         var htmlBytes = html.getBytes(StandardCharsets.UTF_8);
         return new HttpResponse(code,
-                Map.of("content-type", List.of("text/html; charset=utf-8"),
-                        "content-length", List.of(String.valueOf(htmlBytes.length))),
+                Map.of(HttpHeaders.CONTENT_TYPE, List.of("text/html; charset=%s".formatted(charset)),
+                        HttpHeaders.CONTENT_LENGTH, List.of(String.valueOf(htmlBytes.length))),
                 htmlBytes);
     }
 
