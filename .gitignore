@@ -13,6 +13,9 @@ out/
 .project
 .settings
 
+# VSC
+.vscode
+
 # Python
 **/__pycache__/
 **/venv/
