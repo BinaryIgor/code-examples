@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 
-// TODO: editable years if not defined
 interface Props {
     years: number;
     assetOrCurrency1?: {

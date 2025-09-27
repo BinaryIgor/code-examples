@@ -1,18 +1,10 @@
 // TODO: better styling & translations
 import * as Utils from './utils.js';
 
-class AssetElement extends HTMLElement {
+class CurrencyElement extends HTMLElement {
 
-    /**
-     * Supported attributes
-     * {string} id: asset id
-     * {string} name: asset name
-     * {number} market-size
-     * {number} previous-market-size
-     * {string} value-change-reason: optional reason of the market size change
-     * {string} denomination
-     * {string} class: additional class to append to the root div
-     */
+    static observedAttributes = ["market-size", "denomination"];
+
     connectedCallback() {
         this._render();
     }
@@ -22,8 +14,8 @@ class AssetElement extends HTMLElement {
     }
 
     _render() {
-        const [id, name, marketSize, previousMarketSize, denomination, valueChangeReason] = [this.getAttribute("id"), this.getAttribute("name"),
-        this.getAttribute("market-size"), this.getAttribute("previous-market-size"), this.getAttribute("denomination"), this.getAttribute("value-change-reason")
+        const [id, name, marketSize, previousMarketSize, denomination] = [this.getAttribute("id"), this.getAttribute("name"),
+        this.getAttribute("market-size"), this.getAttribute("previous-market-size"), this.getAttribute("denomination")
         ];
         if (id == undefined || name == undefined) {
             return;
@@ -46,10 +38,7 @@ class AssetElement extends HTMLElement {
                 marketPercentageDiff = Math.round((previousMarketSizeInt - currentMarketSizeInt) * 100 * 100 / currentMarketSizeInt) / 100.0;
             }
             previousMarketSizeComponent = `
-            <div>
-                <span class="w-1/2 inline-block">Previous market size:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(this._previousMarketSize, denomination)}</span>
-            <div>
-            <p class="text-right"><span class="italic">${marketIsUp ? 'UP' : 'DOWN'} by ${marketPercentageDiff}%</span>; ${valueChangeReason ?? 'UNKNOWN'}</p>`;
+            <p class="text-right italic">${marketIsUp ? 'UP' : 'DOWN'} by ${marketPercentageDiff}%</p>`;
         } else {
             previousMarketSizeComponent = ``;
         }
@@ -58,7 +47,10 @@ class AssetElement extends HTMLElement {
         <div data-id=${id} class="border-1 p-2 rounded-lg ${classesToAppend ? classesToAppend : ""}">
             <p class="font-bold">${name}</p>
             <div>
-                <span class="w-1/2 inline-block">Market size:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(marketSize, denomination)}</span>
+                <span class="w-1/2 inline-block">Daily turnover:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(marketSize, denomination)}</span>
+                </div>
+            <div>
+                <span class="w-1/2 inline-block">Yearly turnover:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(`${365 * parseInt(marketSize)}`, denomination)}</span>
             </div>
             ${previousMarketSizeComponent}
         </div>
@@ -67,5 +59,5 @@ class AssetElement extends HTMLElement {
 }
 
 export function register() {
-    customElements.define("asset-element", AssetElement);
+    customElements.define("currency-element", CurrencyElement);
 }

@@ -3,27 +3,35 @@ import * as Utils from './utils.js';
 
 class CurrencyElement extends HTMLElement {
 
-    static observedAttributes = ["market-size", "denomination"];
-
+    /**
+     * Supported attributes
+     * {string} id: currency id
+     * {string} name: currency name
+     * {number} market-size
+     * {number} previous-market-size
+     * {string} denomination
+     * {string} class: additional class to append to the root div
+     */
     connectedCallback() {
         this._render();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         this._render();
-        if (name == 'market-size') {
-            this._previousMarketSize = newValue;
-        }
     }
 
     _render() {
-        const [id, name, marketSize, denomination] = [this.getAttribute("id"), this.getAttribute("name"),
-        this.getAttribute("market-size"), this.getAttribute("denomination")
+        const [id, name, marketSize, previousMarketSize, denomination] = [this.getAttribute("id"), this.getAttribute("name"),
+        this.getAttribute("market-size"), this.getAttribute("previous-market-size"), this.getAttribute("denomination")
         ];
         if (id == undefined || name == undefined) {
             return;
         }
         const classesToAppend = this.getAttribute("class");
+
+        if (previousMarketSize) {
+            this._previousMarketSize = previousMarketSize;
+        }
 
         let previousMarketSizeComponent;
         if (this._previousMarketSize && this._previousMarketSize != marketSize) {

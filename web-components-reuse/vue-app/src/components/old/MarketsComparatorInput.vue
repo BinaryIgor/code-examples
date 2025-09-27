@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import type { Asset, Currency } from '../data/api';
+import type { Asset, Currency } from '../../data/api';
 
 interface Props {
     assets: Asset[];

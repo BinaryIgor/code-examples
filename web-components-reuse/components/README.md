@@ -1,0 +1,1 @@
+Define all components in this dir and provide a script to generate a single file with all of them to reuse in various contexts.

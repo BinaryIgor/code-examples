@@ -23,7 +23,7 @@ export class Updater {
             (this.api as MockedApi).setNextExchangeRatsChange(true);
             this.exchangeRatesChangedListener();
         }
-        if (Math.random() > 0.75) {
+        if (Math.random() > 0.5) {
             (this.api as MockedApi).setNextAssetsValueChange(true);
             this.assetsValueChangedListener();
         }

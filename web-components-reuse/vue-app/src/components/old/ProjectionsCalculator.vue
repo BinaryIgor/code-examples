@@ -19,14 +19,14 @@ const assetOrCurrency2ExpectedGrowthRate = ref<number>();
 const projectionYears = ref<number>();
 
 const assetOrCurrency1WithExpectedGrowthRate = computed<{ marketSize: number, growthRate: number } | undefined>(() => {
-    if (assetOrCurrency1 && assetOrCurrency1ExpectedGrowthRate.value) {
+    if (assetOrCurrency1 && assetOrCurrency1ExpectedGrowthRate.value != undefined) {
         return { marketSize: assetOrCurrency1.marketSize, growthRate: assetOrCurrency1ExpectedGrowthRate.value };
     }
     return undefined;
 });
 
 const assetOrCurrency2WithExpectedGrowthRate = computed<{ marketSize: number, growthRate: number } | undefined>(() => {
-    if (assetOrCurrency2 && assetOrCurrency2ExpectedGrowthRate.value) {
+    if (assetOrCurrency2 && assetOrCurrency2ExpectedGrowthRate.value != undefined) {
         return { marketSize: assetOrCurrency2.marketSize, growthRate: assetOrCurrency2ExpectedGrowthRate.value };
     }
     return undefined;

@@ -3,16 +3,9 @@ import * as Utils from './utils.js';
 
 class AssetElement extends HTMLElement {
 
-    /**
-     * Supported attributes
-     * {string} id: asset id
-     * {string} name: asset name
-     * {number} market-size
-     * {number} previous-market-size
-     * {string} value-change-reason: optional reason of the market size change
-     * {string} denomination
-     * {string} class: additional class to append to the root div
-     */
+    static observedAttributes = ["market-size", "denomination", "value-change-reason"];
+    _previousMarketSize = null;
+
     connectedCallback() {
         this._render();
     }
