@@ -26,44 +26,6 @@ class DropDownContainer extends HTMLElement {
     }
 }
 
-class DropDown extends HTMLElement {
-
-    connectedCallback() {
-        const title = this.getAttribute("title");
-
-        // 3 guys:
-        // <DropDownContainer>
-        //   <div>Title</div>
-        //   <DropDownItems>
-        //     <li></li>
-        //     <li></li>
-        //   </DropDownItems>
-        //</DropDownContainer>
-        //
-
-        this.innerHTML = `
-            <div style="position: relative">
-                <div>${title}</div>
-                <ul style="position: absolute; z-index: 99" class="hidden cursor-pointer">
-                    <li>Option 1</li>
-                    <li>Option 2</li>
-                </ul>
-            </div>
-        `;
-
-        const options = this.querySelector("ul");
-        this._optionsElement = options;
-
-        const container = this.querySelector("div");
-        container.onclick = (e) => {
-            // Do not hide other, opened DropDowns
-            e.stopPropagation();
-            options.classList.toggle("hidden");
-        };
-    }
-}
-
 export function register() {
     customElements.define("drop-down-container", DropDownContainer);
-    customElements.define("drop-down", DropDown);
 }

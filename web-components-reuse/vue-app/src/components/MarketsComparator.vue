@@ -42,12 +42,14 @@ const onChosenToMarketSizeChangeHandler = (assetOrCurrency: string, marketSize: 
 
 <template>
     <div class="rounded border-1 p-2">
-        <markets-comparator-input-wc />
+        <markets-comparator-input-wc :assets="assets.map(a => ({ name: a.name, marketSize: a.marketSize }))"
+            :currencies="currencies.map(c => ({ name: c.code.name, marketSize: c.marketSize }))" />
         <MarketsComparatorInput :assets="assets" :currencies="currencies"
             :onChosenMarketSizeChange="onChosenFromMarketSizeChangeHandler" />
         <div class="py-4">to</div>
         <MarketsComparatorInput :assets="assets" :currencies="currencies"
             :onChosenMarketSizeChange="onChosenToMarketSizeChangeHandler" />
-        <div class="underline text-xl my-4">{{ fromMarketSize?.toExponential(3) }} / {{ toMarketSize?.toExponential(3) }} = {{ chosenMarketsComparedValue }}</div>
+        <div class="underline text-xl my-4">{{ fromMarketSize?.toExponential(3) }} / {{ toMarketSize?.toExponential(3)
+        }} = {{ chosenMarketsComparedValue }}</div>
     </div>
 </template>
