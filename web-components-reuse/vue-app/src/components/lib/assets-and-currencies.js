@@ -68,7 +68,11 @@ class AssetsAndCurrencies extends HTMLElement {
             return `<asset-element class="my-2" id="${a.id}" name="${a.name}"
                 market-size="${a.marketSize}" previous-market-size="${previousMarketSize}"
                 denomination="${a.denomination}"
-                value-change-reason="${this._assetsValueChangeReason}">
+                value-change-reason="${this._assetsValueChangeReason}"
+                t-market-size-label="Market size"
+                t-previous-market-size-label="Previous market size"
+                t-market-up-by="UP by"
+                t-market-down-by="DOWN by">
             </asset-element>`;
         }).join("\n");
     }

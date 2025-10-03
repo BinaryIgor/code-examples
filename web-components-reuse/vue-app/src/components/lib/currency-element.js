@@ -1,5 +1,5 @@
 // TODO: better styling & translations
-import * as Utils from './utils.js';
+import * as Utils from './base.js';
 
 class CurrencyElement extends HTMLElement {
 

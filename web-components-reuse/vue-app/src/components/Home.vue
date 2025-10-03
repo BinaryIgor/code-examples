@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { type Asset, type Currency, type ExchangeRate, api } from '../data/api';
 import { USD, type CurrencyCode, currencyCodeById } from '../data/currency-code';
 import { useUpdater } from '../data/updater';
+
+const { t } = useI18n();
 
 const liveUpdatesEnabled = ref<boolean>(true);
 const denomination = ref<CurrencyCode>(USD);
@@ -75,19 +78,6 @@ const assetInputOptions = computed<{ name: string, marketSize: number }[]>(() =>
 const currencyInputOptions = computed<{ name: string, marketSize: number }[]>(() =>
     currencies.value.map(c => ({ name: c.code.name, marketSize: c.marketSize })));
 
-
-watch(assets, () => {
-    if (!marketsComparator.value) {
-        return;
-    }
-
-    assets.value.forEach((a, idx) => {
-        marketsComparator.value?.setAttribute(`asset-${idx}-name`, a.name);
-        marketsComparator.value?.setAttribute(`asset-${idx}-marketSize`, a.marketSize.toString());
-    });
-    marketsComparator.value?.setAttribute(`asset-items`, `${assets.value?.length ?? 0}`);
-});
-
 onDenominationChanged();
 
 const liveUpdatesToggledEventHandler = (e: Event) => {
@@ -141,7 +131,7 @@ onUnmounted(() => {
         </assets-and-currencies>
     </div>
     <div class="m-2">
-        <h2 class="mt-16 text-2xl my-4">Calculator</h2>
+        <h2 class="mt-16 text-2xl my-4">{{ t('calculatorHeader') }}</h2>
         <markets-comparator :assets="assetInputOptions" :currencies="currencyInputOptions">
         </markets-comparator>
         <projections-calculator :assetOrCurrency1="fromAssetOrCurrency" :assetOrCurrency2="toAssetOrCurrency">

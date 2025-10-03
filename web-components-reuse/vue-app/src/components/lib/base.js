@@ -15,5 +15,13 @@ export function formatMoney(value, denomination) {
     return `${value} ${denomination}`;
 }
 
-// TODO
-export const translations = {};
+export class BaseHTMLElement extends HTMLElement {
+
+    translation(key) {
+        const attributeTranslation = this.getAttribute(`t-${key}`);
+        if (attributeTranslation != undefined) {
+            return attributeTranslation;
+        }
+        return this.t ? this.t(key) : null;
+    }
+}
