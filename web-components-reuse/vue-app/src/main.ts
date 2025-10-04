@@ -23,6 +23,22 @@ const i18n = createI18n({
     fallbackLocale: 'en',
     messages: {
         en: {
+            'currency-code': {
+                'USD': "US Dollar",
+                'EUR': "Euro",
+                'JPY': "Japanesse Yen",
+                'GBP': "British Pound",
+                'CNY': "Chinese Yuan",
+                'PLN': "Polish Zloty"
+            },
+            'asset-code': {
+                'BONDS': "Bonds",
+                'STOCKS': "Stocks",
+                'GOLD': "Gold",
+                'CASH': "Cash Reserves",
+                'RLEST': "Real Estate",
+                'BTC': "Bitcoin"
+            },
             'markets-header': {
                 'markets-in': "Markets in",
                 'live-updates': "Live updates:",

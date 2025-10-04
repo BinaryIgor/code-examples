@@ -1,107 +1,100 @@
 import type { Api, Asset, Currency, ExchangeRate } from "./api";
-import { type CurrencyCode, USD, EUR, JPY, GBP, CNY, PLN } from "./currency-code";
+import { CurrencyCode, AssetCode } from "./codes";
 
 // TODO: common API not to duplicate it
 export class MockedApi implements Api {
 
-    // TODO: percentage of global market assets field
-    private assets = [
+    // TODO: percentage of all global assets?
+    private assets: Asset[] = [
         {
-            id: "bonds",
-            name: "Bonds",
+            code: AssetCode.BONDS,
             marketSize: 145.1e12,
-            denomination: USD
-
+            denomination: CurrencyCode.USD
         },
         {
-            id: "stocks",
-            name: "Stocks",
+            code: AssetCode.STOCKS,
             marketSize: 126.7e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
 
         },
         {
-            id: "gold",
-            name: "Gold",
+            code: AssetCode.GOLD,
             marketSize: 22.6e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            id: "cash",
-            name: "Cash Reserves",
+            code: AssetCode.CASH,
             marketSize: 12.6e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            id: "rlest",
-            name: "Real Estate",
+            code: AssetCode.RLEST,
             marketSize: 12.5e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            id: "btc",
-            name: "Bitcoin",
+            code: AssetCode.BTC,
             marketSize: 2.3e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
         }
     ];
 
-    private currencies = [
+    private currencies: Currency[] = [
         {
-            code: USD,
+            code: CurrencyCode.USD,
             marketSize: 6.639e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            code: EUR,
+            code: CurrencyCode.EUR,
             marketSize: 2.292e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            code: JPY,
+            code: CurrencyCode.JPY,
             marketSize: 1.253e12,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            code: GBP,
+            code: CurrencyCode.GBP,
             marketSize: 968e9,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            code: CNY,
+            code: CurrencyCode.CNY,
             marketSize: 526.2e9,
-            denomination: USD
+            denomination: CurrencyCode.USD
         },
         {
-            code: PLN,
+            code: CurrencyCode.PLN,
             marketSize: 13e9,
-            denomination: USD
+            denomination: CurrencyCode.USD
         }
     ];
 
     private baseUsdExchangeRates = [
         {
-            currencyCode: USD,
+            currencyCode: CurrencyCode.USD,
             value: 1
         },
         {
-            currencyCode: EUR,
+            currencyCode: CurrencyCode.EUR,
             value: 0.85
         },
         {
-            currencyCode: JPY,
+            currencyCode: CurrencyCode.JPY,
             value: 148
         },
         {
-            currencyCode: GBP,
+            currencyCode: CurrencyCode.GBP,
             value: 0.73
         },
         {
-            currencyCode: CNY,
+            currencyCode: CurrencyCode.CNY,
             value: 7.11
         },
         {
-            currencyCode: PLN,
+            currencyCode: CurrencyCode.PLN,
             value: 3.63
         },
     ];
@@ -140,7 +133,7 @@ export class MockedApi implements Api {
     }
 
     private exchangeRateFor(denomination: CurrencyCode): number {
-        const exchangeRate = this.lastUsdExchangeRates.find(er => er.currencyCode.id === denomination.id);
+        const exchangeRate = this.lastUsdExchangeRates.find(er => er.currencyCode === denomination);
         if (!exchangeRate) {
             throw new Error(`There is no exchange rate for ${denomination} denomination!`);
         }
@@ -166,7 +159,7 @@ export class MockedApi implements Api {
     exchangeRates(): Promise<ExchangeRate[]> {
         const nextUsdExchangeRates = this.lastUsdExchangeRates.map(er => {
             let nextValueMultiplier;
-            if (er.currencyCode == USD) {
+            if (er.currencyCode == CurrencyCode.USD) {
                 nextValueMultiplier = 1;
             } else {
                 nextValueMultiplier = this.nextExchangeRatesChange ? 0.95 + (Math.random() * 0.1) : 1;
@@ -177,19 +170,19 @@ export class MockedApi implements Api {
 
         this.nextExchangeRatesChange = false;
 
-        return Promise.resolve(nextUsdExchangeRates.map(er => ({ from: USD, to: er.currencyCode, value: er.value })));
+        return Promise.resolve(nextUsdExchangeRates.map(er => ({ from: CurrencyCode.USD, to: er.currencyCode, value: er.value })));
     }
 
     async exchangeRate(to: CurrencyCode): Promise<ExchangeRate> {
         if (this.nextExchangeRatesChange) {
             await this.exchangeRates();
         }
-        const exchangeRate = this.lastUsdExchangeRates.find(er => er.currencyCode.id == to.id);
+        const exchangeRate = this.lastUsdExchangeRates.find(er => er.currencyCode == to);
         if (!exchangeRate) {
             throw new Error(`Couldn't find from USD to ${to} exchange rate`);
         }
         return Promise.resolve({
-            from: USD,
+            from: CurrencyCode.USD,
             value: exchangeRate.value,
             to: exchangeRate.currencyCode
         });

@@ -12,7 +12,7 @@ class MarketsHeader extends BaseHTMLElement {
     set denomination(value) {
         this._denomination = value;
         if (this._denominationElement) {
-            this._denominationElement = this._denomination;
+            this._denominationElement.textContent = this._denomination;
         }
     }
 
@@ -40,7 +40,7 @@ class MarketsHeader extends BaseHTMLElement {
         this._liveUpdatesEnabledElement.onclick = () => {
             this._liveUpdatesEnabled = !this._liveUpdatesEnabled;
             this._liveUpdatesEnabledElement.textContent = this._liveUpdatesElementText();
-            document.dispatchEvent(new CustomEvent('mh:live-updates-toggled', { detail: this._liveUpdatesEnabled }));
+            this.dispatchEvent(new CustomEvent('mh.live-updates-toggled', { bubbles: true, detail: this._liveUpdatesEnabled }));
         };
 
         this._denominationElement = this.querySelector("drop-down-container > span");
@@ -63,7 +63,7 @@ class MarketsHeader extends BaseHTMLElement {
             o.onclick = () => {
                 this._denomination = o.getAttribute("data-option-id");
                 this._denominationElement.textContent = this._denomination;
-                this.dispatchEvent(new CustomEvent('mh:denomination-changed', { bubbles: true, detail: this._denomination }));
+                this.dispatchEvent(new CustomEvent('mh.denomination-changed', { bubbles: true, detail: this._denomination }));
             };
         });
     }

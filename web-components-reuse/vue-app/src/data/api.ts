@@ -1,11 +1,8 @@
-import type { CurrencyCode } from "./currency-code";
+import type { CurrencyCode, AssetCode } from "./codes";
 import { MockedApi } from "./mocked-api";
 
-// TODO: simplify types
-
 export interface Asset {
-    id: string;
-    name: string;
+    code: AssetCode;
     marketSize: number;
     denomination: CurrencyCode
 }
