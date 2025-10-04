@@ -1,10 +1,12 @@
+import { BaseHTMLElement } from "./base.js";
+
 /**
 * @typedef {Object} AssetOrCurrency
 * @property {string} name
 * @property {number} marketSize
 */
 
-class MarketsComparator extends HTMLElement {
+class MarketsComparator extends BaseHTMLElement {
 
     static observedAttributes = ["asset-items", "currency-items"];
 
@@ -47,28 +49,28 @@ class MarketsComparator extends HTMLElement {
         this._render();
 
         this._chosenMarketSizeChangedEventHandler = e => {
-            const { componentId, name, marketSize } = e.detail;
+            const { name, marketSize } = e.detail;
             if (e.target === this._fromMarketsComparatorInput) {
                 this._fromMarketSize = marketSize;
                 this._renderComparisonElementHTML();
-                this.dispatchEvent(new CustomEvent("mc:from-market-size-changed", {
+                this.dispatchEvent(new CustomEvent("mc.from-market-size-changed", {
                     bubbles: true,
                     detail: { name, marketSize }
                 }));
             } else if (e.target === this._toMarketsComparatorInput) {
                 this._toMarketSize = marketSize;
                 this._renderComparisonElementHTML();
-                this.dispatchEvent(new CustomEvent("mc:to-market-size-changed", {
+                this.dispatchEvent(new CustomEvent("mc.to-market-size-changed", {
                     bubbles: true,
                     detail: { name, marketSize }
                 }));
             }
         }
-        document.addEventListener('mci:chosen-market-size-changed', this._chosenMarketSizeChangedEventHandler);
+        document.addEventListener('mci.chosen-market-size-changed', this._chosenMarketSizeChangedEventHandler);
     }
 
     disconnectedCallback() {
-        document.removeEventListener('mci:chosen-market-size-changed', this._chosenMarketSizeChangedEventHandler);
+        document.removeEventListener('mci.chosen-market-size-changed', this._chosenMarketSizeChangedEventHandler);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -81,10 +83,18 @@ class MarketsComparator extends HTMLElement {
 
     _render() {
         this.innerHTML = `
-        <div class="rounded border-1 p-2">
-            <markets-comparator-input id=${this._fromInputId} options-z-index="101"></markets-comparator-input>
-            <div class="py-4">to</div>
-            <markets-comparator-input id=${this._toInputId} options-z-index="100"></markets-comparator-input>
+        <div>
+            <markets-comparator-input options-z-index="101"
+                ${this.translationAttribute('asset-or-currency-input-placeholder')}
+                ${this.translationAttribute('market-size-input-label')}
+                ${this.translationAttribute('days-turnover-input-label')}>
+            </markets-comparator-input>
+            <div class="py-4">${this.translation('markets-to')}</div>
+            <markets-comparator-input options-z-index="100"
+                ${this.translationAttribute('asset-or-currency-input-placeholder')}
+                ${this.translationAttribute('market-size-input-label')}
+                ${this.translationAttribute('days-turnover-input-label')}>
+            </markets-comparator-input>
             <div data-comparison-element>${this._comparisonElementHTML()}</div>
         </div>
         `;
@@ -144,7 +154,7 @@ function currenciesFromAttributes(element) {
     return currencies;
 }
 
-class MarketsComparatorInput extends HTMLElement {
+class MarketsComparatorInput extends BaseHTMLElement {
 
     static observedAttributes = ["asset-items", "currency-items"];
 
@@ -211,18 +221,18 @@ class MarketsComparatorInput extends HTMLElement {
     _dropDownHeaderHTML() {
         let marketSizeHTML;
         if (this._isAsset()) {
-            marketSizeHTML = `<span>market size</span`;
+            marketSizeHTML = `<span>${this.translation('market-size-input-label')}</span`;
         } else if (this._isCurrency()) {
             marketSizeHTML = `
             <span>
                 <input type="number" class="mx-2 px-2 max-w-[75px]" value="${this._curencyTurnoverInputMultiplier}">
-                <span>days turnover</span>
+                <span>${this.translation('days-turnover-input-label')}</span>
             </span>`;
         } else {
             marketSizeHTML = ``;
         }
         return `
-        <span data-drop-down-anchor>${this._assetOrCurrencyInput ?? 'Asset/Currency'}</span>
+        <span data-drop-down-anchor>${this._assetOrCurrencyInput ?? this.translation('asset-or-currency-input-placeholder')}</span>
         ${marketSizeHTML}
         `;
     }
@@ -273,7 +283,7 @@ class MarketsComparatorInput extends HTMLElement {
 
         const inputMarketSize = assetInput ? assetInput.marketSize : currencyInput.marketSize * this._curencyTurnoverInputMultiplier;
 
-        this.dispatchEvent(new CustomEvent("mci:chosen-market-size-changed", {
+        this.dispatchEvent(new CustomEvent("mci.chosen-market-size-changed", {
             bubbles: true,
             detail: { name: this._assetOrCurrencyInput, marketSize: inputMarketSize }
         }));

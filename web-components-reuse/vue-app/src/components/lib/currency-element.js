@@ -1,7 +1,6 @@
-// TODO: better styling & translations
-import * as Utils from './base.js';
+import { formatMoney, BaseHTMLElement } from './base.js';
 
-class CurrencyElement extends HTMLElement {
+class CurrencyElement extends BaseHTMLElement {
 
     /**
      * Supported attributes
@@ -45,7 +44,7 @@ class CurrencyElement extends HTMLElement {
                 marketPercentageDiff = Math.round((previousMarketSizeInt - currentMarketSizeInt) * 100 * 100 / currentMarketSizeInt) / 100.0;
             }
             previousMarketSizeComponent = `
-            <p class="text-right italic">${marketIsUp ? 'UP' : 'DOWN'} by ${marketPercentageDiff}%</p>`;
+            <p class="text-right italic">${marketIsUp ? this.translation('up-by-info') : this.translation('down-by-info')} ${marketPercentageDiff}%</p>`;
         } else {
             previousMarketSizeComponent = ``;
         }
@@ -54,10 +53,10 @@ class CurrencyElement extends HTMLElement {
         <div data-id=${id} class="border-1 p-2 rounded-lg ${classesToAppend ? classesToAppend : ""}">
             <p class="font-bold">${name}</p>
             <div>
-                <span class="w-1/2 inline-block">Daily turnover:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(marketSize, denomination)}</span>
+                <span class="w-1/2 inline-block">${this.translation('daily-turnover-label')}:</span><span class="underline text-right w-1/2 inline-block">${formatMoney(marketSize, denomination)}</span>
                 </div>
             <div>
-                <span class="w-1/2 inline-block">Yearly turnover:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(`${365 * parseInt(marketSize)}`, denomination)}</span>
+                <span class="w-1/2 inline-block">${this.translation('yearly-turnover-label')}:</span><span class="underline text-right w-1/2 inline-block">${formatMoney(`${365 * parseInt(marketSize)}`, denomination)}</span>
             </div>
             ${previousMarketSizeComponent}
         </div>

@@ -1,4 +1,6 @@
-class AssetsAndCurrencies extends HTMLElement {
+import { BaseHTMLElement } from "./base.js";
+
+class AssetsAndCurrencies extends BaseHTMLElement {
 
     _assets = [];
     _assetsValueChangeReason = undefined;
@@ -30,20 +32,22 @@ class AssetsAndCurrencies extends HTMLElement {
 
     connectedCallback() {
         this.innerHTML = `
-        <tabs-container active-tab-class="underline">
-            <div class="flex" data-tabs-header>
-                <tab-header>Assets</tab-header>
-                <tab-header>Currencies</tab-header>
-            </div>
-            <div data-tabs-body>
-                <div class="h-[40dvh] overflow-y-auto">
-                ${this._assetsHTML()}
+        <div class="m-4">
+            <tabs-container active-tab-class="underline">
+                <div class="flex" data-tabs-header>
+                    <tab-header>${this.translation('assets-header')}</tab-header>
+                    <tab-header>${this.translation('currencies-header')}</tab-header>
                 </div>
-                <div class="h-[40dvh] overflow-y-auto">
-                ${this._currenciesHTML()}
+                <div data-tabs-body>
+                    <div class="h-[40dvh] overflow-y-auto">
+                    ${this._assetsHTML()}
+                    </div>
+                    <div class="h-[40dvh] overflow-y-auto">
+                    ${this._currenciesHTML()}
+                    </div>
                 </div>
-            </div>
-        </tabs-container>`;
+            </tabs-container>
+        </div>`;
 
         const tabsBody = this.querySelector("[data-tabs-body]");
         this._assetsContainer = tabsBody.children[0];
@@ -69,10 +73,10 @@ class AssetsAndCurrencies extends HTMLElement {
                 market-size="${a.marketSize}" previous-market-size="${previousMarketSize}"
                 denomination="${a.denomination}"
                 value-change-reason="${this._assetsValueChangeReason}"
-                t-market-size-label="Market size"
-                t-previous-market-size-label="Previous market size"
-                t-market-up-by="UP by"
-                t-market-down-by="DOWN by">
+                ${this.translationAttribute('market-size-label')}
+                ${this.translationAttribute('previous-market-size-label')}
+                ${this.translationAttribute('up-by-info')}
+                ${this.translationAttribute('down-by-info')}>
             </asset-element>`;
         }).join("\n");
     }
@@ -94,7 +98,11 @@ class AssetsAndCurrencies extends HTMLElement {
 
             return `<currency-element class="my-2" id="${c.id}" name="${c.name}"
                 market-size="${c.marketSize}" previous-market-size="${previousMarketSize}"
-                denomination="${c.denomination}">
+                denomination="${c.denomination}"
+                ${this.translationAttribute('daily-turnover-label')}
+                ${this.translationAttribute('yearly-turnover-label')}
+                ${this.translationAttribute('up-by-info')}
+                ${this.translationAttribute('down-by-info')}>
             </currency-element>`})
             .join("\n");
     }

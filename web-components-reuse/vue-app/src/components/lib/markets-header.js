@@ -1,4 +1,6 @@
-class MarketsHeader extends HTMLElement {
+import { BaseHTMLElement } from "./base";
+
+class MarketsHeader extends BaseHTMLElement {
 
     _denomination = 'USD';
     _liveUpdatesEnabled = true;
@@ -21,15 +23,17 @@ class MarketsHeader extends HTMLElement {
 
     connectedCallback() {
         this.innerHTML = `
-        <div class="absolute right-2 text-xl">Live Updates: <span class="cursor-pointer">${this._liveUpdatesElementText()}</span>
+        <div class="m-4">
+            <div class="absolute right-4 text-xl">${this.translation('live-updates')} <span class="cursor-pointer">${this._liveUpdatesElementText()}</span>
+            </div>
+            <span class="text-3xl">${this.translation('markets-in')} </span>
+            <drop-down-container>
+                <span class="underline cursor-pointer text-3xl pr-24">${this._denomination}</span>
+                <ul class="border-1 rounded cursor-pointer bg-white text-lg" data-drop-down-options>
+                    ${this._denominationOptionsHTML()}
+                </ul>
+            </drop-down-container>
         </div>
-        <span class="text-3xl">Markets in </span>
-        <drop-down-container>
-            <span class="underline cursor-pointer text-3xl pr-24">${this._denomination}</span>
-            <ul class="border-1 rounded cursor-pointer bg-white text-lg" data-drop-down-options>
-                ${this._denominationOptionsHTML()}
-            </ul>
-        </drop-down-container>
         `;
 
         this._liveUpdatesEnabledElement = this.querySelector("span");
@@ -65,7 +69,7 @@ class MarketsHeader extends HTMLElement {
     }
 
     _liveUpdatesElementText() {
-        return `${this._liveUpdatesEnabled ? "ON" : "OFF"}`;
+        return `${this._liveUpdatesEnabled ? this.translation('live-updates-on') : this.translation('live-updates-off')}`;
     }
 }
 

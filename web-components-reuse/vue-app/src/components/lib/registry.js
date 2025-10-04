@@ -6,6 +6,7 @@ import * as MarketsHeader from './markets-header.js';
 import * as AssetsAndCurrencies from './assets-and-currencies.js';
 import * as MarketsComparator from './markets-comparator.js';
 import * as ProjectionsCalculator from './projections-calculator.js';
+import * as MarketsProjections from './markets-projections.js';
 
 
 export function registerComponents() {
@@ -17,4 +18,5 @@ export function registerComponents() {
     AssetsAndCurrencies.register();
     MarketsComparator.register();
     ProjectionsCalculator.register();
+    MarketsProjections.register();
 }

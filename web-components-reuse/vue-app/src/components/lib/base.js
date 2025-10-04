@@ -17,11 +17,40 @@ export function formatMoney(value, denomination) {
 
 export class BaseHTMLElement extends HTMLElement {
 
+    _t = null;
+    _tNamespace = '';
+
+    set t(value) {
+        this._t = value;
+        // TODO: shouldn't all components be re-renderable and called from here?
+    }
+
+    set tNamespace(value) {
+        this._tNamespace = value;
+    }
+
     translation(key) {
-        const attributeTranslation = this.getAttribute(`t-${key}`);
+        const namespacedKey = (this.getAttribute("t-namespace") ?? this._tNamespace) + key;
+        const attributeTranslation = this.getAttribute(`t-${namespacedKey}`);
         if (attributeTranslation != undefined) {
             return attributeTranslation;
         }
-        return this.t ? this.t(key) : null;
+        return this._t ? this._t(namespacedKey) : null;
+    }
+
+    translationAttribute(key) {
+        const translation = this.translation(key);
+        if (translation) {
+            return `t-${key}="${translation}"`;
+        }
+        return "";
+    }
+
+    translationAttributeRemovingNamespace(key, namespace) {
+        const translation = this.translation(namespace + key);
+        if (translation) {
+            return `t-${key}="${translation}"`;
+        }
+        return "";
     }
 }

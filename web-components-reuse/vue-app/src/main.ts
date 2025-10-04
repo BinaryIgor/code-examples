@@ -23,7 +23,38 @@ const i18n = createI18n({
     fallbackLocale: 'en',
     messages: {
         en: {
-            calculatorHeader: 'Calculator'
+            'markets-header': {
+                'markets-in': "Market in",
+                'live-updates': "Live updates:",
+                'live-updates-on': "ON",
+                'live-updates-off': "OFF"
+            },
+            'assets-and-currencies': {
+                'assets-header': "Assets",
+                'currencies-header': "Currencies",
+                'market-size-label': "Market size",
+                'previous-market-size-label': "Previous market size",
+                'up-by-info': "UP by",
+                'down-by-info': "DOWN by",
+                'daily-turnover-label': "Daily turnover",
+                'yearly-turnover-label': "Yearly turnover"
+            },
+            'markets-projections': {
+                'projections-header': 'Projections',
+                'markets-comparator': {
+                    'asset-or-currency-input-placeholder': 'Asset/Currency',
+                    'market-size-input-label': 'market size',
+                    'days-turnover-input-label': 'days turnover',
+                    'markets-to': 'to'
+                },
+                'projections-calculator': {
+                    'asset-or-currency-placeholder': 'Asset/Currency',
+                    'asset-or-currency-expected-annual-growth-rate': 'expected annual growth rate',
+                    'results-in-header': 'In',
+                    'year': 'year',
+                    'years': 'years'
+                }
+            }
         }
     }
 });

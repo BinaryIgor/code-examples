@@ -1,6 +1,5 @@
 import { formatMoney, BaseHTMLElement } from './base.js';
 
-
 class AssetElement extends BaseHTMLElement {
 
     /**
@@ -49,7 +48,7 @@ class AssetElement extends BaseHTMLElement {
             <div>
                 <span class="w-1/2 inline-block">${this.translation("previous-market-size-label")}:</span><span class="underline text-right w-1/2 inline-block">${formatMoney(this._previousMarketSize, denomination)}</span>
             <div>
-            <p class="text-right"><span class="italic">${marketIsUp ? this.translation('market-up-by') : this.translation('market-down-by')} ${marketPercentageDiff}%</span>; ${valueChangeReason ?? 'UNKNOWN'}</p>`;
+            <p class="text-right"><span class="italic">${marketIsUp ? this.translation('up-by-info') : this.translation('down-by-info')} ${marketPercentageDiff}%</span>; ${valueChangeReason ?? 'UNKNOWN'}</p>`;
         } else {
             previousMarketSizeComponent = ``;
         }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { type Asset, type Currency, type ExchangeRate, api } from '../data/api';
 import { USD, type CurrencyCode, currencyCodeById } from '../data/currency-code';
@@ -14,11 +14,6 @@ const denominationExchangeRates = ref<ExchangeRate[]>([]);
 const assets = ref<Asset[]>([]);
 const currencies = ref<Currency[]>([]);
 const assetsValueChangeReason = ref<string>();
-
-const fromAssetOrCurrency = ref<{ name: string, marketSize: number }>();
-const toAssetOrCurrency = ref<{ name: string, marketSize: number }>();
-
-const marketsComparator = useTemplateRef<HTMLElement>("markets-comparator");
 
 const fetchAssets = () => api.topAssets(denomination.value).then(a => assets.value = a);
 const fetchCurrencies = () => api.topCurrencies(denomination.value).then(c => currencies.value = c);
@@ -64,14 +59,6 @@ const updateDenominationExchangeRates = async () => {
     }));
 };
 
-const onChosenFromMarketSizeChangeHandler = (assetOrCurrency: string, marketSize: number) => {
-    fromAssetOrCurrency.value = { name: assetOrCurrency, marketSize };
-};
-
-const onChosenToMarketSizeChangeHandler = (assetOrCurrency: string, marketSize: number) => {
-    toAssetOrCurrency.value = { name: assetOrCurrency, marketSize };
-};
-
 const assetInputOptions = computed<{ name: string, marketSize: number }[]>(() =>
     assets.value.map(a => ({ name: a.name, marketSize: a.marketSize })));
 
@@ -91,50 +78,29 @@ const denominationChangedEventHandler = (e: Event) => {
     onDenominationChanged();
 };
 
-const fromChosenMarketSizeChangedEventHandler = (e: Event) => {
-    const { name, marketSize } = (e as CustomEvent).detail as { name: string, marketSize: number };
-    onChosenFromMarketSizeChangeHandler(name, marketSize);
-};
-const toChosenMarketSizeChangedEventHandler = (e: Event) => {
-    const { name, marketSize } = (e as CustomEvent).detail as { name: string, marketSize: number };
-    onChosenToMarketSizeChangeHandler(name, marketSize);
-};
-
 onMounted(() => {
     document.addEventListener('mh:live-updates-toggled', liveUpdatesToggledEventHandler);
     document.addEventListener('mh:denomination-changed', denominationChangedEventHandler);
-    document.addEventListener('mc:from-market-size-changed', fromChosenMarketSizeChangedEventHandler);
-    document.addEventListener('mc:to-market-size-changed', toChosenMarketSizeChangedEventHandler);
 });
 
 onUnmounted(() => {
     document.removeEventListener('mh:live-updates-toggled', liveUpdatesToggledEventHandler);
     document.removeEventListener('mh:denomination-changed', denominationChangedEventHandler);
-    document.removeEventListener('mc:from-market-size-changed', fromChosenMarketSizeChangedEventHandler);
-    document.removeEventListener('mc:to-market-size-changed', toChosenMarketSizeChangedEventHandler);
 });
 
 </script>
 
 <template>
-    <div class="m-2">
-        <markets-header :denomination="USD.id"
-            :denominationExchangeRates="denominationExchangeRates.map(d => ({ name: d.to.id, exchangeRate: d.value }))">
-        </markets-header>
-    </div>
-    <div class="m-2">
-        <assets-and-currencies
-            :assets="assets.map(a => ({ id: a.id, name: a.name, marketSize: a.marketSize, denomination: a.denomination.id }))"
-            :assetsValueChangeReason="assetsValueChangeReason"
-            :currencies="currencies.map(c => ({ id: c.code.id, name: c.code.name, marketSize: c.marketSize, denomination: c.denomination.id }))"
-            :denomination="denomination">
-        </assets-and-currencies>
-    </div>
-    <div class="m-2">
-        <h2 class="mt-16 text-2xl my-4">{{ t('calculatorHeader') }}</h2>
-        <markets-comparator :assets="assetInputOptions" :currencies="currencyInputOptions">
-        </markets-comparator>
-        <projections-calculator :assetOrCurrency1="fromAssetOrCurrency" :assetOrCurrency2="toAssetOrCurrency">
-        </projections-calculator>
-    </div>
+    <markets-header :denomination="USD.id" t-namespace="markets-header." :t="t"
+        :denominationExchangeRates="denominationExchangeRates.map(d => ({ name: d.to.id, exchangeRate: d.value }))">
+    </markets-header>
+    <assets-and-currencies t-namespace="assets-and-currencies." :t="t"
+        :assets="assets.map(a => ({ id: a.id, name: a.name, marketSize: a.marketSize, denomination: a.denomination.id }))"
+        :assetsValueChangeReason="assetsValueChangeReason"
+        :currencies="currencies.map(c => ({ id: c.code.id, name: c.code.name, marketSize: c.marketSize, denomination: c.denomination.id }))"
+        :denomination="denomination">
+    </assets-and-currencies>
+    <markets-projections t-namespace="markets-projections." :t="t" :assets="assetInputOptions"
+        :currencies="currencyInputOptions">
+    </markets-projections>
 </template>

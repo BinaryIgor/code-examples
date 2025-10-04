@@ -3,3 +3,5 @@
 * avoid ids when to necessary:
     * bubbles: true for events
     * this.querySelector('[data-{attr}]') pattern for partially updateable/configureable elements
+* more explicit deps between components?
+* refactor attrs vs props when/where needed which
