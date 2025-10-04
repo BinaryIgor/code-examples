@@ -1,11 +1,17 @@
-// TODO: better styling & translations
-import * as Utils from './utils.js';
+import { formatMoney, BaseHTMLElement } from './base.js';
 
-class AssetElement extends HTMLElement {
+class AssetElement extends BaseHTMLElement {
 
-    static observedAttributes = ["market-size", "denomination", "value-change-reason"];
-    _previousMarketSize = null;
-
+    /**
+     * Supported attributes
+     * {string} id: asset id
+     * {string} name: asset name
+     * {number} market-size
+     * {number} previous-market-size
+     * {string} value-change-reason: optional reason of the market size change
+     * {string} denomination
+     * {string} class: additional class to append to the root div
+     */
     connectedCallback() {
         this._render();
     }
@@ -40,9 +46,9 @@ class AssetElement extends HTMLElement {
             }
             previousMarketSizeComponent = `
             <div>
-                <span class="w-1/2 inline-block">Previous market size:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(this._previousMarketSize, denomination)}</span>
+                <span class="w-1/2 inline-block">${this.translation("previous-market-size-label")}:</span><span class="underline text-right w-1/2 inline-block">${formatMoney(this._previousMarketSize, denomination)}</span>
             <div>
-            <p class="text-right"><span class="italic">${marketIsUp ? 'UP' : 'DOWN'} by ${marketPercentageDiff}%</span>; ${valueChangeReason ?? 'UNKNOWN'}</p>`;
+            <p class="text-right"><span class="italic">${marketIsUp ? this.translation('up-by-info') : this.translation('down-by-info')} ${marketPercentageDiff}%</span>; ${valueChangeReason ?? 'UNKNOWN'}</p>`;
         } else {
             previousMarketSizeComponent = ``;
         }
@@ -51,7 +57,7 @@ class AssetElement extends HTMLElement {
         <div data-id=${id} class="border-1 p-2 rounded-lg ${classesToAppend ? classesToAppend : ""}">
             <p class="font-bold">${name}</p>
             <div>
-                <span class="w-1/2 inline-block">Market size:</span><span class="underline text-right w-1/2 inline-block">${Utils.formatMoney(marketSize, denomination)}</span>
+                <span class="w-1/2 inline-block">${this.translation('market-size-label')}:</span><span class="underline text-right w-1/2 inline-block">${formatMoney(marketSize, denomination)}</span>
             </div>
             ${previousMarketSizeComponent}
         </div>

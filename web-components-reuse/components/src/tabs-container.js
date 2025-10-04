@@ -8,12 +8,7 @@ class TabsContainer extends HTMLElement {
 
     activeTabClass = "underline";
 
-
     connectedCallback() {
-        this._render();
-    }
-
-    _render() {
         this._tabsHeader = this.querySelector("[data-tabs-header]");
         this._tabsBody = this.querySelector("[data-tabs-body]");
         this.activeTabClass = this.getAttribute("active-tab-class") ?? this.activeTabClass;

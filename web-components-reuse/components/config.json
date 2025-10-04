@@ -1,0 +1,17 @@
+{
+    "components": [
+        "base.js",
+        "tabs-container.js",
+        "drop-down.js",
+        "asset-element.js",
+        "currency-element.js",
+        "assets-and-currencies.js",
+        "markets-header.js",
+        "markets-comparator.js",
+        "projections-calculator.js",
+        "markets-projections.js"
+    ],
+    "outputs": [
+        "../vue-app/src/components/web-components.js"
+    ]
+}

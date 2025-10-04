@@ -6,7 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from './components/Home.vue';
 
 // @ts-ignore
-import { registerComponents } from './components/lib/registry.js';
+import { registerComponents } from './components/web-components.js';
 
 registerComponents();
 
@@ -24,7 +24,7 @@ const i18n = createI18n({
     messages: {
         en: {
             'markets-header': {
-                'markets-in': "Market in",
+                'markets-in': "Markets in",
                 'live-updates': "Live updates:",
                 'live-updates-on': "ON",
                 'live-updates-off': "OFF"

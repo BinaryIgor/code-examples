@@ -1,10 +1,4 @@
-import { BaseHTMLElement } from "./base";
-
-/**
-* @typedef {Object} AssetOrCurrency
-* @property {string} name
-* @property {number} marketSize
-*/
+import { BaseHTMLElement, AssetOrCurrency } from "./base.js";
 
 class MarketsProjections extends BaseHTMLElement {
 

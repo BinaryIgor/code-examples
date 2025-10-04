@@ -1,3 +1,10 @@
+// Common types definition
+/**
+* @typedef {Object} AssetOrCurrency
+* @property {string} name
+* @property {number} marketSize
+*/
+
 export function formatMoney(value, denomination) {
     const zeros = value.length;
     if (zeros > 15) {

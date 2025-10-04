@@ -1,6 +1,8 @@
 import type { CurrencyCode } from "./currency-code";
 import { MockedApi } from "./mocked-api";
 
+// TODO: simplify types
+
 export interface Asset {
     id: string;
     name: string;

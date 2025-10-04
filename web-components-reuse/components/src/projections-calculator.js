@@ -1,14 +1,12 @@
+import { BaseHTMLElement, AssetOrCurrency } from "./base.js";
+
 /**
-* @typedef {Object} AssetOrCurrency
-* @property {string} name
-* @property {number} marketSize
-*
 * @typedef {Object} AssetOrCurrencyProjection
 * @property {number} marketSize
 * @property {number} growthRate
 */
 
-class ProjectionsCalculator extends HTMLElement {
+class ProjectionsCalculator extends BaseHTMLElement {
 
     /** @type {?AssetOrCurrency} */
     _assetOrCurrency1 = null;
@@ -38,13 +36,12 @@ class ProjectionsCalculator extends HTMLElement {
     _customProjectionInput = null;
     _projectionsResultsContainer = null;
     _customProjectionContainer = null;
-    _customProjectionTextElementId = crypto.randomUUID();
-    _customProjectionResultContainerId = crypto.randomUUID();
+    _customProjectionTextElement = null;
+    _customProjectionResultContainer = null;
 
     connectedCallback() {
         this.innerHTML = `
-        <h2 class="my-4 text-xl">Projections</h2>
-        <div class="rounded border-1 p-2">
+        <div>
             <div>${this._assetOrCurrencyHeaderText(this._assetOrCurrency1)}</div>
             <input type="number" class="px-2 cursor-pointer" placeholder="%" value=${this._assetOrCurrency1ExpectedGrowthRate ?? ''}>
             <div>${this._assetOrCurrencyHeaderText(this._assetOrCurrency2)}</div>
@@ -68,23 +65,25 @@ class ProjectionsCalculator extends HTMLElement {
         this._customProjectionInput] = container.querySelectorAll("input");
 
         this._assetOrCurrency1Input.addEventListener("input", e => {
-            this._assetOrCurrency1ExpectedGrowthRate = e.target.value;
+            this._assetOrCurrency1ExpectedGrowthRate = parseInt(e.target.value);
             this._renderProjectionsResultsHTML();
         });
         this._assetOrCurrency2Input.addEventListener("input", e => {
-            this._assetOrCurrency2ExpectedGrowthRate = e.target.value;
+            this._assetOrCurrency2ExpectedGrowthRate = parseInt(e.target.value);
             this._renderProjectionsResultsHTML();
         });
         this._customProjectionInput.addEventListener("input", e => {
-            // TODO: is it really needed?
             this._customProjectionYears = parseInt(e.target.value);
             this._updateCustomProjectionText();
             this._updateCustomProjectionResult();
         });
+
+        this._customProjectionTextElement = this.querySelector('[data-custom-projection-text-element]');
+        this._customProjectionResultContainer = this.querySelector('[data-custom-projection-result-container]');
     }
 
     _assetOrCurrencyHeaderText(assetOrCurrency) {
-        return `${assetOrCurrency ? assetOrCurrency.name : "Asset/Currency"} expected annual growth rate:`;
+        return `${assetOrCurrency ? assetOrCurrency.name : this.translation('asset-or-currency-placeholder')} ${this.translation('asset-or-currency-expected-annual-growth-rate')}:`;
     }
 
     _renderProjectionsResultsHTML() {
@@ -95,7 +94,7 @@ class ProjectionsCalculator extends HTMLElement {
     }
 
     _projectionsResultsHTML() {
-        const inYearsText = (years) => `In ${years} ${years == 1 ? 'year' : 'years'}`;
+        const inYearsText = (years) => `${this.translation('results-in-header')} ${years} ${this.translation(years == 1 ? 'year' : 'years')}`;
         const currentYear = new Date().getFullYear();
         return [1, 5, 10].map(y => `
             <div class="mt-t">${inYearsText(y)} (${currentYear + y}):</div>
@@ -120,24 +119,24 @@ class ProjectionsCalculator extends HTMLElement {
 
     _customProjectionHTML() {
         return `
-        In <input class="max-w-[60px] px-2" type="number" value="${this._customProjectionYears == null ? '' : this._customProjectionYears}">
-        <span id="${this._customProjectionTextElementId}">${this._customProjectionYearText()}</span>:
-        <div id="${this._customProjectionResultContainerId}">${this._projectionsResultHTML(this._customProjectionYears)}</div>
+        ${this.translation('results-in-header')} <input class="max-w-[60px] px-2" type="number">
+        <span data-custom-projection-text-element>${this._customProjectionYearText()}</span>:
+        <div data-custom-projection-result-container>${this._projectionsResultHTML(this._customProjectionYears)}</div>
         `;
     }
 
     _customProjectionYearText() {
         const currentYear = new Date().getFullYear();
         return '(' + (this._customProjectionYears == null || Number.isNaN(this._customProjectionYears) ?
-            `${currentYear} + N` : currentYear + this._customProjectionYears) + ')';
+            `${currentYear} + N` : (currentYear + this._customProjectionYears)) + ')';
     }
 
     _updateCustomProjectionText() {
-        document.getElementById(this._customProjectionTextElementId).textContent = this._customProjectionYearText();
+        this._customProjectionTextElement.textContent = this._customProjectionYearText();
     }
 
     _updateCustomProjectionResult() {
-        document.getElementById(this._customProjectionResultContainerId).innerHTML = this._projectionsResultHTML(this._customProjectionYears);
+        this._customProjectionContainer.innerHTML = this._projectionsResultHTML(this._customProjectionYears);
     }
 
     _assetOrCurrency1WithExpectedGrowthRate() {

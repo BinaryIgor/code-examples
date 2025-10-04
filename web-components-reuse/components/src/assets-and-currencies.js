@@ -1,4 +1,14 @@
-class AssetsAndCurrencies extends HTMLElement {
+import { BaseHTMLElement } from "./base.js";
+
+/**
+* @typedef {Object} AssetOrCurrencyElement
+* @property {string} id
+* @property {string} name
+* @property {number} marketSize
+* @property {string} denomination
+*/
+
+class AssetsAndCurrencies extends BaseHTMLElement {
 
     _assets = [];
     _assetsValueChangeReason = undefined;
@@ -7,6 +17,7 @@ class AssetsAndCurrencies extends HTMLElement {
     _assetsContainer = undefined;
     _currenciesContainer = undefined;
 
+    /** @type {AssetOrCurrencyElement[]} */
     set assets(value) {
         this._assets = value;
         this._renderAssets();
@@ -17,11 +28,13 @@ class AssetsAndCurrencies extends HTMLElement {
         this._renderAssets();
     }
 
+    /** @type {AssetOrCurrencyElement[]} */
     set currencies(value) {
         this._currencies = value;
         this._renderCurrencies();
     }
 
+    /** @type {string} */
     set denomination(value) {
         this._denomination = value;
         this._renderAssets();
@@ -30,20 +43,22 @@ class AssetsAndCurrencies extends HTMLElement {
 
     connectedCallback() {
         this.innerHTML = `
-        <tabs-container active-tab-class="underline">
-            <div class="flex" data-tabs-header>
-                <tab-header>Assets</tab-header>
-                <tab-header>Currencies</tab-header>
-            </div>
-            <div data-tabs-body>
-                <div class="h-[40dvh] overflow-y-auto">
-                ${this._assetsHTML()}
+        <div class="m-4">
+            <tabs-container active-tab-class="underline">
+                <div class="flex" data-tabs-header>
+                    <tab-header>${this.translation('assets-header')}</tab-header>
+                    <tab-header>${this.translation('currencies-header')}</tab-header>
                 </div>
-                <div class="h-[40dvh] overflow-y-auto">
-                ${this._currenciesHTML()}
+                <div data-tabs-body>
+                    <div class="h-[40dvh] overflow-y-auto">
+                    ${this._assetsHTML()}
+                    </div>
+                    <div class="h-[40dvh] overflow-y-auto">
+                    ${this._currenciesHTML()}
+                    </div>
                 </div>
-            </div>
-        </tabs-container>`;
+            </tabs-container>
+        </div>`;
 
         const tabsBody = this.querySelector("[data-tabs-body]");
         this._assetsContainer = tabsBody.children[0];
@@ -68,7 +83,11 @@ class AssetsAndCurrencies extends HTMLElement {
             return `<asset-element class="my-2" id="${a.id}" name="${a.name}"
                 market-size="${a.marketSize}" previous-market-size="${previousMarketSize}"
                 denomination="${a.denomination}"
-                value-change-reason="${this._assetsValueChangeReason}">
+                value-change-reason="${this._assetsValueChangeReason}"
+                ${this.translationAttribute('market-size-label')}
+                ${this.translationAttribute('previous-market-size-label')}
+                ${this.translationAttribute('up-by-info')}
+                ${this.translationAttribute('down-by-info')}>
             </asset-element>`;
         }).join("\n");
     }
@@ -90,7 +109,11 @@ class AssetsAndCurrencies extends HTMLElement {
 
             return `<currency-element class="my-2" id="${c.id}" name="${c.name}"
                 market-size="${c.marketSize}" previous-market-size="${previousMarketSize}"
-                denomination="${c.denomination}">
+                denomination="${c.denomination}"
+                ${this.translationAttribute('daily-turnover-label')}
+                ${this.translationAttribute('yearly-turnover-label')}
+                ${this.translationAttribute('up-by-info')}
+                ${this.translationAttribute('down-by-info')}>
             </currency-element>`})
             .join("\n");
     }
