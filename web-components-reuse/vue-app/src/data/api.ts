@@ -1,5 +1,5 @@
 import type { CurrencyCode, AssetCode } from "./codes";
-import { MockedApi } from "./mocked-api";
+import { HttpApi } from "./http-api";
 
 export interface Asset {
     code: AssetCode;
@@ -19,16 +19,47 @@ export interface ExchangeRate {
     value: number;
 }
 
-// TODO: error type
-export interface Api {
+export class Response<T> {
 
-    topAssets(denomination: CurrencyCode): Promise<Asset[]>
 
-    topCurrencies(denomination: CurrencyCode): Promise<Currency[]>
+    constructor(private readonly _value: T | null, private _error: string | null) {
 
-    exchangeRates(): Promise<ExchangeRate[]>
+    }
 
-    exchangeRate(to: CurrencyCode): Promise<ExchangeRate>
+    static ofSuccess<T>(value: T): Response<T> {
+        return new Response(value, null);
+    }
+
+    static ofFailure<T>(error: string): Response<T> {
+        return new Response(null as T, error);
+    }
+
+    success(): boolean {
+        return this._value != null;
+    }
+
+    value(): T {
+        if (this.success()) {
+            return this._value as T;
+        }
+        throw new Error("Cannot return value from failed response");
+    }
+
+    error(): string {
+        if (!this.success()) {
+            return this._error as string;
+        }
+        throw new Error("Cannot return error from sucess response");
+    }
 }
 
-export const api: Api = new MockedApi();
+export interface Api {
+
+    assets(denomination: CurrencyCode): Promise<Response<Asset[]>>
+
+    currencies(denomination: CurrencyCode): Promise<Response<Currency[]>>
+
+    exchangeRates(from: CurrencyCode): Promise<Response<ExchangeRate[]>>
+}
+
+export const api: Api = new HttpApi(import.meta.env.VITE_API_BASE_URL);

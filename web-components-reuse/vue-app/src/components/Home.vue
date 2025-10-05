@@ -2,31 +2,44 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { type Asset, type Currency, type ExchangeRate, api } from '../data/api';
-import { CurrencyCode}  from '../data/codes';
+import { CurrencyCode } from '../data/codes';
 import { useUpdater } from '../data/updater';
+import * as Events from './events';
 
 const { t } = useI18n();
 
 const liveUpdatesEnabled = ref<boolean>(true);
 const denomination = ref<CurrencyCode>(CurrencyCode.USD);
-const denominationExchangeRate = ref<number>(1);
+const denominationToUSDExchangeRate = ref<number>(1);
 const denominationExchangeRates = ref<ExchangeRate[]>([]);
 const assets = ref<Asset[]>([]);
 const currencies = ref<Currency[]>([]);
 const assetsValueChangeReason = ref<string>();
 
-const fetchAssets = () => api.topAssets(denomination.value).then(a => assets.value = a);
-const fetchCurrencies = () => api.topCurrencies(denomination.value).then(c => currencies.value = c);
+const fetchAssets = () => api.assets(denomination.value)
+    .then(r => {
+        if (r.success()) {
+            assets.value = r.value();
+        } else {
+            Events.showErrorModal(r.error());
+        }
+    });
+const fetchCurrencies = () => api.currencies(denomination.value)
+    .then(r => {
+        if (r.success()) {
+            currencies.value = r.value();
+        } else {
+            Events.showErrorModal(r.error());
+        }
+    });
 
 useUpdater().setExchangeRatesChangedListener(() => {
-    api.exchangeRate(denomination.value)
-        .then(er => {
-            updateDenominationExchangeRates();
-            if (er.value != denominationExchangeRate.value) {
-                assetsValueChangeReason.value = "CURRENCY_EXCHANGE_RATE_CHANGED";
-                fetchAssets();
-            }
-        });
+    const previousDenominationExchangeReate = denominationToUSDExchangeRate.value;
+    updateDenominationExchangeRates();
+    if (previousDenominationExchangeReate != denominationToUSDExchangeRate.value) {
+        assetsValueChangeReason.value = "CURRENCY_EXCHANGE_RATE_CHANGED";
+        fetchAssets();
+    }
 });
 useUpdater().setAssetsValueChangedListener(() => {
     assetsValueChangeReason.value = "ASSET_VALUE_CHANGED";
@@ -37,26 +50,19 @@ useUpdater().setCurrenciesValueChangedListener(() => {
 });
 
 const onDenominationChanged = () => {
-    api.exchangeRate(denomination.value)
-        .then(async er => {
-            denominationExchangeRate.value = er.value;
-
-            updateDenominationExchangeRates();
-
-            fetchAssets();
-            fetchCurrencies();
-        });
+    updateDenominationExchangeRates();
+    fetchAssets();
+    fetchCurrencies();
 };
 
 const updateDenominationExchangeRates = async () => {
-    const exchangeRates = await api.exchangeRates();
-    const fromDollarToDenominationExchangeRate = exchangeRates.find(er => er.to == denomination.value)?.value ?? 1;
-    const fromDenominationToDollarExchangeRate = 1 / fromDollarToDenominationExchangeRate;
-    denominationExchangeRates.value = exchangeRates.map(er => ({
-        from: denomination.value,
-        to: er.to,
-        value: Math.round(fromDenominationToDollarExchangeRate * er.value * 100) / 100.0
-    }));
+    const response = await api.exchangeRates(denomination.value);
+    if (response.success()) {
+        denominationExchangeRates.value = response.value();
+        denominationToUSDExchangeRate.value = denominationExchangeRates.value.find(er => er.to == CurrencyCode.USD)?.value ?? 1;
+    } else {
+        Events.showErrorModal(response.error());
+    }
 };
 
 const assetInputOptions = computed<{ name: string, marketSize: number }[]>(() =>

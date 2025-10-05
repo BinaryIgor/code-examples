@@ -1,15 +1,9 @@
-import { api, type Api } from "./api";
-import type { MockedApi } from "./mocked-api";
-
 export class Updater {
 
     private exchangeRatesChangedListener = () => { };
     private assetsValueChangedListener = () => { };
     private currenciesValueChangedListener = () => { };
     private paused = false;
-
-    constructor(private readonly api: Api) {
-    }
 
     public start() {
         setInterval(() => this.update(), 1000);
@@ -19,18 +13,9 @@ export class Updater {
         if (this.paused) {
             return;
         }
-        if (Math.random() > 0.75) {
-            (this.api as MockedApi).setNextExchangeRatsChange(true);
-            this.exchangeRatesChangedListener();
-        }
-        if (Math.random() > 0.5) {
-            (this.api as MockedApi).setNextAssetsValueChange(true);
-            this.assetsValueChangedListener();
-        }
-        if (Math.random() > 0.5) {
-            (this.api as MockedApi).setNextCurrenciesValueChange(true);
-            this.currenciesValueChangedListener();
-        }
+        this.exchangeRatesChangedListener();
+        this.assetsValueChangedListener();
+        this.currenciesValueChangedListener();
     }
 
     public setExchangeRatesChangedListener(listener: () => void) {
@@ -53,7 +38,7 @@ export class Updater {
 let _updater: Updater | undefined;
 export function useUpdater(): Updater {
     if (!_updater) {
-        _updater = new Updater(api);
+        _updater = new Updater();
         _updater.start();
     }
     return _updater;

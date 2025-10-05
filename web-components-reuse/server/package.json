@@ -1,0 +1,17 @@
+{
+  "name": "web-components-reuse-server",
+  "version": "1.0.0",
+  "description": "Web Components Reuse API and HTMX app",
+  "main": "src/server.js",
+  "scripts": {},
+  "author": "Igor",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}

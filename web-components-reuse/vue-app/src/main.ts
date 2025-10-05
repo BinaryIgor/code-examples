@@ -23,6 +23,11 @@ const i18n = createI18n({
     fallbackLocale: 'en',
     messages: {
         en: {
+            'errors': {
+                'title': "Something went wrong...",
+                'UnknownFetchError': "UnknownFetchError",
+                'UnsupportedErrorFormat': 'UnsupportedErrorFormat'
+            },
             'currency-code': {
                 'USD': "US Dollar",
                 'EUR': "Euro",

@@ -3,6 +3,8 @@
         "base.js",
         "tabs-container.js",
         "drop-down.js",
+        "info-modal.js",
+        "error-modal.js",
         "asset-element.js",
         "currency-element.js",
         "assets-and-currencies.js",
