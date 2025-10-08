@@ -2,27 +2,27 @@ import { BaseHTMLElement } from "./base.js";
 
 class MarketsHeader extends BaseHTMLElement {
 
-    _denomination = 'USD';
-    _liveUpdatesEnabled = true;
-    _denominationExchangeRates = [];
-    _liveUpdatesEnabledElement = null;
-    _denominationElement = null;
+  _denomination = 'USD';
+  _liveUpdatesEnabled = true;
+  _denominationExchangeRates = [];
+  _liveUpdatesEnabledElement = null;
+  _denominationElement = null;
 
 
-    set denomination(value) {
-        this._denomination = value;
-        if (this._denominationElement) {
-            this._denominationElement.textContent = this._denomination;
-        }
+  set denomination(value) {
+    this._denomination = value;
+    if (this._denominationElement) {
+      this._denominationElement.textContent = this._denomination;
     }
+  }
 
-    set denominationExchangeRates(value) {
-        this._denominationExchangeRates = value;
-        this._renderDenominationOptions();
-    }
+  set denominationExchangeRates(value) {
+    this._denominationExchangeRates = value;
+    this._renderDenominationOptions();
+  }
 
-    connectedCallback() {
-        this.innerHTML = `
+  connectedCallback() {
+    this.innerHTML = `
         <div class="m-4">
             <div class="absolute right-4 text-xl">${this.translation('live-updates')} <span class="cursor-pointer">${this._liveUpdatesElementText()}</span>
             </div>
@@ -36,43 +36,43 @@ class MarketsHeader extends BaseHTMLElement {
         </div>
         `;
 
-        this._liveUpdatesEnabledElement = this.querySelector("span");
-        this._liveUpdatesEnabledElement.onclick = () => {
-            this._liveUpdatesEnabled = !this._liveUpdatesEnabled;
-            this._liveUpdatesEnabledElement.textContent = this._liveUpdatesElementText();
-            this.dispatchEvent(new CustomEvent('mh.live-updates-toggled', { bubbles: true, detail: this._liveUpdatesEnabled }));
-        };
+    this._liveUpdatesEnabledElement = this.querySelector("span");
+    this._liveUpdatesEnabledElement.onclick = () => {
+      this._liveUpdatesEnabled = !this._liveUpdatesEnabled;
+      this._liveUpdatesEnabledElement.textContent = this._liveUpdatesElementText();
+      this.dispatchEvent(new CustomEvent('mh.live-updates-toggled', { bubbles: true, detail: this._liveUpdatesEnabled }));
+    };
 
-        this._denominationElement = this.querySelector("drop-down-container > span");
-    }
+    this._denominationElement = this.querySelector("drop-down-container > span");
+  }
 
-    _denominationOptionsHTML() {
-        return this._denominationExchangeRates.map(der => `<li class="py-2 px-4 border-b-1 last:border-0" data-option-id="${der.name}">${der.name}: ${der.exchangeRate}</li>`).join('\n');
-    }
+  _denominationOptionsHTML() {
+    return this._denominationExchangeRates.map(der => `<li class="py-2 px-4 border-b-1 last:border-0" data-option-id="${der.name}">${der.name}: ${der.exchangeRate}</li>`).join('\n');
+  }
 
-    _renderDenominationOptions() {
-        const optionsContainer = this.querySelector("ul");
-        if (optionsContainer) {
-            optionsContainer.innerHTML = this._denominationOptionsHTML();
-            this._setOptionsClickHandlers();
-        }
+  _renderDenominationOptions() {
+    const optionsContainer = this.querySelector("ul");
+    if (optionsContainer) {
+      optionsContainer.innerHTML = this._denominationOptionsHTML();
+      this._setOptionsClickHandlers();
     }
+  }
 
-    _setOptionsClickHandlers() {
-        [...this.querySelectorAll("li")].forEach(o => {
-            o.onclick = () => {
-                this._denomination = o.getAttribute("data-option-id");
-                this._denominationElement.textContent = this._denomination;
-                this.dispatchEvent(new CustomEvent('mh.denomination-changed', { bubbles: true, detail: this._denomination }));
-            };
-        });
-    }
+  _setOptionsClickHandlers() {
+    [...this.querySelectorAll("li")].forEach(o => {
+      o.onclick = () => {
+        this._denomination = o.getAttribute("data-option-id");
+        this._denominationElement.textContent = this._denomination;
+        this.dispatchEvent(new CustomEvent('mh.denomination-changed', { bubbles: true, detail: this._denomination }));
+      };
+    });
+  }
 
-    _liveUpdatesElementText() {
-        return `${this._liveUpdatesEnabled ? this.translation('live-updates-on') : this.translation('live-updates-off')}`;
-    }
+  _liveUpdatesElementText() {
+    return `${this._liveUpdatesEnabled ? this.translation('live-updates-on') : this.translation('live-updates-off')}`;
+  }
 }
 
 export function register() {
-    customElements.define("markets-header", MarketsHeader);
+  customElements.define("markets-header", MarketsHeader);
 }

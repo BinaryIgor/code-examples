@@ -1,24 +1,19 @@
-import { Response, type Api, type AssetsReponse, type Currency, type ExchangeRate } from "./api";
+import { Response, type Api, type Asset, type Currency, type ExchangeRate } from "./api";
 import type { CurrencyCode } from "./codes";
 
 export class HttpApi implements Api {
 
-  private readonly baseUrl: string;
+  constructor(private readonly baseUrl: string) {
 
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
   }
 
-  assets(denomination: CurrencyCode, version?: string): Promise<Response<AssetsReponse>> {
-    return this.get(`assets?denomination=${denomination}`, version ? { 'If-None-Match': version } : {});
+  async assets(denomination: CurrencyCode): Promise<Response<Asset[]>> {
+    return this.get(`assets?denomination=${denomination}`);
   }
 
-  async get<T>(path: string, headers = {}): Promise<Response<T>> {
+  async get<T>(path: string): Promise<Response<T>> {
     try {
-      const response = await fetch(`${this.baseUrl}/${path}`, { method: "GET", headers });
-      if (response.status == 304) {
-        return Response.ofSuccess();
-      }
+      const response = await fetch(`${this.baseUrl}/${path}`);
       const jsonResponse = await response.json();
       if (response.ok) {
         return Response.ofSuccess(jsonResponse as T);

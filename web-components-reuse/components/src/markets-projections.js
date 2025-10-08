@@ -2,30 +2,30 @@ import { BaseHTMLElement, AssetOrCurrency } from "./base.js";
 
 class MarketsProjections extends BaseHTMLElement {
 
-    _marketsComparatorComponent = null;
-    _projectionsCalculatorComponent = null;
+  _marketsComparatorComponent = null;
+  _projectionsCalculatorComponent = null;
 
-    /** @type {?AssetOrCurrency} */
-    _fromAssetOrCurrency = null;
-    /** @type {?AssetOrCurrency} */
-    _toAssetOrCurrency = null;
+  /** @type {?AssetOrCurrency} */
+  _fromAssetOrCurrency = null;
+  /** @type {?AssetOrCurrency} */
+  _toAssetOrCurrency = null;
 
-    /** @type {AssetOrCurrency[]} */
-    set assets(value) {
-        if (this._marketsComparatorComponent) {
-            this._marketsComparatorComponent.assets = value;
-        }
+  /** @type {AssetOrCurrency[]} */
+  set assets(value) {
+    if (this._marketsComparatorComponent) {
+      this._marketsComparatorComponent.assets = value;
     }
+  }
 
-    /** @type {AssetOrCurrency[]} */
-    set currencies(value) {
-        if (this._marketsComparatorComponent) {
-            this._marketsComparatorComponent.currencies = value;
-        }
+  /** @type {AssetOrCurrency[]} */
+  set currencies(value) {
+    if (this._marketsComparatorComponent) {
+      this._marketsComparatorComponent.currencies = value;
     }
+  }
 
-    connectedCallback() {
-        this.innerHTML = `
+  connectedCallback() {
+    this.innerHTML = `
         <div class="rounded border-1 p-2 mt-16 mx-4 mb-8">
             <h2 class="text-2xl mb-8">${this.translation('projections-header')}</h2>
             <markets-comparator
@@ -44,23 +44,23 @@ class MarketsProjections extends BaseHTMLElement {
         </div>
         `;
 
-        this._marketsComparatorComponent = this.querySelector("markets-comparator");
-        this._projectionsCalculatorComponent = this.querySelector("projections-calculator");
+    this._marketsComparatorComponent = this.querySelector("markets-comparator");
+    this._projectionsCalculatorComponent = this.querySelector("projections-calculator");
 
-        const fromMarketSizeChangedEventHandler = e => {
-            this._fromAssetOrCurrency = e.detail;
-            this._projectionsCalculatorComponent.assetOrCurrency1 = this._fromAssetOrCurrency;
-        };
-        const toMarketSizeChangedEventHandler = e => {
-            this._toAssetOrCurrency = e.detail;
-            this._projectionsCalculatorComponent.assetOrCurrency2 = this._toAssetOrCurrency;
-        };
+    const fromMarketSizeChangedEventHandler = e => {
+      this._fromAssetOrCurrency = e.detail;
+      this._projectionsCalculatorComponent.assetOrCurrency1 = this._fromAssetOrCurrency;
+    };
+    const toMarketSizeChangedEventHandler = e => {
+      this._toAssetOrCurrency = e.detail;
+      this._projectionsCalculatorComponent.assetOrCurrency2 = this._toAssetOrCurrency;
+    };
 
-        this.addEventListener('mc.from-market-size-changed', fromMarketSizeChangedEventHandler);
-        this.addEventListener('mc.to-market-size-changed', toMarketSizeChangedEventHandler);
-    }
+    this.addEventListener('mc.from-market-size-changed', fromMarketSizeChangedEventHandler);
+    this.addEventListener('mc.to-market-size-changed', toMarketSizeChangedEventHandler);
+  }
 }
 
 export function register() {
-    customElements.define('markets-projections', MarketsProjections);
+  customElements.define('markets-projections', MarketsProjections);
 }

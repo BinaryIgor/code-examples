@@ -1,3 +1,4 @@
+// TODO: maybe something smarter?
 export class Updater {
 
   exchangeRatesChangedListener = () => { };

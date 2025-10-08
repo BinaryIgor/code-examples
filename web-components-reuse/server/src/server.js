@@ -13,46 +13,46 @@ app.use(cors());
 app.use("/api", Api.router);
 
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    if (err instanceof Api.ValidationError) {
-        res.status(400)
-            .send({
-                error: "ValidationError",
-                message: err.message
-            });
-    } else {
-        res.status(500)
-            .send({
-                error: "Unknown",
-                message: "Internal error"
-            });
-    }
+  console.error(err.stack);
+  if (err instanceof Api.ValidationError) {
+    res.status(400)
+      .send({
+        error: "ValidationError",
+        message: err.message
+      });
+  } else {
+    res.status(500)
+      .send({
+        error: "Unknown",
+        message: "Internal error"
+      });
+  }
 });
 
 const server = app.listen(SERVER_PORT, () => {
-    console.log(`Server has started on port ${SERVER_PORT}!`);
+  console.log(`Server has started on port ${SERVER_PORT}!`);
 });
 
 const randomizerTaskId = Api.scheduleDataRandomizer();
 
 process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received: closing HTTP server');
-    onShutdown();
+  console.log('SIGTERM signal received: closing HTTP server');
+  onShutdown();
 });
 
 process.on('SIGINT', () => {
-    console.log('SIGINT signal received: closing HTTP server');
-    onShutdown();
+  console.log('SIGINT signal received: closing HTTP server');
+  onShutdown();
 });
 
 function onShutdown() {
-    clearInterval(randomizerTaskId);
-    server.close(() => {
-        console.log('HTTP server closed');
-    });
-    server.closeIdleConnections();
-    setTimeout(() => {
-        console.log("Closing all remaining connections...");
-        server.closeAllConnections();
-    }, 1000);
+  clearInterval(randomizerTaskId);
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
+  server.closeIdleConnections();
+  setTimeout(() => {
+    console.log("Closing all remaining connections...");
+    server.closeAllConnections();
+  }, 1000);
 }

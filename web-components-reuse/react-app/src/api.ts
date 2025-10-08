@@ -7,13 +7,6 @@ export interface Asset {
   denomination: CurrencyCode
 }
 
-export interface AssetsReponse {
-  assets: Asset[];
-  assetsVersion: number;
-  exchangeRatesVersion: number;
-  responseVersion: string;
-}
-
 export interface Currency {
   code: CurrencyCode;
   marketSize: number;
@@ -28,11 +21,15 @@ export interface ExchangeRate {
 
 export class Response<T> {
 
-  constructor(private readonly _value: T | null | undefined, private _error: string | null) {
+  private readonly _value: T | null;
+  private _error: string | null
 
+  constructor(value: T | null, error: string | null) {
+    this._value = value;
+    this._error = error;
   }
 
-  static ofSuccess<T>(value?: T): Response<T> {
+  static ofSuccess<T>(value: T): Response<T> {
     return new Response(value, null);
   }
 
@@ -41,34 +38,27 @@ export class Response<T> {
   }
 
   success(): boolean {
-    return this._error == null;
+    return this._value != null;
   }
 
   value(): T {
-    if (!this.success()) {
-      throw new Error("Cannot return value from failed response");
-    }
-    if (this.hasValue()) {
+    if (this.success()) {
       return this._value as T;
     }
-    throw new Error("Cannot return value from empty success response");
-  }
-
-  hasValue() {
-    return this.success() && this._value;
+    throw new Error("Cannot return value from failed response");
   }
 
   error(): string {
     if (!this.success()) {
       return this._error as string;
     }
-    throw new Error("Cannot return error from success response");
+    throw new Error("Cannot return error from sucess response");
   }
 }
 
 export interface Api {
 
-  assets(denomination: CurrencyCode, version?: string): Promise<Response<AssetsReponse>>
+  assets(denomination: CurrencyCode): Promise<Response<Asset[]>>
 
   currencies(denomination: CurrencyCode): Promise<Response<Currency[]>>
 

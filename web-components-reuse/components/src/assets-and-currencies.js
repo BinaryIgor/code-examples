@@ -10,39 +10,39 @@ import { BaseHTMLElement } from "./base.js";
 
 class AssetsAndCurrencies extends BaseHTMLElement {
 
-    _assets = [];
-    _assetsValueChangeReason = undefined;
-    _currencies = [];
-    _denomination = "USD";
-    _assetsContainer = undefined;
-    _currenciesContainer = undefined;
+  _assets = [];
+  _assetsValueChangeReason = undefined;
+  _currencies = [];
+  _denomination = "USD";
+  _assetsContainer = undefined;
+  _currenciesContainer = undefined;
 
-    /** @type {AssetOrCurrencyElement[]} */
-    set assets(value) {
-        this._assets = value;
-        this._renderAssets();
-    }
+  /** @type {AssetOrCurrencyElement[]} */
+  set assets(value) {
+    this._assets = value;
+    this._renderAssets();
+  }
 
-    set assetsValueChangeReason(value) {
-        this._assetsValueChangeReason = value;
-        this._renderAssets();
-    }
+  set assetsValueChangeReason(value) {
+    this._assetsValueChangeReason = value;
+    this._renderAssets();
+  }
 
-    /** @type {AssetOrCurrencyElement[]} */
-    set currencies(value) {
-        this._currencies = value;
-        this._renderCurrencies();
-    }
+  /** @type {AssetOrCurrencyElement[]} */
+  set currencies(value) {
+    this._currencies = value;
+    this._renderCurrencies();
+  }
 
-    /** @type {string} */
-    set denomination(value) {
-        this._denomination = value;
-        this._renderAssets();
-        this._renderCurrencies();
-    }
+  /** @type {string} */
+  set denomination(value) {
+    this._denomination = value;
+    this._renderAssets();
+    this._renderCurrencies();
+  }
 
-    connectedCallback() {
-        this.innerHTML = `
+  connectedCallback() {
+    this.innerHTML = `
         <div class="m-4">
             <tabs-container active-tab-class="underline">
                 <div class="flex" data-tabs-header>
@@ -60,27 +60,27 @@ class AssetsAndCurrencies extends BaseHTMLElement {
             </tabs-container>
         </div>`;
 
-        const tabsBody = this.querySelector("[data-tabs-body]");
-        this._assetsContainer = tabsBody.children[0];
-        this._currenciesContainer = tabsBody.children[1];
-    }
+    const tabsBody = this.querySelector("[data-tabs-body]");
+    this._assetsContainer = tabsBody.children[0];
+    this._currenciesContainer = tabsBody.children[1];
+  }
 
-    _assetsHTML(previousAssetElements = []) {
-        return this._assets.map(a => {
-            const previousAsset = previousAssetElements.find(pa => pa.id == a.id);
-            let previousMarketSize;
-            if (!previousAsset) {
-                previousMarketSize = a.marketSize;
-            } else {
-                const previousCurrencyMarketSize = previousAsset.getAttribute("market-size");
-                if (previousCurrencyMarketSize != a.marketSize) {
-                    previousMarketSize = previousCurrencyMarketSize;
-                } else {
-                    previousMarketSize = previousAsset.getAttribute("previous-market-size");
-                }
-            }
+  _assetsHTML(previousAssetElements = []) {
+    return this._assets.map(a => {
+      const previousAsset = previousAssetElements.find(pa => pa.id == a.id);
+      let previousMarketSize;
+      if (!previousAsset) {
+        previousMarketSize = a.marketSize;
+      } else {
+        const previousCurrencyMarketSize = previousAsset.getAttribute("market-size");
+        if (previousCurrencyMarketSize != a.marketSize) {
+          previousMarketSize = previousCurrencyMarketSize;
+        } else {
+          previousMarketSize = previousAsset.getAttribute("previous-market-size");
+        }
+      }
 
-            return `<asset-element class="my-2" id="${a.id}" name="${a.name}"
+      return `<asset-element class="my-2" id="${a.id}" name="${a.name}"
                 market-size="${a.marketSize}" previous-market-size="${previousMarketSize}"
                 denomination="${a.denomination}"
                 value-change-reason="${this._assetsValueChangeReason}"
@@ -89,25 +89,25 @@ class AssetsAndCurrencies extends BaseHTMLElement {
                 ${this.translationAttribute('up-by-info')}
                 ${this.translationAttribute('down-by-info')}>
             </asset-element>`;
-        }).join("\n");
-    }
+    }).join("\n");
+  }
 
-    _currenciesHTML(previousCurrencyElements = []) {
-        return this._currencies.map(c => {
-            const previousCurrency = previousCurrencyElements.find(pc => pc.id == c.id);
-            let previousMarketSize;
-            if (!previousCurrency) {
-                previousMarketSize = c.marketSize;
-            } else {
-                const previousCurrencyMarketSize = previousCurrency.getAttribute("market-size");
-                if (previousCurrencyMarketSize != c.marketSize) {
-                    previousMarketSize = previousCurrencyMarketSize;
-                } else {
-                    previousMarketSize = previousCurrency.getAttribute("previous-market-size");
-                }
-            }
+  _currenciesHTML(previousCurrencyElements = []) {
+    return this._currencies.map(c => {
+      const previousCurrency = previousCurrencyElements.find(pc => pc.id == c.id);
+      let previousMarketSize;
+      if (!previousCurrency) {
+        previousMarketSize = c.marketSize;
+      } else {
+        const previousCurrencyMarketSize = previousCurrency.getAttribute("market-size");
+        if (previousCurrencyMarketSize != c.marketSize) {
+          previousMarketSize = previousCurrencyMarketSize;
+        } else {
+          previousMarketSize = previousCurrency.getAttribute("previous-market-size");
+        }
+      }
 
-            return `<currency-element class="my-2" id="${c.id}" name="${c.name}"
+      return `<currency-element class="my-2" id="${c.id}" name="${c.name}"
                 market-size="${c.marketSize}" previous-market-size="${previousMarketSize}"
                 denomination="${c.denomination}"
                 ${this.translationAttribute('daily-turnover-label')}
@@ -115,24 +115,24 @@ class AssetsAndCurrencies extends BaseHTMLElement {
                 ${this.translationAttribute('up-by-info')}
                 ${this.translationAttribute('down-by-info')}>
             </currency-element>`})
-            .join("\n");
-    }
+      .join("\n");
+  }
 
-    _renderAssets() {
-        if (this._assetsContainer) {
-            const currentAssetElements = [...this.querySelectorAll("asset-element")];
-            this._assetsContainer.innerHTML = this._assetsHTML(currentAssetElements);
-        }
+  _renderAssets() {
+    if (this._assetsContainer) {
+      const currentAssetElements = [...this.querySelectorAll("asset-element")];
+      this._assetsContainer.innerHTML = this._assetsHTML(currentAssetElements);
     }
+  }
 
-    _renderCurrencies() {
-        if (this._currenciesContainer) {
-            const currentCurrencyElements = [...this.querySelectorAll("currency-element")];
-            this._currenciesContainer.innerHTML = this._currenciesHTML(currentCurrencyElements);
-        }
+  _renderCurrencies() {
+    if (this._currenciesContainer) {
+      const currentCurrencyElements = [...this.querySelectorAll("currency-element")];
+      this._currenciesContainer.innerHTML = this._currenciesHTML(currentCurrencyElements);
     }
+  }
 }
 
 export function register() {
-    customElements.define('assets-and-currencies', AssetsAndCurrencies);
+  customElements.define('assets-and-currencies', AssetsAndCurrencies);
 }
