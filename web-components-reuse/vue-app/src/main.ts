@@ -25,8 +25,8 @@ const i18n = createI18n({
         en: {
             'errors': {
                 'title': "Something went wrong...",
-                'UnknownFetchError': "UnknownFetchError",
-                'UnsupportedErrorFormat': 'UnsupportedErrorFormat'
+                'UnknownFetchError': "Unknown error while fetching data",
+                'UnsupportedErrorFormat': "Server responded in an unexpected way"
             },
             'currency-code': {
                 'USD': "US Dollar",
