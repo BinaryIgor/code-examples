@@ -2,20 +2,12 @@ import { createApp } from 'vue';
 import { createI18n } from 'vue-i18n';
 import './style.css';
 import App from './App.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import Home from './components/Home.vue';
 
 // @ts-ignore
 import { registerComponents } from './components/web-components.js';
 
 registerComponents();
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        { path: '/', component: Home },
-    ]
-});
 
 const i18n = createI18n({
     legacy: false,
@@ -81,6 +73,5 @@ const i18n = createI18n({
 });
 
 createApp(App)
-    .use(router)
     .use(i18n)
     .mount('#app');

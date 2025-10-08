@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-// TODO: router not needed!
+import Home from './components/Home.vue';
 
 const { t } = useI18n();
 
@@ -20,7 +20,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <RouterView />
+  <Home />
   <error-modal></error-modal>
 </template>
 
