@@ -1,8 +1,8 @@
 export class Updater {
 
-  private fetchAssets: Function | null = null;
-  private fetchCurrencies: Function | null = null;
-  private fetchExchangeRates: Function | null = null;
+  fetchAssets: Function | null = null;
+  fetchCurrencies: Function | null = null;
+  fetchExchangeRates: Function | null = null;
   private _paused = false;
 
   set paused(value: boolean) {

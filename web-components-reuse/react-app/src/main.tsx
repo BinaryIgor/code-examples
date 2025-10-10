@@ -5,14 +5,9 @@ import './i18n';
 import App from './App.tsx';
 
 // @ts-ignore
-import { register } from './custom-header.js';
-
-// @ts-ignore
-import { registerComponents } from './web-components.js';
+import { registerComponents } from './components/web-components.js';
 
 registerComponents();
-
-register();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -15,6 +15,6 @@
     ],
     "outputs": [
         "../vue-app/src/components/web-components.js",
-        "../react-app/src/web-components.js"
+        "../react-app/src/components/web-components.js"
     ]
 }

@@ -155,13 +155,9 @@ export const router = express.Router();
 
 router.get('/assets', (req, res) => {
   const denomination = req.query.denomination ?? CurrencyCode.USD;
-
-  const versionHeader = versionFromHeader(req) ?? `-1:-${exchangeRatesVersionFor(denomination, -1)}`;
-  const versions = versionHeader.split(':');
-  const clientAssetsVersion = versions[0];
-  const clientExchangeRatesVersion = versions.length > 1 ? versions[1] : exchangeRatesVersionFor(denomination, -1);
-  const exchangeRatesVersionForDenomination = exchangeRatesVersionFor(denomination);
-  if (clientAssetsVersion == assetsVersion && clientExchangeRatesVersion == exchangeRatesVersionForDenomination) {
+  const clientAssetsVersion = versionFromHeader(req) ?? prefixedVersion(denomination, 0);
+  const serverAssetsVersion = prefixedVersion(denomination, assetsVersion);
+  if (clientAssetsVersion == serverAssetsVersion) {
     returnNotModified(res);
     return;
   }
@@ -169,38 +165,35 @@ router.get('/assets', (req, res) => {
   const exchangeRateValue = exchangeRateFor(denomination);
   const denominatedAssets = nextAssets.map(a => ({ ...a, marketSize: Math.round(a.marketSize * exchangeRateValue), denomination }));
 
-  const responseVersion = `${assetsVersion}:${exchangeRatesVersionForDenomination}`;
-
-  returnVersionedJson(res, responseVersion, {
+  returnVersionedJson(res, serverAssetsVersion, {
     assets: denominatedAssets,
-    assetsVersion,
-    exchangeRatesVersionForDenomination,
-    responseVersion
+    responseVersion: serverAssetsVersion
   });
 });
 
 router.get('/currencies', (req, res) => {
-  const clientCurrenciesVersion = versionFromHeader(req) ?? '-1';
-  if (clientCurrenciesVersion == currenciesVersion) {
+  const denomination = req.query.denomination ?? CurrencyCode.USD;
+  const clientCurrenciesVersion = versionFromHeader(req) ?? prefixedVersion(denomination, 0);
+  const serverCurrenciesVersion = prefixedVersion(denomination, currenciesVersion);
+  if (clientCurrenciesVersion == serverCurrenciesVersion) {
     returnNotModified(res);
     return;
   }
 
-  const denomination = req.query.denomination ?? CurrencyCode.USD;
   const exchangeRateValue = exchangeRateFor(denomination);
   const denominatedCurrencies = nextCurrencies.map(c => ({ ...c, marketSize: Math.round(c.marketSize * exchangeRateValue), denomination }));
-  returnVersionedJson(res, currenciesVersion, {
-    currencies: denominatedCurrencies
-    responseVersion: currenciesVersion
+  returnVersionedJson(res, serverCurrenciesVersion, {
+    currencies: denominatedCurrencies,
+    responseVersion: serverCurrenciesVersion
   });
 });
 
 router.get('/exchange-rates/:from', (req, res) => {
   const from = req.params.from;
 
-  const clientExchangeRatesVersion = versionFromHeader(req) ?? exchangeRatesVersionFor(from, -1);
-  const serverExchangeRatesVersion = exchangeRatesVersionFor(from);
-  if (clientCurrenciesVersion == serverExchangeRatesVersion) {
+  const clientExchangeRatesVersion = versionFromHeader(req) ?? prefixedVersion(from, 0);
+  const serverExchangeRatesVersion = prefixedVersion(from, exchangeRatesVersion);
+  if (clientExchangeRatesVersion == serverExchangeRatesVersion) {
     returnNotModified(res);
     return;
   }
@@ -229,8 +222,8 @@ function exchangeRateFor(denomination) {
   return exchangeRate.value;
 }
 
-function exchangeRatesVersionFor(denomination, version = exchangeRatesVersion) {
-  return `${denomination}-${version}`;
+function prefixedVersion(prefix, version) {
+  return `${prefix}:${version}`;
 }
 
 function versionFromHeader(req) {
@@ -242,23 +235,19 @@ function returnVersionedJson(res, version, object, status = 200) {
   res.status(status).send(object);
 }
 
-function returnJson(res, object, status = 200) {
-  res.status(status).send(object);
-}
-
 function returnNotModified(res) {
   res.status(304).send();
 }
 
 export function scheduleDataRandomizer() {
   return setInterval(() => {
-    if (Math.random() > 0.75) {
+    if (Math.random() > 0.5) {
       randomizeAssets();
     }
-    if (Math.random() < 0.25) {
+    if (Math.random() > 0.5) {
       randomizeCurrencies();
     }
-    if (Math.random() > 0.75) {
+    if (Math.random() > 0.5) {
       randomizeExchangeRates();
     }
   }, 1000);
@@ -275,7 +264,10 @@ function randomizeCurrencies() {
 }
 
 function randomizeExchangeRates() {
-  nextUsdExchangeRates = nextUsdExchangeRates.map(er => ({ ...er, value: er.value * nextValueMultiplier(0.9, 1.1) }));
+  nextUsdExchangeRates = nextUsdExchangeRates.map(er => ({
+    ...er,
+    value: er.code == CurrencyCode.USD ? er.value : er.value * nextValueMultiplier(0.9, 1.1)
+  }));
   exchangeRatesVersion++;
 }
 

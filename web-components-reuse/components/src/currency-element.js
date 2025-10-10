@@ -28,13 +28,9 @@ class CurrencyElement extends BaseHTMLElement {
     }
     const classesToAppend = this.getAttribute("class");
 
-    if (previousMarketSize) {
-      this._previousMarketSize = previousMarketSize;
-    }
-
     let previousMarketSizeComponent;
-    if (this._previousMarketSize && this._previousMarketSize != marketSize) {
-      const previousMarketSizeInt = parseInt(this._previousMarketSize);
+    if (previousMarketSize && previousMarketSize != marketSize) {
+      const previousMarketSizeInt = parseInt(previousMarketSize);
       const currentMarketSizeInt = parseInt(marketSize);
       const marketIsUp = currentMarketSizeInt > previousMarketSizeInt;
       let marketPercentageDiff;

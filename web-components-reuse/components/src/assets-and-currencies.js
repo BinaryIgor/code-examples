@@ -10,35 +10,35 @@ import { BaseHTMLElement } from "./base.js";
 
 class AssetsAndCurrencies extends BaseHTMLElement {
 
-  _assets = [];
-  _assetsValueChangeReason = undefined;
-  _currencies = [];
-  _denomination = "USD";
-  _assetsContainer = undefined;
-  _currenciesContainer = undefined;
+  #assets = [];
+  #assetsValueChangeReason = null;
+  #currencies = [];
+  #denomination = "USD";
+  #assetsContainer = null;
+  #currenciesContainer = null;
 
   /** @type {AssetOrCurrencyElement[]} */
   set assets(value) {
-    this._assets = value;
-    this._renderAssets();
+    this.#assets = value;
+    this.#renderAssets();
   }
 
   set assetsValueChangeReason(value) {
-    this._assetsValueChangeReason = value;
-    this._renderAssets();
+    this.#assetsValueChangeReason = value;
+    this.#renderAssets();
   }
 
   /** @type {AssetOrCurrencyElement[]} */
   set currencies(value) {
-    this._currencies = value;
-    this._renderCurrencies();
+    this.#currencies = value;
+    this.#renderCurrencies();
   }
 
   /** @type {string} */
   set denomination(value) {
-    this._denomination = value;
-    this._renderAssets();
-    this._renderCurrencies();
+    this.#denomination = value;
+    this.#renderAssets();
+    this.#renderCurrencies();
   }
 
   connectedCallback() {
@@ -51,30 +51,34 @@ class AssetsAndCurrencies extends BaseHTMLElement {
                 </div>
                 <div data-tabs-body>
                     <div class="h-[40dvh] overflow-y-auto">
-                    ${this._assetsHTML()}
+                    ${this.#assetsHTML()}
                     </div>
                     <div class="h-[40dvh] overflow-y-auto">
-                    ${this._currenciesHTML()}
+                    ${this.#currenciesHTML()}
                     </div>
                 </div>
             </tabs-container>
         </div>`;
 
     const tabsBody = this.querySelector("[data-tabs-body]");
-    this._assetsContainer = tabsBody.children[0];
-    this._currenciesContainer = tabsBody.children[1];
+    this.#assetsContainer = tabsBody.children[0];
+    this.#currenciesContainer = tabsBody.children[1];
   }
 
-  _assetsHTML(previousAssetElements = []) {
-    return this._assets.map(a => {
+  #assetsHTML(previousAssetElements = []) {
+    return this.#assets.map(a => {
       const previousAsset = previousAssetElements.find(pa => pa.id == a.id);
       let previousMarketSize;
       if (!previousAsset) {
         previousMarketSize = a.marketSize;
       } else {
-        const previousCurrencyMarketSize = previousAsset.getAttribute("market-size");
-        if (previousCurrencyMarketSize != a.marketSize) {
-          previousMarketSize = previousCurrencyMarketSize;
+        const previousAssetDenomination = previousAsset.getAttribute("denomination");
+        const previousAssetMarketSize = previousAsset.getAttribute("market-size");
+        // if denomination has changed, comparing current market size with the previous is meaningless
+        if (previousAssetDenomination != a.denomination) {
+          previousMarketSize = a.marketSize;
+        } else if (previousAssetMarketSize != a.marketSize) {
+          previousMarketSize = previousAssetMarketSize;
         } else {
           previousMarketSize = previousAsset.getAttribute("previous-market-size");
         }
@@ -83,7 +87,7 @@ class AssetsAndCurrencies extends BaseHTMLElement {
       return `<asset-element class="my-2" id="${a.id}" name="${a.name}"
                 market-size="${a.marketSize}" previous-market-size="${previousMarketSize}"
                 denomination="${a.denomination}"
-                value-change-reason="${this._assetsValueChangeReason}"
+                value-change-reason="${this.#assetsValueChangeReason}"
                 ${this.translationAttribute('market-size-label')}
                 ${this.translationAttribute('previous-market-size-label')}
                 ${this.translationAttribute('up-by-info')}
@@ -92,15 +96,19 @@ class AssetsAndCurrencies extends BaseHTMLElement {
     }).join("\n");
   }
 
-  _currenciesHTML(previousCurrencyElements = []) {
-    return this._currencies.map(c => {
+  #currenciesHTML(previousCurrencyElements = []) {
+    return this.#currencies.map(c => {
       const previousCurrency = previousCurrencyElements.find(pc => pc.id == c.id);
       let previousMarketSize;
       if (!previousCurrency) {
         previousMarketSize = c.marketSize;
       } else {
+        const previousCurrencyDenomination = previousCurrency.getAttribute("denomination");
         const previousCurrencyMarketSize = previousCurrency.getAttribute("market-size");
-        if (previousCurrencyMarketSize != c.marketSize) {
+        // if denomination has changed, comparing current market size with the previous is meaningless
+        if (previousCurrencyDenomination != c.denomination) {
+          previousMarketSize = c.marketSize;
+        } else if (previousCurrencyMarketSize != c.marketSize) {
           previousMarketSize = previousCurrencyMarketSize;
         } else {
           previousMarketSize = previousCurrency.getAttribute("previous-market-size");
@@ -118,17 +126,17 @@ class AssetsAndCurrencies extends BaseHTMLElement {
       .join("\n");
   }
 
-  _renderAssets() {
-    if (this._assetsContainer) {
+  #renderAssets() {
+    if (this.#assetsContainer) {
       const currentAssetElements = [...this.querySelectorAll("asset-element")];
-      this._assetsContainer.innerHTML = this._assetsHTML(currentAssetElements);
+      this.#assetsContainer.innerHTML = this.#assetsHTML(currentAssetElements);
     }
   }
 
-  _renderCurrencies() {
-    if (this._currenciesContainer) {
+  #renderCurrencies() {
+    if (this.#currenciesContainer) {
       const currentCurrencyElements = [...this.querySelectorAll("currency-element")];
-      this._currenciesContainer.innerHTML = this._currenciesHTML(currentCurrencyElements);
+      this.#currenciesContainer.innerHTML = this.#currenciesHTML(currentCurrencyElements);
     }
   }
 }
