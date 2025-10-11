@@ -3,6 +3,7 @@ import express from "express";
 import cors from 'cors';
 
 import * as Api from './api.js';
+import * as HtmxApp from './htmx-app.js';
 
 const SERVER_PORT = process.env.SERVER_PORT || 8080;
 
@@ -11,6 +12,7 @@ const app = express();
 app.use(cors());
 
 app.use("/api", Api.router);
+app.use("/", HtmxApp.router);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -1,6 +1,3 @@
-import express from "express";
-import * as Data from "./data.js";
-
 /** 
  * @enum {string}
  */
@@ -146,65 +143,60 @@ let assetsVersion = 1;
 let currenciesVersion = 1;
 let exchangeRatesVersion = 1;
 
-export class ValidationError extends Error {
-  constructor(message) {
-    super(message);
-  }
-}
-
-export const router = express.Router();
-
-router.get('/assets', (req, res) => {
-  const denomination = req.query.denomination ?? CurrencyCode.USD;
-  const clientAssetsVersion = versionFromHeader(req) ?? prefixedVersion(denomination, 0);
-  const assets = Data.versionedAssets(denomination, clientAssetsVersion);
-  if (!assets) {
-    returnNotModified(res);
-    return;
-  }
-
-  returnVersionedJson(res, assets.responseVersion, assets);
-});
-
-router.get('/currencies', (req, res) => {
-  const denomination = req.query.denomination ?? CurrencyCode.USD;
-  const clientCurrenciesVersion = versionFromHeader(req) ?? prefixedVersion(denomination, 0);
-  const serverCurrenciesVersion = prefixedVersion(denomination, currenciesVersion);
-  if (clientCurrenciesVersion == serverCurrenciesVersion) {
-    returnNotModified(res);
-    return;
+export function versionedAssets(denomination, version) {
+  const denominatedAsetsVersion = prefixedVersion(denomination, assetsVersion);
+  if (version == denominatedAsetsVersion) {
+    return null;
   }
 
   const exchangeRateValue = exchangeRateFor(denomination);
-  const denominatedCurrencies = nextCurrencies.map(c => ({ ...c, marketSize: Math.round(c.marketSize * exchangeRateValue), denomination }));
-  returnVersionedJson(res, serverCurrenciesVersion, {
-    currencies: denominatedCurrencies,
-    responseVersion: serverCurrenciesVersion
-  });
-});
+  const denominatedAssets = nextAssets.map(a => ({ ...a, marketSize: Math.round(a.marketSize * exchangeRateValue), denomination }));
 
-router.get('/exchange-rates/:from', (req, res) => {
-  const from = req.params.from;
+  return {
+    assets: denominatedAssets,
+    responseVersion: denominatedAsetsVersion
+  };
+}
 
-  const clientExchangeRatesVersion = versionFromHeader(req) ?? prefixedVersion(from, 0);
-  const serverExchangeRatesVersion = prefixedVersion(from, exchangeRatesVersion);
-  if (clientExchangeRatesVersion == serverExchangeRatesVersion) {
-    returnNotModified(res);
-    return;
-  }
+// router.get('/currencies', (req, res) => {
+//   const denomination = req.query.denomination ?? CurrencyCode.USD;
+//   const clientCurrenciesVersion = versionFromHeader(req) ?? prefixedVersion(denomination, 0);
+//   const serverCurrenciesVersion = prefixedVersion(denomination, currenciesVersion);
+//   if (clientCurrenciesVersion == serverCurrenciesVersion) {
+//     returnNotModified(res);
+//     return;
+//   }
 
-  const fromRequestedToDollarExchangeRate = 1 / exchangeRateFor(from);
+//   const exchangeRateValue = exchangeRateFor(denomination);
+//   const denominatedCurrencies = nextCurrencies.map(c => ({ ...c, marketSize: Math.round(c.marketSize * exchangeRateValue), denomination }));
+//   returnVersionedJson(res, serverCurrenciesVersion, {
+//     currencies: denominatedCurrencies,
+//     responseVersion: serverCurrenciesVersion
+//   });
+// });
 
-  const exchangeRates = nextUsdExchangeRates.map(er => ({
-    from,
-    to: er.code,
-    value: Math.round(fromRequestedToDollarExchangeRate * er.value * 100) / 100.0
-  }));
+// router.get('/exchange-rates/:from', (req, res) => {
+//   const from = req.params.from;
 
-  returnVersionedJson(res, serverExchangeRatesVersion, {
-    exchangeRates, responseVersion: serverExchangeRatesVersion
-  });
-});
+//   const clientExchangeRatesVersion = versionFromHeader(req) ?? prefixedVersion(from, 0);
+//   const serverExchangeRatesVersion = prefixedVersion(from, exchangeRatesVersion);
+//   if (clientExchangeRatesVersion == serverExchangeRatesVersion) {
+//     returnNotModified(res);
+//     return;
+//   }
+
+//   const fromRequestedToDollarExchangeRate = 1 / exchangeRateFor(from);
+
+//   const exchangeRates = nextUsdExchangeRates.map(er => ({
+//     from,
+//     to: er.code,
+//     value: Math.round(fromRequestedToDollarExchangeRate * er.value * 100) / 100.0
+//   }));
+
+//   returnVersionedJson(res, serverExchangeRatesVersion, {
+//     exchangeRates, responseVersion: serverExchangeRatesVersion
+//   });
+// });
 
 function exchangeRateFor(denomination) {
   if (denomination == CurrencyCode.USD) {

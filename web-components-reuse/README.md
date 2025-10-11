@@ -5,3 +5,4 @@
     * this.querySelector('[data-{attr}]') pattern for partially updateable/configureable elements
 * more explicit deps between components?
 * refactor attrs vs props when/where needed which
+* dev scoped deps for server!
