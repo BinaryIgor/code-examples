@@ -22,36 +22,36 @@ public class HtmlComponentsController {
     @GetMapping("/web-component")
     String webComponent() {
         var component = """
-            class CollapsibleItem extends HTMLElement {
-              connectedCallback() {
-                 const header = this.getAttribute("header");
-                 const items = this.getAttribute("items").split(",");
-                        
-                 this.innerHTML = `
-                  <div>${header}</div>
-                  <div style="display: none">
-                  ${items.map(i => `<div>${i}</div>`).join("\\n")}
-                  </div>
-                 `;
-                  const [itemsHeader, itemsContainer] = this.querySelectorAll("div");
-                  itemsHeader.onclick = () => {
-                    const itemsDisplay = itemsContainer.style.display;
-                    if (itemsDisplay == 'block') {
-                      itemsContainer.style.display = 'none';
-                    } else {
-                      itemsContainer.style.display = 'block';
-                    }
-                  };
-              }
-            }
-            customElements.define("collapsible-item", CollapsibleItem);
-            """;
+                class CollapsibleItem extends HTMLElement {
+                  connectedCallback() {
+                     const header = this.getAttribute("header");
+                     const items = this.getAttribute("items").split(",");
+                
+                     this.innerHTML = `
+                      <div>${header}</div>
+                      <div style="display: none">
+                      ${items.map(i => `<div>${i}</div>`).join("\\n")}
+                      </div>
+                     `;
+                      const [itemsHeader, itemsContainer] = this.querySelectorAll("div");
+                      itemsHeader.onclick = () => {
+                        const itemsDisplay = itemsContainer.style.display;
+                        if (itemsDisplay == 'block') {
+                          itemsContainer.style.display = 'none';
+                        } else {
+                          itemsContainer.style.display = 'block';
+                        }
+                      };
+                  }
+                }
+                customElements.define("collapsible-item", CollapsibleItem);
+                """;
         return html("""
-              <collapsible-item
-                   header="Items"
-                   items="A,B">
-                 </collapsible-item>
-            """, component);
+                  <collapsible-item
+                       header="Items"
+                       items="A,B">
+                     </collapsible-item>
+                """, component);
     }
 
     private String html(String body) {
@@ -60,19 +60,19 @@ public class HtmlComponentsController {
 
     private String html(String body, String script) {
         return """
-            <!DOCTYPE html>
-            <html lang="en">
-              <head>
-                <meta charset="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>HTML Components</title>
-               </head>
-               <body>
-                 %s
-                 %s
-               </body>
-            </html>
-            """.formatted(body, script.isBlank() ? "" : "<script>%s</script>".formatted(script)).trim();
+                <!DOCTYPE html>
+                <html lang="en">
+                  <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>HTML Components</title>
+                   </head>
+                   <body>
+                     %s
+                     %s
+                   </body>
+                </html>
+                """.formatted(body, script.isBlank() ? "" : "<script>%s</script>".formatted(script)).trim();
     }
 
     @GetMapping("/html-component")
@@ -80,12 +80,12 @@ public class HtmlComponentsController {
         var compiled = factory.compile("collapsible.mustache");
         var writer = new StringWriter();
         compiled.execute(
-                writer,
-                Map.of(
-                    "id", "collapsible-example",
-                    "header", "Items",
-                    "items", List.of("A", "B")))
-            .flush();
+                        writer,
+                        Map.of(
+                                "id", "collapsible-example",
+                                "header", "Items",
+                                "items", List.of("A", "B")))
+                .flush();
 
         return html(writer.toString());
     }
@@ -93,32 +93,47 @@ public class HtmlComponentsController {
     @GetMapping("/todos")
     String todos() throws Exception {
         var todos = Stream.generate(this::randomTodo)
-            .limit(10)
-            .toList();
+                .limit(10)
+                .toList();
 
         var compiled = factory.compile("todos.mustache");
         var writer = new StringWriter();
         compiled.execute(
-                writer,
-                Map.of("todosId", "todos",
-                    "todos", todos))
-            .flush();
+                        writer,
+                        Map.of("todosId", "todos",
+                                "todos", todos))
+                .flush();
 
         return html(writer.toString(), """
-            (function(){
-            document.getElementById("todos").onclick = (e) => {
-              console.log("On todos click", e.target);
-            };
-            })();
-            """);
+                (function(){
+                document.getElementById("todos").onclick = (e) => {
+                  console.log("On todos click", e.target);
+                };
+                })();
+                """);
+    }
+
+    @GetMapping("/modal")
+    String modal() throws Exception {
+        var compiled = factory.compile("modal.mustache");
+        var writer = new StringWriter();
+        compiled.execute(
+                        writer,
+                        Map.of(
+                                "modalId", "example-modal",
+                                "title", "Important Alert",
+                                "content", "This modal was generated using server-side Mustache templates!"))
+                .flush();
+
+        return html(writer.toString());
     }
 
     private Todo randomTodo() {
         var now = LocalDateTime.now();
         return new Todo(UUID.randomUUID().toString(), UUID.randomUUID().toString(),
-            RANDOM.nextBoolean(),
-            now.minusMinutes(RANDOM.nextInt(24 * 60)),
-            now);
+                RANDOM.nextBoolean(),
+                now.minusMinutes(RANDOM.nextInt(24 * 60)),
+                now);
     }
 
     record Todo(String title, String text, boolean done, LocalDateTime createdOn, LocalDateTime completedOn) {
