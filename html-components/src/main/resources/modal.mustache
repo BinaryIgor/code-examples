@@ -1,0 +1,23 @@
+<div id="{{modalId}}" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+  <div style="background-color: white; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 50%;">
+    <span id="{{modalId}}-close" style="float: right; cursor: pointer; font-weight: bold;">&times;</span>
+    <h2>{{title}}</h2>
+    <p>{{content}}</p>
+  </div>
+</div>
+
+<button id="{{modalId}}-trigger">Open {{title}}</button>
+
+<script>
+  (function() {
+    const modal = document.getElementById("{{modalId}}");
+    const btn = document.getElementById("{{modalId}}-trigger");
+    const closeSpan = document.getElementById("{{modalId}}-close");
+
+    btn.onclick = () => modal.style.display = "block";
+    closeSpan.onclick = () => modal.style.display = "none";
+    window.onclick = (event) => {
+      if (event.target == modal) modal.style.display = "none";
+    };
+  })();
+</script>
