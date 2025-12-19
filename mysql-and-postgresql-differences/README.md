@@ -33,7 +33,7 @@ CREATE TABLE table_single_index (
 
 Available test cases:
 ```
-enum TestCases {
+enum TestCase {
   BATCH_INSERT_TABLE_SINGLE_INDEX,
   BATCH_INSERT_TABLE_FEW_INDEXES,
   INSERT_TABLE_SINGLE_INDEX,
