@@ -1,0 +1,45 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@4bec1f0c
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+POSTGRESQL data source connected, about to run SELECT_USERS_BY_EMAIL test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=500000, queriesRate=75000, queryGroups=[QueryGroup[id=select-users-by-email, tables=["user"]]]]
+
+Tables count before test:
+"user": 651742
+
+2026-01-03T18:13:40.483, 75000/500000 queries were issued, waiting 1s before sending next query batch...
+2026-01-03T18:13:42.951, 150000/500000 queries were issued, waiting 1s before sending next query batch...
+2026-01-03T18:13:44.388, 225000/500000 queries were issued, waiting 1s before sending next query batch...
+2026-01-03T18:13:45.763, 300000/500000 queries were issued, waiting 1s before sending next query batch...
+2026-01-03T18:13:47.201, 375000/500000 queries were issued, waiting 1s before sending next query batch...
+2026-01-03T18:13:48.618, 450000/500000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case SELECT_USERS_BY_EMAIL with POSTGRESQL data source finished! It had queries: [QueryGroup[id=select-users-by-email, tables=["user"]]]
+
+Tables count after test:
+"user": 651742
+
+Some stats...
+
+Total test duration: PT10.862S
+Queries duration: PT9.348S
+
+Executed queries: 500000
+
+Wanted queries rate: 75000/s
+Actual queries rate: 53487/s
+
+Min: 0.084 ms
+Max: 82.551 ms
+Mean: 0.834 ms
+
+Percentile 50 (Median): 0.618 ms
+Percentile 75: 0.88 ms
+Percentile 90: 1.288 ms
+Percentile 99: 5.358 ms
+Percentile 99.9: 16.843 ms

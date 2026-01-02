@@ -25,7 +25,7 @@ Tables count after test:
 Some stats...
 
 Total test duration: PT10.173S
-Queries duration: PT5.658328684S
+Queries duration: PT5.658S
 
 Executed queries: 20000
 

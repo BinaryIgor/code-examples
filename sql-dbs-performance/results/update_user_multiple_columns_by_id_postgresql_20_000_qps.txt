@@ -1,0 +1,48 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@4bec1f0c
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+POSTGRESQL data source connected, about to run UPDATE_USER_MULTIPLE_COLUMNS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=200000, queriesRate=20000, queryGroups=[QueryGroup[id=update-user-multiple-fields-by-id, tables=["user"]]]]
+
+Tables count before test:
+"user": 651742
+
+2026-01-04T17:31:41.305, 20000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:43.320, 40000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:44.362, 60000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:45.504, 80000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:46.547, 100000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:47.599, 120000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:48.647, 140000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:49.691, 160000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-04T17:31:50.748, 180000/200000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case UPDATE_USER_MULTIPLE_COLUMNS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=update-user-multiple-fields-by-id, tables=["user"]]]
+
+Tables count after test:
+"user": 651742
+
+Some stats...
+
+Total test duration: PT11.665S
+Queries duration: PT11.083S
+
+Executed queries: 200000
+
+Wanted queries rate: 20000/s
+Actual queries rate: 18046/s
+
+Min: 1.088 ms
+Max: 16.465 ms
+Mean: 2.507 ms
+
+Percentile 50 (Median): 2.463 ms
+Percentile 75: 2.633 ms
+Percentile 90: 2.947 ms
+Percentile 99: 4.704 ms
+Percentile 99.9: 10.178 ms

@@ -32,7 +32,7 @@ Tables count after test:
 Some stats...
 
 Total test duration: PT13.154S
-Queries duration: PT12.414166406S
+Queries duration: PT12.414S
 
 Executed queries: 350000
 
@@ -47,4 +47,4 @@ Percentile 50 (Median): 1.321 ms
 Percentile 75: 1.892 ms
 Percentile 90: 2.85 ms
 Percentile 99: 19.823 ms
-Percentile 99.9: 26.859 m
+Percentile 99.9: 26.859 ms

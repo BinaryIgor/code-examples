@@ -25,7 +25,7 @@ Tables count after test:
 Some stats...
 
 Total test duration: PT5.32S
-Queries duration: PT5.007069044S
+Queries duration: PT5.007S
 
 Executed queries: 75000
   insert-users: 12601
