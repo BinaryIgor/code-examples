@@ -1,0 +1,56 @@
+Running with PostgreSQL
+
+sql-db-performance-tests
+
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@4bec1f0c
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=200000, queriesRate=20000, queryGroups=[QueryGroup[id=insert-users, tables=["user"]], QueryGroup[id=update-user-emails-by-id, tables=["user"]], QueryGroup[id=delete-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]]]]
+
+Tables count before test:
+"user": 625895
+
+2025-12-30T18:01:59.177, 20000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:00.518, 40000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:01.606, 60000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:02.698, 80000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:03.738, 100000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:04.807, 120000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:06.018, 140000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:07.061, 160000/200000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T18:02:08.122, 180000/200000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=insert-users, tables=["user"]], QueryGroup[id=update-user-emails-by-id, tables=["user"]], QueryGroup[id=delete-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]]]
+
+Tables count after test:
+"user": 626742
+
+Some stats...
+
+Total test duration: PT11.224S
+Queries duration: PT10.569S
+
+Executed queries: 200000
+  insert-users: 33008
+  update-user-emails-by-id: 33200
+  delete-users-by-id: 33699
+  select-users-by-id: 100093
+
+Wanted queries rate: 20000/s
+Actual queries rate: 18922/s
+
+Min: 0.087 ms
+Max: 17.691 ms
+Mean: 1.236 ms
+
+Percentile 50 (Median): 0.616 ms
+Percentile 75: 2.266 ms
+Percentile 90: 2.656 ms
+Percentile 99: 3.813 ms
+Percentile 99.9: 9.299 ms

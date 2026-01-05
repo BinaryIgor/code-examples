@@ -1,0 +1,43 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@4bec1f0c
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run INSERT_ORDERS_IN_BATCHES test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=20000, queriesRate=4000, queryGroups=[QueryGroup[id=insert-orders-in-batches-of-100, tables=["order"]]]]
+
+Tables count before test:
+"order": 0
+
+2025-12-30T16:13:47.311, 4000/20000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T16:13:50.364, 8000/20000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T16:13:52.261, 12000/20000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T16:13:53.999, 16000/20000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_ORDERS_IN_BATCHES with POSTGRESQL data source finished! It had queries: [QueryGroup[id=insert-orders-in-batches-of-100, tables=["order"]]]
+
+Tables count after test:
+"order": 2000000
+
+Some stats...
+
+Total test duration: PT10.173S
+Queries duration: PT5.658S
+
+Executed queries: 20000
+
+Wanted queries rate: 4000/s
+Actual queries rate: 3535/s
+
+Min: 2.487 ms
+Max: 90.238 ms
+Mean: 14.697 ms
+
+Percentile 50 (Median): 13.997 ms
+Percentile 75: 18.002 ms
+Percentile 90: 22.082 ms
+Percentile 99: 34.779 ms
+Percentile 99.9: 75.629 ms

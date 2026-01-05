@@ -1,0 +1,47 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@4bec1f0c
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=50000, queriesRate=10000, queryGroups=[QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=["user", "order", "order_item"]]]]
+
+Tables count before test:
+"order_item": 755018
+"order": 421846
+"user": 575000
+
+2025-12-30T17:54:46.124, 10000/50000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:54:48.236, 20000/50000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:54:49.284, 30000/50000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:54:50.314, 40000/50000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS with POSTGRESQL data source finished! It had queries: [QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=["user", "order", "order_item"]]]
+
+Tables count after test:
+"order_item": 855018
+"order": 471846
+"user": 625000
+
+Some stats...
+
+Total test duration: PT6.337S
+Queries duration: PT5.671S
+
+Executed queries: 50000
+
+Wanted queries rate: 10000/s
+Actual queries rate: 8816/s
+
+Min: 1.35 ms
+Max: 27.007 ms
+Mean: 3.587 ms
+
+Percentile 50 (Median): 2.891 ms
+Percentile 75: 4.196 ms
+Percentile 90: 6.126 ms
+Percentile 99: 11.209 ms
+Percentile 99.9: 18.949 m

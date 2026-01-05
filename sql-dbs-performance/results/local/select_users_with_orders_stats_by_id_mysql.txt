@@ -1,0 +1,50 @@
+Starting DB Performance Tests, connecting to MYSQL data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MYSQL - Added connection com.mysql.cj.jdbc.ConnectionImpl@c86b9e3
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Start completed.
+MYSQL data source connected, about to run SELECT_USERS_WITH_ORDERS_STATS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=400000, queriesRate=40000, queryGroups=[QueryGroup[id=select-users-with-orders-stats-by-id, tables=[`user`, `order`]]]]
+
+Tables count before test:
+`user`: 500000
+`order`: 2000000
+
+2026-01-02T19:20:56.645, 40000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:20:59.018, 80000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:21:00.909, 120000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:21:02.635, 160000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:21:04.493, 200000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:21:06.221, 240000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:21:07.999, 280000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:21:09.687, 320000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-02T19:21:11.422, 360000/400000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case SELECT_USERS_WITH_ORDERS_STATS_BY_ID with MYSQL data source finished! It had queries: [QueryGroup[id=select-users-with-orders-stats-by-id, tables=[`user`, `order`]]]
+
+Tables count after test:
+`user`: 500000
+`order`: 2000000
+
+Some stats...
+
+Total test duration: PT18.485S
+Queries duration: PT17.505S
+
+Executed queries: 400000
+
+Wanted queries rate: 40000/s
+Actual queries rate: 22851/s
+
+Min: 0.151 ms
+Max: 106.217 ms
+Mean: 2.759 ms
+
+Percentile 50 (Median): 1.77 ms
+Percentile 75: 3.157 ms
+Percentile 90: 5.092 ms
+Percentile 99: 19.511 ms
+Percentile 99.9: 34.338 m

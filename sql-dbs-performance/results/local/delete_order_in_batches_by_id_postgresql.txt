@@ -1,0 +1,48 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@4bec1f0c
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run DELETE_ORDERS_IN_BATCHES_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=10000, queriesRate=1000, queryGroups=[QueryGroup[id=delete-orders-in-batches-of-100-by-id, tables=["order"]]]]
+
+Tables count before test:
+"order": 1921280
+
+2025-12-30T17:44:39.655, 1000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:40.735, 2000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:41.739, 3000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:42.742, 4000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:43.747, 5000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:44.750, 6000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:45.752, 7000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:46.756, 8000/10000 queries were issued, waiting 1s before sending next query batch...
+2025-12-30T17:44:47.757, 9000/10000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case DELETE_ORDERS_IN_BATCHES_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=delete-orders-in-batches-of-100-by-id, tables=["order"]]]
+
+Tables count after test:
+"order": 1133871
+
+Some stats...
+
+Total test duration: PT10.135S
+Queries duration: PT7.445S
+
+Executed queries: 10000
+
+Wanted queries rate: 1000/s
+Actual queries rate: 1343/s
+
+Min: 1.572 ms
+Max: 117.852 ms
+Mean: 11.387 ms
+
+Percentile 50 (Median): 4.975 ms
+Percentile 75: 15.089 ms
+Percentile 90: 29.104 ms
+Percentile 99: 60.834 ms
+Percentile 99.9: 89.203 ms
