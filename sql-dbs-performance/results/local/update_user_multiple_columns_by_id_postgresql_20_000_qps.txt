@@ -5,7 +5,7 @@ Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool 
 
 [main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
 POSTGRESQL data source connected, about to run UPDATE_USER_MULTIPLE_COLUMNS_BY_ID test case.
-The following test case specification will be executed: TestCaseSpec[queriesToExecute=200000, queriesRate=20000, queryGroups=[QueryGroup[id=update-user-multiple-fields-by-id, tables=["user"]]]]
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=200000, queriesRate=20000, queryGroups=[QueryGroup[id=update-user-multiple-columns-by-id, tables=["user"]]]]
 
 Tables count before test:
 "user": 651742
@@ -22,7 +22,7 @@ Tables count before test:
 
 ...
 
-Test case UPDATE_USER_MULTIPLE_COLUMNS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=update-user-multiple-fields-by-id, tables=["user"]]]
+Test case UPDATE_USER_MULTIPLE_COLUMNS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=update-user-multiple-columns-by-id, tables=["user"]]]
 
 Tables count after test:
 "user": 651742

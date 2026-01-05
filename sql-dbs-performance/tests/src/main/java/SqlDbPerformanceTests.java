@@ -162,9 +162,9 @@ static DataSource dataSource() {
 
 static TestCaseSpec testCaseSpec(DataSource dataSource) {
     return switch (TEST_CASE) {
-        case INSERT_USERS -> insertUsersTestCaseSpec();
-        case INSERT_ITEMS_IN_BATCHES -> insertItemsInBatchesTestCaseSpec();
-        case INSERT_ORDERS_IN_BATCHES -> insertOrdersInBatchesTestCaseSpec(dataSource);
+        case INSERT_USERS -> insertUsersSpec();
+        case INSERT_ITEMS_IN_BATCHES -> insertItemsInBatchesSpec();
+        case INSERT_ORDERS_IN_BATCHES -> insertOrdersInBatchesSpec(dataSource);
         case INSERT_ORDER_ITEMS_IN_BATCHES -> insertOrderItemsInBatchesSpec(dataSource);
         case SELECT_USERS_BY_ID -> selectUsersByIdSpec(dataSource);
         case SELECT_USERS_BY_EMAIL -> selectUsersByEmailSpec(dataSource);
@@ -183,14 +183,14 @@ static TestCaseSpec testCaseSpec(DataSource dataSource) {
     };
 }
 
-static TestCaseSpec insertUsersTestCaseSpec() {
+static TestCaseSpec insertUsersSpec() {
     return new TestCaseSpec(
             envQueriesToExecuteOrDefault(500_000),
             envQueriesRateOrDefault(10_000),
-            new QueryGroup("insert-user", USER_TABLE, () -> insertUserQuery()));
+            new QueryGroup("insert-users", USER_TABLE, () -> insertUserQuery()));
 }
 
-static TestCaseSpec insertItemsInBatchesTestCaseSpec() {
+static TestCaseSpec insertItemsInBatchesSpec() {
     var batchSize = 100;
     return new TestCaseSpec(
             envQueriesToExecuteOrDefault(5000),
@@ -199,7 +199,7 @@ static TestCaseSpec insertItemsInBatchesTestCaseSpec() {
                     () -> insertItemQuery(batchSize)));
 }
 
-static TestCaseSpec insertOrdersInBatchesTestCaseSpec(DataSource dataSource) {
+static TestCaseSpec insertOrdersInBatchesSpec(DataSource dataSource) {
     var batchSize = 100;
     var nextUserId = nextIdSupplier(dataSource, USER_TABLE);
     return new TestCaseSpec(
@@ -281,7 +281,7 @@ static TestCaseSpec selectUsersByIdSpec(DataSource dataSource) {
     return new TestCaseSpec(
             envQueriesToExecuteOrDefault(500_000),
             envQueriesRateOrDefault(50_000),
-            new QueryGroup("select-users-by-primary-key", USER_TABLE,
+            new QueryGroup("select-users-by-id", USER_TABLE,
                     () -> "SELECT * FROM %s WHERE id = %d".formatted(USER_TABLE, nextUserId.get())));
 }
 
@@ -395,7 +395,7 @@ static TestCaseSpec updateUserMultipleColumnsByIdSpec(DataSource dataSource) {
     return new TestCaseSpec(
             envQueriesToExecuteOrDefault(50_000),
             envQueriesRateOrDefault(5_000),
-            new QueryGroup("update-user-multiple-fields-by-id",
+            new QueryGroup("update-user-multiple-columns-by-id",
                     List.of(USER_TABLE),
                     () -> """
                             UPDATE %s
@@ -780,7 +780,7 @@ enum TestCase {
     SELECT_SORTED_BY_ID_USER_PAGES,
     // single join: order -> user, many to one
     SELECT_ORDERS_JOINED_WITH_USERS,
-    // double join: order -> order_item -> item, one to many, many to many
+    // double join: order -> order_item -> item, many to many, many to many
     SELECT_ORDERS_JOINED_WITH_ITEMS,
     // single join: user -> order, one to many + a few aggregate functions
     SELECT_USERS_WITH_ORDERS_STATS_BY_ID,
@@ -794,7 +794,7 @@ enum TestCase {
     DELETE_ORDERS_IN_BATCHES_BY_ID,
     // transaction with a few write queries
     INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS,
-    // mixed write and read case of the same table
+    // mixed writes and reads case of the same table
     INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID
 }
 

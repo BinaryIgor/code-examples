@@ -5,7 +5,7 @@ Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool 
 [main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
 
 POSTGRESQL data source connected, about to run INSERT_USERS test case.
-The following test case specification will be executed: TestCaseSpec[queriesToExecute=500000, queriesRate=20000, queryGroups=[QueryGroup[id=insert-user, tables=["user"]]]]
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=500000, queriesRate=20000, queryGroups=[QueryGroup[id=insert-users, tables=["user"]]]]
 
 Tables count before test:
 "user": 0
@@ -37,7 +37,7 @@ Tables count before test:
 
 ...
 
-Test case INSERT_USERS with POSTGRESQL data source finished! It had queries: [QueryGroup[id=insert-user, tables=["user"]]]
+Test case INSERT_USERS with POSTGRESQL data source finished! It had queries: [QueryGroup[id=insert-users, tables=["user"]]]
 
 Tables count after test:
 "user": 500000

@@ -5,7 +5,7 @@ Starting DB Performance Tests, connecting to MYSQL data source with a pool of 12
 
 MYSQL data source connected, about to run INSERT_USERS test case.
 [main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Start completed.
-The following test case specification will be executed: TestCaseSpec[queriesToExecute=500000, queriesRate=10000, queryGroups=[QueryGroup[id=insert-user, tables=[`user`]]]]
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=500000, queriesRate=10000, queryGroups=[QueryGroup[id=insert-users, tables=[`user`]]]]
 
 Tables count before test:
 `user`: 0
@@ -62,7 +62,7 @@ Tables count before test:
 
 ...
 
-Test case INSERT_USERS with MYSQL data source finished! It had queries: [QueryGroup[id=insert-user, tables=[`user`]]]
+Test case INSERT_USERS with MYSQL data source finished! It had queries: [QueryGroup[id=insert-users, tables=[`user`]]]
 
 Tables count after test:
 `user`: 500000

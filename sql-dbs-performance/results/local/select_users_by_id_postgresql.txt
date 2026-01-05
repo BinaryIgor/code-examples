@@ -5,7 +5,7 @@ Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool 
 
 [main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
 POSTGRESQL data source connected, about to run SELECT_USERS_BY_ID test case.
-The following test case specification will be executed: TestCaseSpec[queriesToExecute=500000, queriesRate=50000, queryGroups=[QueryGroup[id=select-users-by-primary-key, tables=["user"]]]]
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=500000, queriesRate=50000, queryGroups=[QueryGroup[id=select-users-by-id, tables=["user"]]]]
 
 Tables count before test:
 "user": 500000
@@ -22,7 +22,7 @@ Tables count before test:
 
 ...
 
-Test case SELECT_USERS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=select-users-by-primary-key, tables=["user"]]]
+Test case SELECT_USERS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=select-users-by-id, tables=["user"]]]
 
 Tables count after test:
 "user": 500000
@@ -30,7 +30,7 @@ Tables count after test:
 Some stats...
 
 Total test duration: PT11.935S
-Queries duration: PT11.282874809S
+Queries duration: PT11.282S
 
 Executed queries: 500000
 

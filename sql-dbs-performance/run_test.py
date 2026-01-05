@@ -53,13 +53,13 @@ Choose db. Available options:
         data_source_url = "jdbc:mysql://localhost:3306/performance"
         data_source_username = "root"
         data_source_password = "performance"
-        data_source_connection_pool_size = 8 * 16
+        data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 16)
         print("Running with MySQL")
     else:
         data_source_url = "jdbc:postgresql://localhost:5432/performance"
         data_source_username = "postgres"
         data_source_password = "performance"
-        data_source_connection_pool_size = 8 * 8
+        data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 8)
         print("Running with PostgreSQL")
 
     print()
