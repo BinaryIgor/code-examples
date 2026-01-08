@@ -42,25 +42,32 @@ Choose test case. Available options:
 Choose db. Available options:
 1 - MySQL
 2 - PostgreSQL
+3 - MariaDB
 """).strip() or 1)
 
     print()
 
     # 8 cores available - usually a few connections per core is where the optimal amount lives;
     # here, we are stress/load testing - it's not about the best absolute amount; better to use too many than too few connections
-    # Empirically, MySQL benefits from more connections
+    # Empirically, MySQL and MariaDB benefit from more connections
     if db_type == 1:
         data_source_url = "jdbc:mysql://localhost:3306/performance"
         data_source_username = "root"
         data_source_password = "performance"
         data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 16)
         print("Running with MySQL")
-    else:
+    elif db_type == 2:
         data_source_url = "jdbc:postgresql://localhost:5432/performance"
         data_source_username = "postgres"
         data_source_password = "performance"
         data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 8)
         print("Running with PostgreSQL")
+    else:
+        data_source_url = "jdbc:mariadb://localhost:3306/performance"
+        data_source_username = "root"
+        data_source_password = "performance"
+        data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 16)
+        print("Running with MariaDB")
 
     print()
 

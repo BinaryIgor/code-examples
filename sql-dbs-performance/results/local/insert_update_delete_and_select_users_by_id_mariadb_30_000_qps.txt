@@ -1,0 +1,52 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@402a079c
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+MARIADB data source connected, about to run INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=300000, queriesRate=30000, queryGroups=[QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 851045
+
+2026-01-08T09:49:49.498, 30000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:51.088, 60000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:52.148, 90000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:53.226, 120000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:54.269, 150000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:55.344, 180000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:56.464, 210000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:57.534, 240000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:49:58.625, 270000/300000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID with MARIADB data source finished! It had queries: [QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 853601
+
+Some stats...
+
+Total test duration: PT11.457S
+Queries duration: PT10.583S
+
+Executed queries: 300000
+  insert-users: 50077
+  update-user-emails-by-id: 50066
+  delete-users-by-id: 49954
+  select-users-by-id: 149903
+
+Wanted queries rate: 30000/s
+Actual queries rate: 28347/s
+
+Min: 0.063 ms
+Max: 22.321 ms
+Mean: 1.396 ms
+
+Percentile 50 (Median): 0.868 ms
+Percentile 75: 2.403 ms
+Percentile 90: 2.912 ms
+Percentile 99: 5.317 ms
+Percentile 99.9: 13.223 ms

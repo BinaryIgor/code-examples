@@ -1,0 +1,47 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@402a079c
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+
+MARIADB data source connected, about to run SELECT_ORDERS_JOINED_WITH_USERS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=350000, queriesRate=50000, queryGroups=[QueryGroup[id=select-orders-joined-with-users, tables=[`order`, `user`]]]]
+
+Tables count before test:
+`user`: 500000
+`order`: 2000000
+
+2026-01-08T08:16:51.920, 50000/350000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T08:16:53.498, 100000/350000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T08:16:54.737, 150000/350000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T08:16:55.979, 200000/350000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T08:16:57.155, 250000/350000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T08:16:58.388, 300000/350000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case SELECT_ORDERS_JOINED_WITH_USERS with MARIADB data source finished! It had queries: [QueryGroup[id=select-orders-joined-with-users, tables=[`order`, `user`]]]
+
+Tables count after test:
+`user`: 500000
+`order`: 2000000
+
+Some stats...
+
+Total test duration: PT8.971S
+Queries duration: PT7.136S
+
+Executed queries: 350000
+
+Wanted queries rate: 50000/s
+Actual queries rate: 49047/s
+
+Min: 0.073 ms
+Max: 56.246 ms
+Mean: 1.046 ms
+
+Percentile 50 (Median): 0.757 ms
+Percentile 75: 1.161 ms
+Percentile 90: 1.69 ms
+Percentile 99: 7.287 ms
+Percentile 99.9: 20.512 ms

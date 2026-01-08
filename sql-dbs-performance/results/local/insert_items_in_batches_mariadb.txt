@@ -1,0 +1,48 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@402a079c
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+
+MARIADB data source connected, about to run INSERT_ITEMS_IN_BATCHES test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=5000, queriesRate=500, queryGroups=[QueryGroup[id=insert-items-in-batches-of-100, tables=[`item`]]]]
+
+Tables count before test:
+`item`: 0
+
+2026-01-08T07:58:30.390, 500/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:33.095, 1000/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:35.493, 1500/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:37.950, 2000/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:40.355, 2500/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:42.786, 3000/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:45.204, 3500/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:47.661, 4000/5000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T07:58:50.102, 4500/5000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_ITEMS_IN_BATCHES with MARIADB data source finished! It had queries: [QueryGroup[id=insert-items-in-batches-of-100, tables=[`item`]]]
+
+Tables count after test:
+`item`: 500000
+
+Some stats...
+
+Total test duration: PT24.666S
+Queries duration: PT24.666S
+
+Executed queries: 5000
+
+Wanted queries rate: 500/s
+Actual queries rate: 203/s
+
+Min: 5.932 ms
+Max: 238.598 ms
+Mean: 9.545 ms
+
+Percentile 50 (Median): 8.503 ms
+Percentile 75: 10.42 ms
+Percentile 90: 11.674 ms
+Percentile 99: 22.976 ms
+Percentile 99.9: 178.363 ms
