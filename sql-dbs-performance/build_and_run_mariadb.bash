@@ -11,7 +11,7 @@ docker stop $container_name
 docker rm $container_name
 
 # innodb_buffer_pool_size - caches data in memory instead of disk to limit I/O (should be 50-80% of RAM)
-# innodb_log_file_capacity - reduces frequency of checkpoint operations
+# innodb_log_file_size - reduces frequency of checkpoint operations
 # transaction isolation is set to a lower than default level (REPEATABLE-READ) to make comparison with Postgres fair
 docker run -d -v "${volume_dir}:/var/lib/mysql" --network host \
   -e "MARIADB_ROOT_PASSWORD=performance" \

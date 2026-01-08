@@ -6,7 +6,6 @@ Requirements:
 * Docker
 * Bash & Python 3 for scripts
 
-
 ## Preparation
 
 ### DBs
@@ -14,14 +13,16 @@ Requirements:
 To run tests, DBs with expected schemas are required. Currently, supported DBs are:
 * MySQL
 * PostgreSQL
+* MariaDB
 
 To build and run them in Docker, execute:
 ```
 ./build_and_run_mysql.bash
 ./build_and_run_postgresql.bash
+./build_and_run_mariadb.bash
 ```
 
-Check out those scripts if you want to customize their runtime a bit; for DB versions and schemas inspect `mysql` and `postgresql` folders respectively.
+Check out those scripts if you want to customize their runtime a bit; for DB versions and schemas inspect db folders respectively.
 
 We have the following schema - `postgresql/schema.sql` example:
 ```sql
@@ -97,6 +98,7 @@ Chosen test case: INSERT_USERS
 Choose db. Available options:
 1 - MySQL
 2 - PostgreSQL
+3 - MariaDB
 2
 
 Running with PostgreSQL
