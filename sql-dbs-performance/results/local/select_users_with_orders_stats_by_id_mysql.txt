@@ -47,4 +47,4 @@ Percentile 50 (Median): 1.77 ms
 Percentile 75: 3.157 ms
 Percentile 90: 5.092 ms
 Percentile 99: 19.511 ms
-Percentile 99.9: 34.338 m
+Percentile 99.9: 34.338 ms

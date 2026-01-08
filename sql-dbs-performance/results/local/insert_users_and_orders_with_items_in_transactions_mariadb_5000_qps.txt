@@ -1,0 +1,47 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@402a079c
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+
+MARIADB data source connected, about to run INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=25000, queriesRate=5000, queryGroups=[QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]]
+
+Tables count before test:
+`user`: 525000
+`order_item`: 751681
+`order`: 450824
+
+2026-01-08T09:42:26.601, 5000/25000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:42:27.733, 10000/25000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:42:28.741, 15000/25000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:42:29.746, 20000/25000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS with MARIADB data source finished! It had queries: [QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]
+
+Tables count after test:
+`user`: 550000
+`order_item`: 801681
+`order`: 475824
+
+Some stats...
+
+Total test duration: PT5.204S
+Queries duration: PT4.589S
+
+Executed queries: 25000
+
+Wanted queries rate: 5000/s
+Actual queries rate: 5448/s
+
+Min: 1.128 ms
+Max: 16.698 ms
+Mean: 2.456 ms
+
+Percentile 50 (Median): 2.352 ms
+Percentile 75: 2.677 ms
+Percentile 90: 3.13 ms
+Percentile 99: 6.021 ms
+Percentile 99.9: 12.942 m

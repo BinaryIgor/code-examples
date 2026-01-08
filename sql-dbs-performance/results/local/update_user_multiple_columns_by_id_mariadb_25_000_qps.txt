@@ -1,0 +1,48 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@402a079c
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+MARIADB data source connected, about to run UPDATE_USER_MULTIPLE_COLUMNS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=250000, queriesRate=25000, queryGroups=[QueryGroup[id=update-user-multiple-columns-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 500000
+
+2026-01-08T09:24:51.140, 25000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:24:53.095, 50000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:24:54.148, 75000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:24:55.181, 100000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:24:56.279, 125000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:24:57.333, 150000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:24:58.403, 175000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:24:59.467, 200000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-01-08T09:25:00.548, 225000/250000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case UPDATE_USER_MULTIPLE_COLUMNS_BY_ID with MARIADB data source finished! It had queries: [QueryGroup[id=update-user-multiple-columns-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 500000
+
+Some stats...
+
+Total test duration: PT11.695S
+Queries duration: PT11.1S
+
+Executed queries: 250000
+
+Wanted queries rate: 25000/s
+Actual queries rate: 22523/s
+
+Min: 1.115 ms
+Max: 23.484 ms
+Mean: 2.711 ms
+
+Percentile 50 (Median): 2.5 ms
+Percentile 75: 2.882 ms
+Percentile 90: 3.619 ms
+Percentile 99: 6.817 ms
+Percentile 99.9: 12.063 ms

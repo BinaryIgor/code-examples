@@ -102,12 +102,15 @@ static DbType dbTypeFromUrl() {
     if (jdbcUrl.contains("postgresql")) {
         return DbType.POSTGRESQL;
     }
+    if (jdbcUrl.contains("mariadb")) {
+        return DbType.MARIADB;
+    }
     throw new IllegalArgumentException("Cannot resolve db type from %s url".formatted(jdbcUrl));
 }
 
 static String safeTableName(String table) {
     return switch (DB_TYPE) {
-        case MYSQL -> "`%s`".formatted(table);
+        case MYSQL, MARIADB -> "`%s`".formatted(table);
         case POSTGRESQL -> "\"%s\"".formatted(table);
     };
 }
@@ -148,6 +151,8 @@ static DataSource dataSource() {
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
     } else if (DB_TYPE == DbType.POSTGRESQL) {
         config.setDriverClassName("org.postgresql.Driver");
+    } else if (DB_TYPE == DbType.MARIADB) {
+        config.setDriverClassName("org.mariadb.jdbc.Driver");
     }
 
     config.setJdbcUrl(jdbcUrl);
@@ -765,7 +770,7 @@ static boolean isInteger(double value) {
 }
 
 enum DbType {
-    MYSQL, POSTGRESQL
+    MYSQL, POSTGRESQL, MARIADB
 }
 
 enum TestCase {
