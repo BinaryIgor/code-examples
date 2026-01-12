@@ -1,0 +1,47 @@
+Starting DB Performance Tests, connecting to MYSQL data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MYSQL - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c671d7f
+
+MYSQL data source connected, about to run INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS test case.
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Start completed.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=25000, queriesRate=5000, queryGroups=[QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]]
+
+Tables count before test:
+`user`: 525000
+`order_item`: 2259653
+`order`: 1141568
+
+2026-01-12T10:43:00.047, 5000/25000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:43:02.937, 10000/25000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:43:04.322, 15000/25000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:43:05.378, 20000/25000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS with MYSQL data source finished! It had queries: [QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]
+
+Tables count after test:
+`user`: 550000
+`order_item`: 2309653
+`order`: 1166568
+
+Some stats...
+
+Total test duration: PT7.491S
+Queries duration: PT6.564S
+
+Executed queries: 25000
+
+Wanted queries rate: 5000/s
+Actual queries rate: 3809/s
+
+Min: 6.511 ms
+Max: 121.626 ms
+Mean: 19.464 ms
+
+Percentile 50 (Median): 17.541 ms
+Percentile 75: 21.485 ms
+Percentile 90: 26.199 ms
+Percentile 99: 56.646 ms
+Percentile 99.9: 114.908 ms

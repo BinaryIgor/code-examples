@@ -1,0 +1,47 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@5ed828d
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=75000, queriesRate=15000, queryGroups=[QueryGroup[id=insert-users, tables=["user"]], QueryGroup[id=update-user-emails-by-id, tables=["user"]], QueryGroup[id=delete-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]]]]
+
+Tables count before test:
+"user": 650407
+
+2026-01-12T10:46:35.888, 15000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:46:37.413, 30000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:46:38.540, 45000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:46:39.569, 60000/75000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=insert-users, tables=["user"]], QueryGroup[id=update-user-emails-by-id, tables=["user"]], QueryGroup[id=delete-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]], QueryGroup[id=select-users-by-id, tables=["user"]]]
+
+Tables count after test:
+"user": 650814
+
+Some stats...
+
+Total test duration: PT5.902S
+Queries duration: PT5.609S
+
+Executed queries: 75000
+  insert-users: 12516
+  update-user-emails-by-id: 12501
+  delete-users-by-id: 12663
+  select-users-by-id: 37320
+
+Wanted queries rate: 15000/s
+Actual queries rate: 13371/s
+
+Min: 0.437 ms
+Max: 23.068 ms
+Mean: 2.211 ms
+
+Percentile 50 (Median): 1.832 ms
+Percentile 75: 2.885 ms
+Percentile 90: 3.983 ms
+Percentile 99: 6.997 ms
+Percentile 99.9: 16.088 ms

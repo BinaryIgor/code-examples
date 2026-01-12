@@ -1,0 +1,48 @@
+Starting DB Performance Tests, connecting to MYSQL data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MYSQL - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c671d7f
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Start completed.
+
+MYSQL data source connected, about to run UPDATE_USER_EMAILS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=50000, queriesRate=5000, queryGroups=[QueryGroup[id=update-user-emails-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 500000
+
+2026-01-12T10:32:17.328, 5000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:19.432, 10000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:20.449, 15000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:21.464, 20000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:22.476, 25000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:23.516, 30000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:24.524, 35000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:25.600, 40000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-12T10:32:26.608, 45000/50000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case UPDATE_USER_EMAILS_BY_ID with MYSQL data source finished! It had queries: [QueryGroup[id=update-user-emails-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 500000
+
+Some stats...
+
+Total test duration: PT11.36S
+Queries duration: PT11.108S
+
+Executed queries: 50000
+
+Wanted queries rate: 5000/s
+Actual queries rate: 4501/s
+
+Min: 2.616 ms
+Max: 113.398 ms
+Mean: 8.097 ms
+
+Percentile 50 (Median): 7.372 ms
+Percentile 75: 8.753 ms
+Percentile 90: 10.604 ms
+Percentile 99: 19.838 ms
+Percentile 99.9: 102.246 ms
