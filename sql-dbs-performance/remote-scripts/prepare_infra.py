@@ -16,8 +16,8 @@ NAME = "name"
 
 # full machine slugs reference: https://slugs.do-api.dev/
 # https://www.digitalocean.com/blog/premium-droplets-intel-cascade-lake-amd-epyc-rome
-TESTS_MACHINE_SLUG = "s-8vcpu-16gb-amd"
-DB_MACHINE_SLUG = "s-8vcpu-16gb-amd"
+TESTS_MACHINE_SLUG = "c-8-intel"
+DB_MACHINE_SLUG = "c-8-intel"
 
 
 def print_and_exit(message):
