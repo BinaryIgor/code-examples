@@ -1,0 +1,50 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@f6c48ac
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+MARIADB data source connected, about to run SELECT_USERS_WITH_ORDERS_STATS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=400000, queriesRate=40000, queryGroups=[QueryGroup[id=select-users-with-orders-stats-by-id, tables=[`user`, `order`]]]]
+
+Tables count before test:
+`user`: 1000000
+`order`: 2000000
+
+2026-01-13T08:55:14.392, 40000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:16.460, 80000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:18.111, 120000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:19.799, 160000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:21.450, 200000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:22.946, 240000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:24.566, 280000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:26.236, 320000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:55:27.926, 360000/400000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case SELECT_USERS_WITH_ORDERS_STATS_BY_ID with MARIADB data source finished! It had queries: [QueryGroup[id=select-users-with-orders-stats-by-id, tables=[`user`, `order`]]]
+
+Tables count after test:
+`user`: 1000000
+`order`: 2000000
+
+Some stats...
+
+Total test duration: PT16.893S
+Queries duration: PT15.331S
+
+Executed queries: 400000
+
+Wanted queries rate: 40000/s
+Actual queries rate: 26091/s
+
+Min: 0.323 ms
+Max: 31.736 ms
+Mean: 3.001 ms
+
+Percentile 50 (Median): 2.953 ms
+Percentile 75: 3.624 ms
+Percentile 90: 4.344 ms
+Percentile 99: 6.224 ms
+Percentile 99.9: 27.002 ms

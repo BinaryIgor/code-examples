@@ -41,7 +41,7 @@ DB_MACHINE_NAMES = [
 ALL_MACHINE_NAMES = TESTS_MACHINE_NAMES + DB_MACHINE_NAMES
 FIREWALL_NAME = "sql-dbs-performance-firewall"
 
-REGION = "fra1"
+REGION = "nyc1"
 IMAGE = "ubuntu-24-04-x64"
 
 API_TOKEN = environ.get("DO_API_TOKEN")

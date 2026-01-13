@@ -1,0 +1,49 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@f6c48ac
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+MARIADB data source connected, about to run INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=200000, queriesRate=30000, queryGroups=[QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 1253391
+
+2026-01-13T09:26:14.743, 30000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:26:16.451, 60000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:26:17.788, 90000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:26:18.975, 120000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:26:20.356, 150000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:26:21.533, 180000/200000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID with MARIADB data source finished! It had queries: [QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 1254978
+
+Some stats...
+
+Total test duration: PT9.532S
+Queries duration: PT8.377S
+
+Executed queries: 200000
+  insert-users: 33274
+  update-user-emails-by-id: 33133
+  delete-users-by-id: 33261
+  select-users-by-id: 100332
+
+Wanted queries rate: 30000/s
+Actual queries rate: 23875/s
+
+Min: 0.25 ms
+Max: 76.941 ms
+Mean: 2.464 ms
+
+Percentile 50 (Median): 1.593 ms
+Percentile 75: 3.011 ms
+Percentile 90: 5.037 ms
+Percentile 99: 14.124 ms
+Percentile 99.9: 39.564 ms

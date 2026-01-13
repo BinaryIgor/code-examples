@@ -1,0 +1,45 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@f6c48ac
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+
+MARIADB data source connected, about to run UPDATE_USER_EMAILS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=200000, queriesRate=30000, queryGroups=[QueryGroup[id=update-user-emails-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 1000000
+
+2026-01-13T09:01:02.891, 30000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:05.084, 60000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:06.620, 90000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:07.912, 120000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:09.452, 150000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:10.752, 180000/200000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case UPDATE_USER_EMAILS_BY_ID with MARIADB data source finished! It had queries: [QueryGroup[id=update-user-emails-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 1000000
+
+Some stats...
+
+Total test duration: PT10.6S
+Queries duration: PT9.667S
+
+Executed queries: 200000
+
+Wanted queries rate: 30000/s
+Actual queries rate: 20689/s
+
+Min: 0.414 ms
+Max: 29.795 ms
+Mean: 3.295 ms
+
+Percentile 50 (Median): 2.929 ms
+Percentile 75: 4.15 ms
+Percentile 90: 5.449 ms
+Percentile 99: 10.098 ms
+Percentile 99.9: 24.162 ms

@@ -1,0 +1,42 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@5ed828d
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run DELETE_ORDERS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=100000, queriesRate=25000, queryGroups=[QueryGroup[id=delete-orders-by-id, tables=["order"]]]]
+
+Tables count before test:
+"order": 1921398
+
+2026-01-13T09:10:12.130, 25000/100000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:10:14.134, 50000/100000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:10:15.231, 75000/100000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case DELETE_ORDERS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=delete-orders-by-id, tables=["order"]]]
+
+Tables count after test:
+"order": 1842878
+
+Some stats...
+
+Total test duration: PT5.382S
+Queries duration: PT5.073S
+
+Executed queries: 100000
+
+Wanted queries rate: 25000/s
+Actual queries rate: 19712/s
+
+Min: 0.449 ms
+Max: 206.784 ms
+Mean: 1.932 ms
+
+Percentile 50 (Median): 1.753 ms
+Percentile 75: 2.416 ms
+Percentile 90: 3.047 ms
+Percentile 99: 4.714 ms
+Percentile 99.9: 11.071 ms

@@ -1,11 +1,20 @@
 1. **Inserts**  
-    * **MySQL** - `4383 QPS` with `42.729 ms` at the 99th percentile for single-row inserts;<br> for batch inserts of *100 rows* - `1883 QPS` with `146.497 ms` at the 99th percentile
-    * **PostgreSQL** - `21 338 QPS` with `4.009 ms` at the 99th percentile for single-row inserts;<br> for batch inserts of *100 rows* - `3535 QPS` with `34.779 ms` at the 99th percentile
-    * **MariaDB** - `18 241 QPS` with `7.337 ms` at the 99th percentile for single-row inserts;<br> for batch inserts of *100 rows* - `1941 QPS` with `136.598 ms` at the 99th percentile
+    * **MySQL** - `4383 QPS` with `42.729 ms` at the 99th percentile for single-row inserts;
+    <br>`1883 QPS` with `146.497 ms` at the 99th percentile for batch inserts of *100 rows*
+    * **PostgreSQL** - `21 338 QPS` with `4.009 ms` at the 99th percentile for single-row inserts;
+    <br>`3535 QPS` with `34.779 ms` at the 99th percentile for batch inserts of *100 rows*
+    * **MariaDB** - `18 241 QPS` with `7.337 ms` at the 99th percentile for single-row inserts;
+    <br>`1941 QPS` with `136.598 ms` at the 99th percentile for batch inserts of *100 rows*
 2. **Selects**
-    * **MySQL** - `33 469 QPS` with `12.721 ms` at the 99th percentile for single-row selects by id;<br> for sorted selects of multiple rows - `4559 QPS `with `41.294 ms` at the 99th percentile
-    * **PostgresSQL** - `55 200 QPS` with `5.446 ms` at the 99th percentile for single-row selects by id;<br> for sorted selects of multiple rows - `4745 QPS` with `9.146 ms` at the 99th percentile
-    * **MariaDB** - `54 095 QPS` with `3.811 ms` at the 99th percentile for single-row selects by id;<br> for sorted selects of multiple rows - `6668 QPS` with `55.712 ms` at the 99th percentile
+    * **MySQL** - `33 469 QPS` with `12.721 ms` at the 99th percentile for single-row selects by id;
+      <br>`4559 QPS `with `41.294 ms` at the 99th percentile for sorted selects of multiple rows;
+      <br>`22 619 QPS` with `19.795 ms` at the 99th percentile for selects by id with two joins
+     * **PostgresSQL** - `55 200 QPS` with `5.446 ms` at the 99th percentile for single-row selects by id;
+      <br>`4745 QPS` with `9.146 ms` at the 99th percentile for sorted selects of multiple rows
+      <br>`20 211 QPS` with `28.604 ms` at the 99th percentile for selects by id with two joins
+    * **MariaDB** - `54 095 QPS` with `3.811 ms` at the 99th percentile for single-row selects by id;
+      <br>`6688 QPS` with `55.712 ms` at the 99th percentile for sorted selects of multiple rows
+      <br>`34 799 QPS` with `15.939 ms` at the 99th percentile for selects by id with two joins
 3. **Updates**
     * **MySQL** - `3747 QPS` with `39.774 ms` at the 99th percentile for updates by id of multiple columns
     * **PostgreSQL** - `18 046 QPS` with `4.704 ms` at the 99th percentile for updates by id of multiple columns

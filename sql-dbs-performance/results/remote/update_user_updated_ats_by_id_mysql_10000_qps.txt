@@ -1,0 +1,43 @@
+Starting DB Performance Tests, connecting to MYSQL data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MYSQL - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c671d7f
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Start completed.
+
+MYSQL data source connected, about to run UPDATE_USER_UPDATED_ATS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=50000, queriesRate=10000, queryGroups=[QueryGroup[id=update-user-updated-ats-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 1000000
+
+2026-01-13T09:05:01.690, 10000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:05:03.680, 20000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:05:04.692, 30000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:05:05.771, 40000/50000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case UPDATE_USER_UPDATED_ATS_BY_ID with MYSQL data source finished! It had queries: [QueryGroup[id=update-user-updated-ats-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 1000000
+
+Some stats...
+
+Total test duration: PT6.189S
+Queries duration: PT5.868S
+
+Executed queries: 50000
+
+Wanted queries rate: 10000/s
+Actual queries rate: 8521/s
+
+Min: 0.436 ms
+Max: 104.84 ms
+Mean: 3.189 ms
+
+Percentile 50 (Median): 1.841 ms
+Percentile 75: 2.509 ms
+Percentile 90: 3.811 ms
+Percentile 99: 85.709 ms
+Percentile 99.9: 102.743 ms

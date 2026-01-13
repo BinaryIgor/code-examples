@@ -1,0 +1,52 @@
+Starting DB Performance Tests, connecting to MYSQL data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MYSQL - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c671d7f
+
+MYSQL data source connected, about to run INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID test case.
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Start completed.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=150000, queriesRate=15000, queryGroups=[QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 1125996
+
+2026-01-13T09:28:09.420, 15000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:11.658, 30000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:13.001, 45000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:14.221, 60000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:15.368, 75000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:16.853, 90000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:17.994, 105000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:19.232, 120000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:28:20.274, 135000/150000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID with MYSQL data source finished! It had queries: [QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 1127139
+
+Some stats...
+
+Total test duration: PT13.529S
+Queries duration: PT12.582S
+
+Executed queries: 150000
+  insert-users: 25027
+  update-user-emails-by-id: 24939
+  delete-users-by-id: 25018
+  select-users-by-id: 75016
+
+Wanted queries rate: 15000/s
+Actual queries rate: 11922/s
+
+Min: 0.289 ms
+Max: 122.693 ms
+Mean: 6.664 ms
+
+Percentile 50 (Median): 3.425 ms
+Percentile 75: 8.406 ms
+Percentile 90: 12.606 ms
+Percentile 99: 100.812 ms
+Percentile 99.9: 109.475 ms

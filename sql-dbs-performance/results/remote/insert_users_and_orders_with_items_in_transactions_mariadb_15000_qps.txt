@@ -1,0 +1,49 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@f6c48ac
+
+MARIADB data source connected, about to run INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS test case.
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=100000, queriesRate=15000, queryGroups=[QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]]
+
+Tables count before test:
+`user`: 1150000
+`order_item`: 4776763
+`order`: 2418228
+
+2026-01-13T09:20:32.811, 15000/100000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:20:34.580, 30000/100000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:20:36.085, 45000/100000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:20:37.192, 60000/100000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:20:38.778, 75000/100000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:20:39.822, 90000/100000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS with MARIADB data source finished! It had queries: [QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]
+
+Tables count after test:
+`user`: 1250000
+`order_item`: 4976763
+`order`: 2518228
+
+Some stats...
+
+Total test duration: PT9.547S
+Queries duration: PT7.171S
+
+Executed queries: 100000
+
+Wanted queries rate: 15000/s
+Actual queries rate: 13945/s
+
+Min: 0.654 ms
+Max: 34.772 ms
+Mean: 3.52 ms
+
+Percentile 50 (Median): 2.685 ms
+Percentile 75: 4.992 ms
+Percentile 90: 6.756 ms
+Percentile 99: 11.671 ms
+Percentile 99.9: 26.304 ms
