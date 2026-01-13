@@ -1,0 +1,43 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@f6c48ac
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+
+MARIADB data source connected, about to run DELETE_ORDERS_IN_BATCHES_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=10000, queriesRate=2000, queryGroups=[QueryGroup[id=delete-orders-in-batches-of-100-by-id, tables=[`order`]]]]
+
+Tables count before test:
+`order`: 3055155
+
+2026-01-13T09:15:34.094, 2000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:15:40.688, 4000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:15:48.123, 6000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:15:54.197, 8000/10000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case DELETE_ORDERS_IN_BATCHES_BY_ID with MARIADB data source finished! It had queries: [QueryGroup[id=delete-orders-in-batches-of-100-by-id, tables=[`order`]]]
+
+Tables count after test:
+`order`: 2268228
+
+Some stats...
+
+Total test duration: PT32.334S
+Queries duration: PT7.122S
+
+Executed queries: 10000
+
+Wanted queries rate: 2000/s
+Actual queries rate: 1404/s
+
+Min: 3.428 ms
+Max: 543.508 ms
+Mean: 84.154 ms
+
+Percentile 50 (Median): 64.258 ms
+Percentile 75: 110.469 ms
+Percentile 90: 172.438 ms
+Percentile 99: 332.177 ms
+Percentile 99.9: 478.393 ms

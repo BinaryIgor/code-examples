@@ -1,0 +1,52 @@
+Starting DB Performance Tests, connecting to MYSQL data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MYSQL - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c671d7f
+[main] INFO com.zaxxer.hikari.HikariDataSource - MYSQL - Start completed.
+
+MYSQL data source connected, about to run INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=75000, queriesRate=7500, queryGroups=[QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]]
+
+Tables count before test:
+`user`: 1050000
+`order_item`: 2301391
+`order`: 1184527
+
+2026-01-13T09:19:22.860, 7500/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:25.523, 15000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:26.922, 22500/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:28.494, 30000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:30.589, 37500/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:32.053, 45000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:33.238, 52500/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:35.019, 60000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:19:36.285, 67500/75000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS with MYSQL data source finished! It had queries: [QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=[`user`, `order`, `order_item`]]]
+
+Tables count after test:
+`user`: 1125000
+`order_item`: 2451391
+`order`: 1259527
+
+Some stats...
+
+Total test duration: PT16.438S
+Queries duration: PT14.286S
+
+Executed queries: 75000
+
+Wanted queries rate: 7500/s
+Actual queries rate: 5250/s
+
+Min: 2.247 ms
+Max: 133.437 ms
+Mean: 19.336 ms
+
+Percentile 50 (Median): 14.605 ms
+Percentile 75: 19.19 ms
+Percentile 90: 24.994 ms
+Percentile 99: 114.72 ms
+Percentile 99.9: 124.704 ms

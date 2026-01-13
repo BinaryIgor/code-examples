@@ -1,7 +1,9 @@
-#!/bin/python3
+#!/usr/bin/env python3
 import subprocess as sp
 import sys
 from os import environ
+
+DOCKER_CONTAINER_NAME = "sql-db-performance-tests"
 
 try:
     options_to_test_cases = {
@@ -50,20 +52,24 @@ Choose db. Available options:
     # 8 cores available - usually a few connections per core is where the optimal amount lives;
     # here, we are stress/load testing - it's not about the best absolute amount; better to use too many than too few connections
     # Empirically, MySQL and MariaDB benefit from more connections
+    db_host = environ.get("DB_HOST", "localhost")
     if db_type == 1:
-        data_source_url = "jdbc:mysql://localhost:3306/performance"
+        db_type_name = "mysql"
+        data_source_url = f"jdbc:mysql://{db_host}:3306/performance"
         data_source_username = "root"
         data_source_password = "performance"
         data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 16)
         print("Running with MySQL")
     elif db_type == 2:
-        data_source_url = "jdbc:postgresql://localhost:5432/performance"
+        db_type_name = "postgresql"
+        data_source_url = f"jdbc:postgresql://{db_host}:5432/performance"
         data_source_username = "postgres"
         data_source_password = "performance"
         data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 8)
         print("Running with PostgreSQL")
     else:
-        data_source_url = "jdbc:mariadb://localhost:3306/performance"
+        db_type_name = "mariadb"
+        data_source_url = f"jdbc:mariadb://{db_host}:3306/performance"
         data_source_username = "root"
         data_source_password = "performance"
         data_source_connection_pool_size = environ.get("DATA_SOURCE_CONNECTION_POOL_SIZE", 8 * 16)
@@ -80,14 +86,12 @@ Choose db. Available options:
     if QUERIES_RATE:
         docker_env += " -e QUERIES_RATE"
     run_test_in_docker = f"""
-    docker rm sql-db-performance-tests || true
+    docker rm {DOCKER_CONTAINER_NAME} || true
     echo
     docker run --network host \
       {docker_env} \
-      --name sql-db-performance-tests sql-db-performance-tests
+      --name {DOCKER_CONTAINER_NAME} {DOCKER_CONTAINER_NAME}
     """.strip()
-
-    run_test_directly = "java -jar tests/target/sql-db-performance-tests-jar-with-dependencies.jar"
 
     script_result = sp.run(f"""
     #!/bin/bash
@@ -101,5 +105,19 @@ Choose db. Available options:
     
     {run_test_in_docker}
     """, shell=True)
+
+    print()
+    print("Tests have finished running, exporting results to a file...")
+
+    results_file = f"{test_case.lower()}_{db_type_name}"
+    if QUERIES_RATE:
+        results_file += f"_{QUERIES_RATE}_qps.txt"
+    else:
+        results_file += ".txt"
+
+    sp.run(f"docker logs {DOCKER_CONTAINER_NAME} > {results_file} 2>&1", shell=True)
+
+    print()
+    print(f"Results exported to to the {results_file} file")
 except KeyboardInterrupt:
     print("Process interrupted by user, exiting")

@@ -1,0 +1,47 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@f6c48ac
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+
+MARIADB data source connected, about to run INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=75000, queriesRate=15000, queryGroups=[QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 1250651
+
+2026-01-13T09:24:41.626, 15000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:24:42.732, 30000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:24:43.750, 45000/75000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:24:44.780, 60000/75000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_AND_SELECT_USERS_BY_ID with MARIADB data source finished! It had queries: [QueryGroup[id=insert-users, tables=[`user`]], QueryGroup[id=update-user-emails-by-id, tables=[`user`]], QueryGroup[id=delete-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]], QueryGroup[id=select-users-by-id, tables=[`user`]]]
+
+Tables count after test:
+`user`: 1251474
+
+Some stats...
+
+Total test duration: PT5.33S
+Queries duration: PT4.879S
+
+Executed queries: 75000
+  insert-users: 12625
+  update-user-emails-by-id: 12370
+  delete-users-by-id: 12301
+  select-users-by-id: 37704
+
+Wanted queries rate: 15000/s
+Actual queries rate: 15372/s
+
+Min: 0.244 ms
+Max: 37.768 ms
+Mean: 0.962 ms
+
+Percentile 50 (Median): 0.64 ms
+Percentile 75: 0.956 ms
+Percentile 90: 1.615 ms
+Percentile 99: 6.425 ms
+Percentile 99.9: 11.376 ms

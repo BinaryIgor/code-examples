@@ -1,5 +1,5 @@
 **/node_modules
-**/dist
+**/dist*
 # some-wisdom htmx app
 **/__quote-notes.json
 

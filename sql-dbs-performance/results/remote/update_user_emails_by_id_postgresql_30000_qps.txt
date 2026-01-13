@@ -1,0 +1,45 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@5ed828d
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run UPDATE_USER_EMAILS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=200000, queriesRate=30000, queryGroups=[QueryGroup[id=update-user-emails-by-id, tables=["user"]]]]
+
+Tables count before test:
+"user": 1000000
+
+2026-01-13T09:01:08.715, 30000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:10.981, 60000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:12.671, 90000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:14.077, 120000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:15.658, 150000/200000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T09:01:17.045, 180000/200000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case UPDATE_USER_EMAILS_BY_ID with POSTGRESQL data source finished! It had queries: [QueryGroup[id=update-user-emails-by-id, tables=["user"]]]
+
+Tables count after test:
+"user": 1000000
+
+Some stats...
+
+Total test duration: PT11.064S
+Queries duration: PT10.499S
+
+Executed queries: 200000
+
+Wanted queries rate: 30000/s
+Actual queries rate: 19049/s
+
+Min: 0.593 ms
+Max: 212.187 ms
+Mean: 2.407 ms
+
+Percentile 50 (Median): 2.304 ms
+Percentile 75: 2.838 ms
+Percentile 90: 3.405 ms
+Percentile 99: 5.03 ms
+Percentile 99.9: 17.672 ms

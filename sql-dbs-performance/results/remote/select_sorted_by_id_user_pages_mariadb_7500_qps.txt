@@ -1,0 +1,45 @@
+Starting DB Performance Tests, connecting to MARIADB data source with a pool of 128 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - MARIADB - Added connection org.mariadb.jdbc.Connection@f6c48ac
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - MARIADB - Start completed.
+MARIADB data source connected, about to run SELECT_SORTED_BY_ID_USER_PAGES test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=50000, queriesRate=7500, queryGroups=[QueryGroup[id=select-sorted-by-id-user-pages, tables=[`user`]]]]
+
+Tables count before test:
+`user`: 1000000
+
+2026-01-13T08:50:56.080, 7500/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:50:57.867, 15000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:50:59.485, 22500/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:51:01.122, 30000/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:51:02.729, 37500/50000 queries were issued, waiting 1s before sending next query batch...
+2026-01-13T08:51:04.355, 45000/50000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case SELECT_SORTED_BY_ID_USER_PAGES with MARIADB data source finished! It had queries: [QueryGroup[id=select-sorted-by-id-user-pages, tables=[`user`]]]
+
+Tables count after test:
+`user`: 1000000
+
+Some stats...
+
+Total test duration: PT11.038S
+Queries duration: PT11.038S
+
+Executed queries: 50000
+
+Wanted queries rate: 7500/s
+Actual queries rate: 4530/s
+
+Min: 0.349 ms
+Max: 135.523 ms
+Mean: 17.607 ms
+
+Percentile 50 (Median): 13.524 ms
+Percentile 75: 26.394 ms
+Percentile 90: 36.631 ms
+Percentile 99: 53.592 ms
+Percentile 99.9: 119.882 ms
