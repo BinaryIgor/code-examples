@@ -20,3 +20,5 @@ resources: irq:68 memory:78c00000-78c03fff
 ```
 
 Databases ran in Docker with memory capped at 16G and CPUs at 8. The test runner did not have any limits imposed. 
+
+For db configs, check out `build_and_run_*.bash` scripts, located in the root dir.

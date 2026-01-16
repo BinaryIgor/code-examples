@@ -29,7 +29,7 @@ To build and run them in Docker, execute:
 ./build_and_run_mariadb.bash
 ```
 
-Check out those scripts if you want to customize their runtime a bit; for DB versions and schemas inspect db folders respectively.
+Check out those scripts if you want to customize their runtime and various config options a bit; for DB versions and schemas inspect db folders respectively.
 
 We have the following schema - `postgresql/schema.sql` example:
 ```sql
@@ -227,6 +227,7 @@ First, let's build & package - all in Docker; it might take a while, especially 
 ./build_and_package_dbs.bash
 ```
 It builds docker images of all dbs and packages them into tar archives, to-be-deployed to our remote machines.
+If you are curious and/or want to customize db configs a bit, check out `build_and_package.bash` scripts, located in each db dir.
 
 To deploy dbs, we must get public ip addresses of the target machines - each db having its own, dedicated one. Then, we simply run:
 ```
