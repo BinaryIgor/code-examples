@@ -118,3 +118,5 @@ sudo lshw -class disk -class storage
           size: 504KiB (516KB)
           configuration: driver=virtio_blk logicalsectorsize=512 sectorsize=512
 ```
+
+For db configs, check out `build_and_package.bash` scripts, located in each db dir.

@@ -1,0 +1,52 @@
+Starting DB Performance Tests, connecting to POSTGRESQL data source with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@59494225
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+POSTGRESQL data source connected, about to run INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=150000, queriesRate=15000, queryGroups=[QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=["user", "order", "order_item"]]]]
+
+Tables count before test:
+"order_item": 3547256
+"order": 1782106
+"user": 502915
+
+2026-01-16T07:07:04.793, 15000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:07.099, 30000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:08.381, 45000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:09.473, 60000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:10.841, 75000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:11.877, 90000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:13.168, 105000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:14.658, 120000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-01-16T07:07:15.808, 135000/150000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_USERS_AND_ORDERS_WITH_ITEMS_IN_TRANSACTIONS with POSTGRESQL data source finished! It had queries: [QueryGroup[id=insert-users-and-orders-with-items-in-transaction, tables=["user", "order", "order_item"]]]
+
+Tables count after test:
+"order_item": 3847256
+"order": 1932106
+"user": 652915
+
+Some stats...
+
+Total test duration: PT13.434S
+Queries duration: PT11.777S
+
+Executed queries: 150000
+
+Wanted queries rate: 15000/s
+Actual queries rate: 12737/s
+
+Min: 1.457 ms
+Max: 36.254 ms
+Mean: 4.452 ms
+
+Percentile 50 (Median): 4.111 ms
+Percentile 75: 5.064 ms
+Percentile 90: 6.387 ms
+Percentile 99: 11.077 ms
+Percentile 99.9: 17.574 ms
