@@ -13,8 +13,8 @@ chmod 0700 "$home_directory/.ssh"
 chmod 0600 "$home_directory/.ssh/authorized_keys"
 chown --recursive "_user_placeholder_":"_user_placeholder_" "$home_directory/.ssh"
 
-# SSH hardening
-ssh_hardening_file="/etc/ssh/sshd_config.d/99-hardening.conf"
+# SSH hardening; files are processed in lexical order, lower-numbered ones taking precedence
+ssh_hardening_file="/etc/ssh/sshd_config.d/00-hardening.conf"
 
 cat > "$ssh_hardening_file" <<EOF
 # Authentication
