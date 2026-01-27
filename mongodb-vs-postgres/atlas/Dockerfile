@@ -1,0 +1,1 @@
+FROM mongodb/mongodb-atlas-local:8.0
