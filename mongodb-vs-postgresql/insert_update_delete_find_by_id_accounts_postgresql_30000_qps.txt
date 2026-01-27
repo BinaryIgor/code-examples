@@ -1,0 +1,48 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@56620197
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run INSERT_UPDATE_DELETE_FIND_BY_ID_ACCOUNTS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=250000, queriesRate=30000, queries=[Query[id=insert-account], Query[id=update-account], Query[id=delete-account], Query[id=find-account-by-id], Query[id=find-account-by-id], Query[id=find-account-by-id]], collection=accounts]
+Collection count before test: 4001803
+
+2026-02-10T19:34:26.460, 30000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:34:28.113, 60000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:34:29.183, 90000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:34:30.223, 120000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:34:31.280, 150000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:34:32.340, 180000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:34:33.428, 210000/250000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:34:34.491, 240000/250000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_FIND_BY_ID_ACCOUNTS with POSTGRESQL finished! It had queries: [Query[id=insert-account], Query[id=update-account], Query[id=delete-account], Query[id=find-account-by-id], Query[id=find-account-by-id], Query[id=find-account-by-id]]
+
+Collection count after test: 4003088
+
+Some stats...
+
+Total test duration: PT10.257S
+Queries duration: PT10.257S
+
+Executed queries: 250000
+  insert-account: 41583
+  update-account: 41801
+  delete-account: 42047
+  find-account-by-id: 124569
+
+Wanted queries rate: 30000/s
+Actual queries rate: 24374/s
+
+Min: 0.042 ms
+Max: 1593.344 ms
+Mean: 60.225 ms
+
+Percentile 50 (Median): 1.65 ms
+Percentile 75: 2.498 ms
+Percentile 90: 250.466 ms
+Percentile 99: 643.465 ms
+Percentile 99.9: 1135.565 ms

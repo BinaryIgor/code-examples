@@ -1,0 +1,45 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@56620197
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run BATCH_DELETE_ACCOUNTS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=1000, queriesRate=100, queries=[Query[id=batch-delete-account-1000]], collection=accounts]
+Collection count before test: 3914101
+
+2026-02-10T19:44:04.562, 100/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:05.571, 200/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:06.576, 300/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:07.588, 400/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:08.592, 500/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:09.593, 600/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:10.601, 700/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:11.606, 800/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-10T19:44:12.607, 900/1000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case BATCH_DELETE_ACCOUNTS with POSTGRESQL finished! It had queries: [Query[id=batch-delete-account-1000]]
+
+Collection count after test: 3481745
+
+Some stats...
+
+Total test duration: PT10.055S
+Queries duration: PT10.055S
+
+Executed queries: 1000
+
+Wanted queries rate: 100/s
+Actual queries rate: 99/s
+
+Min: 6.582 ms
+Max: 88.863 ms
+Mean: 10.655 ms
+
+Percentile 50 (Median): 9.386 ms
+Percentile 75: 10.712 ms
+Percentile 90: 12.148 ms
+Percentile 99: 59.748 ms
+Percentile 99.9: 88.863 ms
