@@ -1,7 +1,7 @@
 db.createCollection("accounts");
 db.accounts.createIndex(
   { createdAt: 1 },
-  { name: "idx_accounts_id"}
+  { name: "idx_accounts_created_at"}
 );
 
 db.createCollection("products");

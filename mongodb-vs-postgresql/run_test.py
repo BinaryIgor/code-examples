@@ -16,14 +16,12 @@ try:
         7: 'FIND_ACCOUNTS_BY_ID',
         8: 'FIND_PRODUCTS_BY_ID',
         9: 'FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES',
-        10: 'FIND_SORTED_BY_CREATED_AT_PRODUCTS_PAGES',
-        11: 'FIND_PRODUCTS_BY_TAGS',
-        12: 'FIND_PRODUCTS_STATS_BY_IDS',
-        13: 'INSERT_UPDATE_DELETE_FIND_ACCOUNTS',
-        14: 'DELETE_ACCOUNTS',
-        15: 'DELETE_PRODUCTS',
-        16: 'BATCH_DELETE_ACCOUNTS',
-        17: 'BATCH_DELETE_PRODUCTS'
+        10: 'FIND_PRODUCTS_BY_TAGS',
+        11: 'FIND_PRODUCTS_STATS_BY_IDS',
+        12: 'INSERT_UPDATE_DELETE_FIND_ACCOUNTS',
+        13: 'DELETE_ACCOUNTS',
+        14: 'DELETE_PRODUCTS',
+        15: 'BATCH_DELETE_ACCOUNTS'
     }
 
     options = '\n'.join([f'{k} - {v}' for k, v in options_to_test_cases.items()])

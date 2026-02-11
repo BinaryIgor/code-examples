@@ -1,0 +1,45 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@56620197
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run BATCH_INSERT_PRODUCTS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=1000, queriesRate=100, queries=[Query[id=batch-insert-products-100]], collection=products]
+
+Collection count before test: 25000
+
+2026-02-11T20:11:15.404, 100/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:19.705, 200/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:23.875, 300/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:27.719, 400/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:31.507, 500/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:35.391, 600/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:39.258, 700/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:43.123, 800/1000 queries were issued, waiting 1s before sending next query batch...
+2026-02-11T20:11:47.110, 900/1000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case BATCH_INSERT_PRODUCTS with POSTGRESQL finished! It had queries: [Query[id=batch-insert-products-100]]
+
+Collection count after test: 125000
+
+Some stats...
+
+Total test duration: PT39.468S
+
+Executed queries: 1000
+
+Wanted queries rate: 100/s
+Actual queries rate: 25/s
+
+Min: 6.559 ms
+Max: 119.61 ms
+Mean: 11.532 ms
+
+Percentile 50 (Median): 9.816 ms
+Percentile 75: 11.832 ms
+Percentile 90: 16.129 ms
+Percentile 99: 45.889 ms
+Percentile 99.9: 119.61 ms

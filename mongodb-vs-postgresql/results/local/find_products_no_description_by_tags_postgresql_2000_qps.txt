@@ -1,0 +1,45 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@55b7a4e0
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run FIND_PRODUCTS_BY_TAGS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=20000, queriesRate=2000, queries=[Query[id=find-products-by-tags]], collection=products]
+
+Collection count before test: 125000
+
+2026-02-18T20:45:43.577, 2000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:45.263, 4000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:46.509, 6000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:47.514, 8000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:48.517, 10000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:49.521, 12000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:50.531, 14000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:51.534, 16000/20000 queries were issued, waiting 1s before sending next query batch...
+2026-02-18T20:45:52.540, 18000/20000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case FIND_PRODUCTS_BY_TAGS with POSTGRESQL finished! It had queries: [Query[id=find-products-by-tags]]
+
+Collection count after test: 125000
+
+Some stats...
+
+Total test duration: PT11.001S
+
+Executed queries: 20000
+
+Wanted queries rate: 2000/s
+Actual queries rate: 1818/s
+
+Min: 1.04 ms
+Max: 1165.709 ms
+Mean: 59.405 ms
+
+Percentile 50 (Median): 2.488 ms
+Percentile 75: 11.532 ms
+Percentile 90: 188.209 ms
+Percentile 99: 642.963 ms
+Percentile 99.9: 856.838 ms

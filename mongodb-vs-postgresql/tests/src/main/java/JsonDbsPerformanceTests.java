@@ -24,8 +24,6 @@ static final int CONNECTION_POOL_SIZE = envIntValueOrDefault("DB_CONNECTION_POOL
 
 static final TestCase TEST_CASE = testCaseFromEnv();
 
-static final AtomicLong ADDITIONAL_QUERY_DATA_DURATION = new AtomicLong(0);
-
 static final String ACCOUNTS_COLLECTION = "accounts";
 static final String PRODUCTS_COLLECTION = "products";
 static final boolean PRODUCTS_WITHOUT_DESCRIPTION = envValueOrDefault("PRODUCTS_WITHOUT_DESCRIPTION", "false").equalsIgnoreCase("true");
@@ -163,6 +161,7 @@ void main(String[] $) throws Exception {
 
     IO.println("The following test case specification will be executed: %s".formatted(testCaseSpec));
     var collectionCountBeforeTest = dbClient.count(testCaseSpec.collection());
+    IO.println();
     IO.println("Collection count before test: %d".formatted(collectionCountBeforeTest));
     IO.println();
 
@@ -301,28 +300,26 @@ static TestCaseSpec<?> testCaseSpec(DbClient dbClient) {
         case UPDATE_PRODUCTS -> updateProductsSpec(dbClient);
         case FIND_ACCOUNTS_BY_ID -> findAccountsByIdSpec(dbClient);
         case FIND_PRODUCTS_BY_ID -> findProductsByIdSpec(dbClient);
-        case FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES -> findSortedByCreatedAtPagesOfAccountsSpec(dbClient);
-        case FIND_SORTED_BY_CREATED_AT_PRODUCTS_PAGES -> findSortedByCreatedAtPagesOfProductsSpec(dbClient);
+        case FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES -> findSortedByCreatedAtAccountsPagesSpec(dbClient);
         case FIND_PRODUCTS_BY_TAGS -> findProductsByTagsSpec(dbClient);
         case FIND_PRODUCTS_STATS_BY_IDS -> findProductsStatsByIdsSpec(dbClient);
         case INSERT_UPDATE_DELETE_FIND_ACCOUNTS -> insertUpdateDeleteFindByIdAccountsSpec(dbClient);
         case DELETE_ACCOUNTS -> deleteAccountsSpec(dbClient);
         case DELETE_PRODUCTS -> deleteProductsSpec(dbClient);
         case BATCH_DELETE_ACCOUNTS -> batchDeleteAccountsSpec(dbClient);
-        case BATCH_DELETE_PRODUCTS -> batchDeleteProductsSpec(dbClient);
     };
 }
 
 static TestCaseSpec<Account> insertAccountsSpec(DbClient dbClient) {
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(250_000),
-            envQueriesRateOrDefault(25_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(200_000),
+            envQueriesRateOrDefault(20_000),
             new Query<>("insert-account", () -> randomAccount(), dbClient::insertAccount),
             ACCOUNTS_COLLECTION);
 }
 
 static TestCaseSpec<Product> insertProductsSpec(DbClient dbClient) {
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(50_000),
-            envQueriesRateOrDefault(5_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(25_000),
+            envQueriesRateOrDefault(2500),
             new Query<>("insert-product", () -> randomProduct(), dbClient::insertProduct),
             PRODUCTS_COLLECTION);
 }
@@ -338,7 +335,7 @@ static TestCaseSpec<List<Account>> batchInsertAccountsSpec(DbClient dbClient) {
 }
 
 static TestCaseSpec<List<Product>> batchInsertProductsSpec(DbClient dbClient) {
-    var batch = 1000;
+    var batch = 100;
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(1000),
             envQueriesRateOrDefault(100),
             new Query<>("batch-insert-products-%d".formatted(batch),
@@ -349,8 +346,8 @@ static TestCaseSpec<List<Product>> batchInsertProductsSpec(DbClient dbClient) {
 
 static TestCaseSpec<Account> updateAccountsSpec(DbClient dbClient) {
     var accountIds = requireAccountIds(dbClient);
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(250_000),
-            envQueriesRateOrDefault(25_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(200_000),
+            envQueriesRateOrDefault(20_000),
             new Query<>("update-account", () -> {
                 var id = randomChoice(accountIds);
                 return randomAccount(id);
@@ -360,8 +357,8 @@ static TestCaseSpec<Account> updateAccountsSpec(DbClient dbClient) {
 
 static TestCaseSpec<Product> updateProductsSpec(DbClient dbClient) {
     var productIds = requireProductIds(dbClient);
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(50_000),
-            envQueriesRateOrDefault(5_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(25_000),
+            envQueriesRateOrDefault(2500),
             new Query<>("update-product", () -> {
                 var id = randomChoice(productIds);
                 return randomProduct(id);
@@ -379,32 +376,34 @@ static List<UUID> requireAccountIds(DbClient dbClient) {
 
 static TestCaseSpec<UUID> findAccountsByIdSpec(DbClient dbClient) {
     var accountIds = requireAccountIds(dbClient);
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(500_000),
-            envQueriesRateOrDefault(50_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(400_000),
+            envQueriesRateOrDefault(40_000),
             new Query<>("find-account-by-id", () -> randomChoice(accountIds), dbClient::findAccountById),
-            ACCOUNTS_COLLECTION);
-}
-
-static TestCaseSpec<DbClient.PageRequest> findSortedByCreatedAtPagesOfAccountsSpec(DbClient dbClient) {
-    var maxLimit = 100;
-    var maxOffset = Math.clamp(dbClient.count(ACCOUNTS_COLLECTION) - maxLimit, 0, 100_000);
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(100_000),
-            envQueriesRateOrDefault(10_000),
-            new Query<>("find-sorted-by-created-at-pages-of-accounts", () -> {
-                var offset = RANDOM.nextInt(maxOffset);
-                var limit = randomNumber(10, maxLimit);
-                var desc = RANDOM.nextBoolean();
-                return new DbClient.PageRequest(offset, limit, desc);
-            }, dbClient::findAccountsPageSortedByCreatedAt),
             ACCOUNTS_COLLECTION);
 }
 
 static TestCaseSpec<UUID> findProductsByIdSpec(DbClient dbClient) {
     var productIds = requireProductIds(dbClient);
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(500_000),
-            envQueriesRateOrDefault(50_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(400_000),
+            envQueriesRateOrDefault(40_000),
             new Query<>("find-product-by-id", () -> randomChoice(productIds), dbClient::findProductById),
             PRODUCTS_COLLECTION);
+}
+
+
+static TestCaseSpec<DbClient.PageRequest> findSortedByCreatedAtAccountsPagesSpec(DbClient dbClient) {
+    var maxLimit = 100;
+    var minMaxCreatedAt = dbClient.findMinMaxAccountsCreatedAt();
+    var minCreatedAtSeconds = minMaxCreatedAt.getFirst().getEpochSecond();
+    var maxCreatedAtSeconds = minMaxCreatedAt.getLast().getEpochSecond();
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(30_000),
+            envQueriesRateOrDefault(3000),
+            new Query<>("find-sorted-by-created-at-accounts-pages", () -> {
+                var limit = randomNumber(10, maxLimit);
+                var pageKey = randomNumber(minCreatedAtSeconds, maxCreatedAtSeconds);
+                return new DbClient.PageRequest(Instant.ofEpochSecond(pageKey), limit, RANDOM.nextBoolean());
+            }, dbClient::findAccountsPageSortedByCreatedAt),
+            ACCOUNTS_COLLECTION);
 }
 
 static List<UUID> requireProductIds(DbClient dbClient) {
@@ -415,23 +414,9 @@ static List<UUID> requireProductIds(DbClient dbClient) {
     return productIds;
 }
 
-static TestCaseSpec<DbClient.PageRequest> findSortedByCreatedAtPagesOfProductsSpec(DbClient dbClient) {
-    var maxLimit = 100;
-    var maxOffset = Math.clamp(dbClient.count(PRODUCTS_COLLECTION) - maxLimit, 0, 100_000);
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(100_000),
-            envQueriesRateOrDefault(10_000),
-            new Query<>("find-sorted-by-created-at-pages-of-products", () -> {
-                var offset = RANDOM.nextInt(maxOffset);
-                var limit = randomNumber(10, maxLimit);
-                var desc = RANDOM.nextBoolean();
-                return new DbClient.PageRequest(offset, limit, desc);
-            }, dbClient::findProductsPageSortedByCreatedAt),
-            PRODUCTS_COLLECTION);
-}
-
 static TestCaseSpec<List<String>> findProductsByTagsSpec(DbClient dbClient) {
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(50_000),
-            envQueriesRateOrDefault(5_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(10_000),
+            envQueriesRateOrDefault(1000),
             new Query<>("find-products-by-tags",
                     () -> Stream.generate(() -> randomChoice(TAGS))
                             .limit(randomNumber(1, 10))
@@ -443,8 +428,8 @@ static TestCaseSpec<List<String>> findProductsByTagsSpec(DbClient dbClient) {
 static TestCaseSpec<List<UUID>> findProductsStatsByIdsSpec(DbClient dbClient) {
     var productIds = requireProductIds(dbClient);
     var idsBatch = 100;
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(20_000),
-            envQueriesRateOrDefault(2_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(10_000),
+            envQueriesRateOrDefault(1_000),
             new Query<>("find-products-stats-by-ids-%d".formatted(idsBatch),
                     () -> Stream.generate(() -> randomChoice(productIds))
                             .distinct()
@@ -490,48 +475,45 @@ static TestCaseSpec<UUID> deleteAccountsSpec(DbClient dbClient) {
 
 static TestCaseSpec<UUID> deleteProductsSpec(DbClient dbClient) {
     var productIds = requireProductIds(dbClient);
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(250_000),
-            envQueriesRateOrDefault(25_000),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(150_000),
+            envQueriesRateOrDefault(15_000),
             new Query<>("delete-product", () -> randomChoice(productIds), id -> dbClient.deleteProducts(List.of(id))),
             PRODUCTS_COLLECTION);
 }
 
 static TestCaseSpec<List<UUID>> batchDeleteAccountsSpec(DbClient dbClient) {
     var batchSize = 1000;
-    var accountIds = requireAccountIds(dbClient);
+    var accountIds = new AtomicReference<>(requireAccountIds(dbClient));
     var deletedIds = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(5000),
-            envQueriesRateOrDefault(500),
+    var mutex = new Semaphore(1);
+
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(3000),
+            envQueriesRateOrDefault(300),
             new Query<>("batch-delete-accounts-%d".formatted(batchSize),
-                    () -> Stream.generate(() -> randomChoiceExcluding(accountIds, deletedIds))
-                            .distinct()
-                            .limit(batchSize)
-                            .toList(),
+                    () -> {
+                        try {
+                            mutex.acquire();
+                            var refetchAccountIds = deletedIds.size() >= (accountIds.get().size() / 2);
+                            if (refetchAccountIds) {
+                                accountIds.set(requireAccountIds(dbClient));
+                                deletedIds.clear();
+                            }
+                            return Stream.generate(() -> randomChoiceExcluding(accountIds.get(), deletedIds))
+                                    .distinct()
+                                    .limit(batchSize)
+                                    .toList();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        } finally {
+                            mutex.release();
+                        }
+                    },
                     ids -> {
                         dbClient.deleteAccounts(ids);
                         deletedIds.addAll(ids);
                     }),
             ACCOUNTS_COLLECTION);
-}
-
-static TestCaseSpec<List<UUID>> batchDeleteProductsSpec(DbClient dbClient) {
-    var batchSize = 1000;
-    var productIds = requireProductIds(dbClient);
-    var deletedIds = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
-
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(1000),
-            envQueriesRateOrDefault(100),
-            new Query<>("batch-delete-products-%d".formatted(batchSize),
-                    () -> Stream.generate(() -> randomChoiceExcluding(productIds, deletedIds))
-                            .distinct()
-                            .limit(batchSize)
-                            .toList(),
-                    ids -> {
-                        dbClient.deleteProducts(ids);
-                        deletedIds.addAll(ids);
-                    }),
-            PRODUCTS_COLLECTION);
 }
 
 static <T> QueryTestResult queryTest(List<Query<T>> queries) {
@@ -653,13 +635,17 @@ static int randomNumber(int min, int max) {
     return min + RANDOM.nextInt(max - min);
 }
 
+static long randomNumber(long min, long max) {
+    return min + RANDOM.nextLong(max - min);
+}
+
 static <T> T randomChoice(List<T> elements) {
     var idx = RANDOM.nextInt(elements.size());
     return elements.get(idx);
 }
 
 static <T> T randomChoiceExcluding(List<T> elements, Collection<T> toExclude) {
-    var maxAttempts = 500;
+    var maxAttempts = 100;
     for (int i = 0; i < maxAttempts; i++) {
         var choice = randomChoice(elements);
         if (!toExclude.contains(choice)) {
@@ -687,11 +673,7 @@ static void printStats(List<Long> sortedResults, Map<String, Integer> executedQu
     var min = sortedResults.getFirst();
     var max = sortedResults.getLast();
 
-    var queriesDuration = duration.minusNanos(ADDITIONAL_QUERY_DATA_DURATION.get())
-            .truncatedTo(ChronoUnit.MILLIS);
-
     IO.println("Total test duration: " + duration);
-    IO.println("Queries duration: " + queriesDuration);
     IO.println();
     IO.println("Executed queries: " + sortedResults.size());
     if (executedQueriesByGroupId.size() > 1) {
@@ -699,7 +681,7 @@ static void printStats(List<Long> sortedResults, Map<String, Integer> executedQu
     }
     IO.println();
     IO.println("Wanted queries rate: %d/s".formatted(queriesRate));
-    IO.println("Actual queries rate: %d/s".formatted(actualQueriesRate(sortedResults.size(), queriesDuration)));
+    IO.println("Actual queries rate: %d/s".formatted(actualQueriesRate(sortedResults.size(), duration)));
     IO.println();
 
     var mean = sortedResults.stream().mapToLong(Long::longValue).average().getAsDouble();
@@ -780,14 +762,12 @@ enum TestCase {
     FIND_ACCOUNTS_BY_ID,
     FIND_PRODUCTS_BY_ID,
     FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES,
-    FIND_SORTED_BY_CREATED_AT_PRODUCTS_PAGES,
     FIND_PRODUCTS_BY_TAGS,
     FIND_PRODUCTS_STATS_BY_IDS,
     INSERT_UPDATE_DELETE_FIND_ACCOUNTS,
     DELETE_ACCOUNTS,
     DELETE_PRODUCTS,
-    BATCH_DELETE_ACCOUNTS,
-    BATCH_DELETE_PRODUCTS
+    BATCH_DELETE_ACCOUNTS
 }
 
 record TestCaseSpec<T>(int queriesToExecute, int queriesRate, List<Query<T>> queries, String collection) {
@@ -798,6 +778,7 @@ record TestCaseSpec<T>(int queriesToExecute, int queriesRate, List<Query<T>> que
 }
 
 // Both are public for MongoDB POJO codecs
+// TODO: add owners to check GIN perf
 public record Account(@BsonId UUID id, String name, String type, Instant createdAt, Instant updatedAt, long version) {
 
 }
@@ -842,6 +823,8 @@ sealed interface DbClient {
 
     List<Account> findAccountsPageSortedByCreatedAt(PageRequest request);
 
+    List<Instant> findMinMaxAccountsCreatedAt();
+
     int count(String collection);
 
     void insertProduct(Product product);
@@ -860,9 +843,7 @@ sealed interface DbClient {
 
     List<UUID> findProductIds(int limit);
 
-    List<Product> findProductsPageSortedByCreatedAt(PageRequest request);
-
-    record PageRequest(int offset, int limit, boolean desc) {
+    record PageRequest(Instant createdAtKey, int limit, boolean desc) {
     }
 }
 
@@ -967,16 +948,24 @@ record PostgresClient(DataSource dataSource) implements DbClient {
     }
 
     @Override
-    public List<Account> findAccountsPageSortedByCreatedAt(PageRequest request) {
-        return findDocumentsPageSortedByCreatedAt(ACCOUNTS_COLLECTION, request, Account.class);
+    public List<Instant> findMinMaxAccountsCreatedAt() {
+        return executeQuery("SELECT MIN(data->>'createdAt'), MAX(data->>'createdAt') FROM %s".formatted(ACCOUNTS_COLLECTION),
+                r -> {
+                    r.next();
+                    var min = Instant.parse(r.getString(1));
+                    var max = Instant.parse(r.getString(2));
+                    return List.of(min, max);
+                });
     }
 
-    private <T> List<T> findDocumentsPageSortedByCreatedAt(String collection, PageRequest request, Class<T> type) {
-        return executeQueryMappingEachRow("SELECT * FROM %s ORDER BY data->>'createdAt' %s OFFSET %d LIMIT %d"
-                        .formatted(collection, request.desc ? "DESC" : "ASC", request.offset, request.limit),
+    @Override
+    public List<Account> findAccountsPageSortedByCreatedAt(PageRequest request) {
+        var whereClause = "WHERE data ->> 'createdAt' %s '%s'".formatted(request.desc ? "<" : ">", request.createdAtKey.toString());
+        return executeQueryMappingEachRow("SELECT * FROM %s %s ORDER BY data->>'createdAt' %s LIMIT %d"
+                        .formatted(PRODUCTS_COLLECTION, whereClause, request.desc ? "DESC" : "ASC", request.limit),
                 r -> {
                     var json = r.getString(1);
-                    return OBJECT_MAPPER.readValue(json, type);
+                    return OBJECT_MAPPER.readValue(json, Account.class);
                 });
     }
 
@@ -1014,11 +1003,6 @@ record PostgresClient(DataSource dataSource) implements DbClient {
     @Override
     public Optional<Product> findProductById(UUID id) {
         return findDocumentById(PRODUCTS_COLLECTION, id, Product.class);
-    }
-
-    @Override
-    public List<Product> findProductsPageSortedByCreatedAt(PageRequest request) {
-        return findDocumentsPageSortedByCreatedAt(PRODUCTS_COLLECTION, request, Product.class);
     }
 
     @Override
@@ -1161,13 +1145,20 @@ static final class MongoDbClient implements DbClient {
     }
 
     @Override
-    public List<Account> findAccountsPageSortedByCreatedAt(PageRequest request) {
-        return findDocumentsPageSortedByCreatedAt(accountsTyped, request);
+    public List<Instant> findMinMaxAccountsCreatedAt() {
+        return accounts.aggregate(List.of(Aggregates.group(null,
+                        Accumulators.min("minCreatedAt", "$createdAt"),
+                        Accumulators.max("maxCreatedAt", "$createdAt")
+                ))).map(d -> List.of(d.get("minCreatedAt", Date.class).toInstant(), d.get("maxCreatedAt", Date.class).toInstant()))
+                .first();
     }
 
-    private <T> List<T> findDocumentsPageSortedByCreatedAt(MongoCollection<T> collection, PageRequest request) {
-        return collection.find()
-                .skip(request.offset)
+    @Override
+    public List<Account> findAccountsPageSortedByCreatedAt(PageRequest request) {
+        var filter = request.desc
+                ? Filters.lt("createdAt", request.createdAtKey)
+                : Filters.gt("createdAt", request.createdAtKey);
+        return accountsTyped.find(filter)
                 .limit(request.limit)
                 .sort(request.desc ? Sorts.descending("createdAt") : Sorts.ascending("createdAt"))
                 .into(new ArrayList<>());
@@ -1209,11 +1200,6 @@ static final class MongoDbClient implements DbClient {
     @Override
     public Optional<Product> findProductById(UUID id) {
         return Optional.ofNullable(productsTyped.find(Filters.eq("_id", id), Product.class).first());
-    }
-
-    @Override
-    public List<Product> findProductsPageSortedByCreatedAt(PageRequest request) {
-        return findDocumentsPageSortedByCreatedAt(productsTyped, request);
     }
 
     @Override

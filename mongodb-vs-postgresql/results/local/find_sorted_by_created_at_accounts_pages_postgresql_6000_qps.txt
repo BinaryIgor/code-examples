@@ -1,0 +1,40 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@56620197
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=30000, queriesRate=6000, queries=[Query[id=find-sorted-by-created-at-accounts-pages]], collection=accounts]
+
+Collection count before test: 3400000
+
+2026-02-12T18:52:29.520, 6000/30000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T18:52:31.816, 12000/30000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T18:52:33.121, 18000/30000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T18:52:34.307, 24000/30000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES with POSTGRESQL finished! It had queries: [Query[id=find-sorted-by-created-at-accounts-pages]]
+
+Collection count after test: 3400000
+
+Some stats...
+
+Total test duration: PT7.058S
+
+Executed queries: 30000
+
+Wanted queries rate: 6000/s
+Actual queries rate: 4250/s
+
+Min: 0.458 ms
+Max: 2117.646 ms
+Mean: 278.602 ms
+
+Percentile 50 (Median): 82.526 ms
+Percentile 75: 237.793 ms
+Percentile 90: 1132.856 ms
+Percentile 99: 1286.621 ms
+Percentile 99.9: 2051.498 ms

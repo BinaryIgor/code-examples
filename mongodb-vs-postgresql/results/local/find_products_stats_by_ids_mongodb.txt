@@ -1,0 +1,45 @@
+Starting Json DBs Performance Tests, connecting to MONGODB with a pool of 256 connections...
+
+[main] INFO org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync", "version": "5.6.2"}, "os": {"type": "Linux", "name": "Linux", "architecture": "amd64", "version": "6.14.0-37-generic"}, "platform": "Java/Eclipse Adoptium/25.0.2+10-LTS", "env": {"container": {"runtime": "docker"}}} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=true}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='json', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@2cdd0d4b, com.mongodb.Jep395RecordCodecProvider@7e9131d5, com.mongodb.KotlinCodecProvider@2e1d27ba, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=256, minSize=256, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=STANDARD, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+
+Connected with MONGODB, about to run FIND_PRODUCTS_STATS_BY_IDS test case.
+[cluster-ClusterId{value='698e23f5f47dac2e256980dc', description='null'}-localhost:27017] INFO org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=26753083, minRoundTripTimeNanos=0}
+[main] INFO org.mongodb.driver.cluster - Waiting for server to become available for operation find with ID 3. Remaining time: 29983 ms. Selector: ReadPreferenceServerSelector{readPreference=primary}, topology description: {type=UNKNOWN, servers=[{address=localhost:27017, type=UNKNOWN, state=CONNECTING}].
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=10000, queriesRate=1000, queries=[Query[id=find-products-stats-by-ids-100]], collection=products]
+
+Collection count before test: 125000
+
+2026-02-12T19:03:18.451, 1000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:19.454, 2000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:20.456, 3000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:21.458, 4000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:22.460, 5000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:23.462, 6000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:24.464, 7000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:25.466, 8000/10000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:03:26.469, 9000/10000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case FIND_PRODUCTS_STATS_BY_IDS with MONGODB finished! It had queries: [Query[id=find-products-stats-by-ids-100]]
+
+Collection count after test: 125000
+
+Some stats...
+
+Total test duration: PT10.04S
+
+Executed queries: 10000
+
+Wanted queries rate: 1000/s
+Actual queries rate: 996/s
+
+Min: 0.92 ms
+Max: 51.323 ms
+Mean: 1.938 ms
+
+Percentile 50 (Median): 1.555 ms
+Percentile 75: 1.947 ms
+Percentile 90: 2.373 ms
+Percentile 99: 9.603 ms
+Percentile 99.9: 49.508 ms

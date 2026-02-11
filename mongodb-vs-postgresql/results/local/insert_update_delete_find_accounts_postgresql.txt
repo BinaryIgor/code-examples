@@ -1,0 +1,49 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@56620197
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run INSERT_UPDATE_DELETE_FIND_ACCOUNTS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=300000, queriesRate=30000, queries=[Query[id=insert-account], Query[id=update-account], Query[id=delete-account], Query[id=find-account-by-id], Query[id=find-account-by-id], Query[id=find-account-by-id]], collection=accounts]
+
+Collection count before test: 3400000
+
+2026-02-12T19:06:33.624, 30000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:35.230, 60000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:36.350, 90000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:37.430, 120000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:38.489, 150000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:39.579, 180000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:40.656, 210000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:41.755, 240000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-12T19:06:42.839, 270000/300000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case INSERT_UPDATE_DELETE_FIND_ACCOUNTS with POSTGRESQL finished! It had queries: [Query[id=insert-account], Query[id=update-account], Query[id=delete-account], Query[id=find-account-by-id], Query[id=find-account-by-id], Query[id=find-account-by-id]]
+
+Collection count after test: 3402738
+
+Some stats...
+
+Total test duration: PT11.61S
+
+Executed queries: 300000
+  insert-account: 50247
+  update-account: 49718
+  delete-account: 49802
+  find-account-by-id: 150233
+
+Wanted queries rate: 30000/s
+Actual queries rate: 25840/s
+
+Min: 0.043 ms
+Max: 1195.516 ms
+Mean: 32.349 ms
+
+Percentile 50 (Median): 1.798 ms
+Percentile 75: 2.646 ms
+Percentile 90: 68.037 ms
+Percentile 99: 417.419 ms
+Percentile 99.9: 746.389 ms
