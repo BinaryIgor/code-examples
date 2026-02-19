@@ -10,9 +10,7 @@ docker build . -t $container_name
 docker stop $container_name
 docker rm $container_name
 
-# c synchronous_commit=off \
-#  -c wal_writer_delay=33ms
-docker run -d -v "${volume_dir}:/var/lib/postgresql" --network host \
+docker run -d --network host -v "${volume_dir}:/var/lib/postgresql" \
   -e "POSTGRES_DB=json" \
   -e "POSTGRES_USER=json" \
   -e "POSTGRES_PASSWORD=json" \

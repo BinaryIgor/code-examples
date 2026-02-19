@@ -1,10 +1,11 @@
 CREATE TABLE accounts (data JSONB NOT NULL);
-CREATE INDEX idx_accounts_id ON accounts ((data->>'id'));
-CREATE INDEX idx_accounts_created_at ON accounts ((data->>'createdAt'));
+CREATE UNIQUE INDEX accounts_id ON accounts ((data->>'id'));
+CREATE INDEX accounts_created_at_idx ON accounts ((data->>'createdAt'));
+CREATE INDEX accounts_owners_idx ON accounts USING GIN ((data->'owners'));
 
 CREATE TABLE products (data JSONB NOT NULL);
-CREATE INDEX idx_products_id ON products ((data->>'id'));
-CREATE UNIQUE INDEX unique_idx_products_name ON products ((data->>'name'));
-CREATE INDEX idx_products_categories ON products USING GIN ((data->'categories'));
-CREATE INDEX idx_products_tags ON products USING GIN ((data->'tags'));
-CREATE INDEX idx_products_created_at ON products ((data->>'createdAt'));
+CREATE UNIQUE INDEX products_id ON products ((data->>'id'));
+CREATE UNIQUE INDEX products_name_unique_idx ON products ((data->>'name'));
+CREATE INDEX products_categories_idx ON products USING GIN ((data->'categories'));
+CREATE INDEX products_tags_idx ON products USING GIN ((data->'tags'));
+CREATE INDEX products_created_at_idx ON products ((data->>'createdAt'));

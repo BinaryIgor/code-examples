@@ -1,47 +1,48 @@
 Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
 
 [main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
-[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@56620197
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@55b7a4e0
 [main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
 
 Connected with POSTGRESQL, about to run INSERT_UPDATE_DELETE_FIND_ACCOUNTS test case.
 The following test case specification will be executed: TestCaseSpec[queriesToExecute=300000, queriesRate=40000, queries=[Query[id=insert-account], Query[id=update-account], Query[id=delete-account], Query[id=find-account-by-id], Query[id=find-account-by-id], Query[id=find-account-by-id]], collection=accounts]
 
-Collection count before test: 3402738
+Collection count before test: 3402821
 
-2026-02-12T19:07:38.261, 40000/300000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:07:40.236, 80000/300000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:07:41.398, 120000/300000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:07:42.463, 160000/300000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:07:43.584, 200000/300000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:07:44.647, 240000/300000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:07:45.774, 280000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:57:55.125, 40000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:57:57.287, 80000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:57:58.359, 120000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:57:59.486, 160000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:58:00.676, 200000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:58:01.812, 240000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:58:02.934, 280000/300000 queries were issued, waiting 1s before sending next query batch...
 
 ...
 
 Test case INSERT_UPDATE_DELETE_FIND_ACCOUNTS with POSTGRESQL finished! It had queries: [Query[id=insert-account], Query[id=update-account], Query[id=delete-account], Query[id=find-account-by-id], Query[id=find-account-by-id], Query[id=find-account-by-id]]
 
-Collection count after test: 3405634
+Collection count after test: 3404968
 
 Some stats...
 
-Total test duration: PT9.727S
+Total test duration: PT10.229S
+Queries duration: PT9.399S
 
 Executed queries: 300000
-  insert-account: 50479
-  update-account: 49840
-  delete-account: 50024
-  find-account-by-id: 149657
+  insert-account: 49998
+  update-account: 50437
+  delete-account: 50275
+  find-account-by-id: 149290
 
 Wanted queries rate: 40000/s
-Actual queries rate: 30842/s
+Actual queries rate: 31918/s
 
 Min: 0.044 ms
-Max: 1780.054 ms
-Mean: 93.383 ms
+Max: 1962.967 ms
+Mean: 130.354 ms
 
-Percentile 50 (Median): 2.076 ms
-Percentile 75: 8.597 ms
-Percentile 90: 479.334 ms
-Percentile 99: 833.031 ms
-Percentile 99.9: 1419.191 ms
+Percentile 50 (Median): 3.827 ms
+Percentile 75: 54.227 ms
+Percentile 90: 585.563 ms
+Percentile 99: 1040.725 ms
+Percentile 99.9: 1668.685 ms

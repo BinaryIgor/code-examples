@@ -1,0 +1,44 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@55b7a4e0
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run FIND_ACCOUNTS_BY_OWNERS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=300000, queriesRate=40000, queries=[Query[id=find-accounts-by-owners]], collection=accounts]
+
+Collection count before test: 3400000
+
+2026-02-21T17:53:38.212, 40000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T17:53:40.321, 80000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T17:53:41.541, 120000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T17:53:42.592, 160000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T17:53:43.732, 200000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T17:53:44.818, 240000/300000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T17:53:45.924, 280000/300000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case FIND_ACCOUNTS_BY_OWNERS with POSTGRESQL finished! It had queries: [Query[id=find-accounts-by-owners]]
+
+Collection count after test: 3400000
+
+Some stats...
+
+Total test duration: PT9.994S
+Queries duration: PT9.994S
+
+Executed queries: 300000
+
+Wanted queries rate: 40000/s
+Actual queries rate: 30018/s
+
+Min: 0.069 ms
+Max: 1216.229 ms
+Mean: 31.348 ms
+
+Percentile 50 (Median): 0.138 ms
+Percentile 75: 0.3 ms
+Percentile 90: 112.331 ms
+Percentile 99: 491.419 ms
+Percentile 99.9: 758.211 ms

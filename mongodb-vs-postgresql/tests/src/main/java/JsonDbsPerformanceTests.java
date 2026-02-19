@@ -32,9 +32,9 @@ static final Random RANDOM = new SecureRandom();
 static final String UPPER_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static final String RANDOM_STRING_ALPHABET = UPPER_ALPHABET + UPPER_ALPHABET.toLowerCase() + "0123456789";
 
-static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
-        .build();
+static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
 
+static final int MAX_USER_ID = 1_000_000;
 static final List<String> ACCOUNT_TYPES = List.of("FREE", "PLUS", "GOLD", "PLATINUM");
 static final List<String> CATEGORIES = List.of(
         "Electronics",
@@ -147,6 +147,8 @@ static final List<String> COLOR_VARIATIONS = List.of("red", "orange", "amber", "
         "sky", "blue", "indigo", "violet", "purple",
         "fuchsia", "pink", "rose", "slate", "gray",
         "zinc", "neutral", "stone");
+
+static long ADDITIONAL_QUERIES_DURATION_MILLIS = 0;
 
 void main(String[] $) throws Exception {
     IO.println("Starting Json DBs Performance Tests, connecting to %s with a pool of %d connections...".formatted(DB_TYPE, CONNECTION_POOL_SIZE));
@@ -301,7 +303,9 @@ static TestCaseSpec<?> testCaseSpec(DbClient dbClient) {
         case FIND_ACCOUNTS_BY_ID -> findAccountsByIdSpec(dbClient);
         case FIND_PRODUCTS_BY_ID -> findProductsByIdSpec(dbClient);
         case FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES -> findSortedByCreatedAtAccountsPagesSpec(dbClient);
+        case FIND_ACCOUNTS_BY_OWNERS -> findAccountsByOwnersSpec(dbClient);
         case FIND_PRODUCTS_BY_TAGS -> findProductsByTagsSpec(dbClient);
+        case FIND_ACCOUNTS_STATS_BY_IDS -> findAccountsStatsByIdsSpec(dbClient);
         case FIND_PRODUCTS_STATS_BY_IDS -> findProductsStatsByIdsSpec(dbClient);
         case INSERT_UPDATE_DELETE_FIND_ACCOUNTS -> insertUpdateDeleteFindByIdAccountsSpec(dbClient);
         case DELETE_ACCOUNTS -> deleteAccountsSpec(dbClient);
@@ -326,8 +330,8 @@ static TestCaseSpec<Product> insertProductsSpec(DbClient dbClient) {
 
 static TestCaseSpec<List<Account>> batchInsertAccountsSpec(DbClient dbClient) {
     var batch = 1000;
-    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(3000),
-            envQueriesRateOrDefault(300),
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(1500),
+            envQueriesRateOrDefault(150),
             new Query<>("batch-insert-accounts-%d".formatted(batch),
                     () -> Stream.generate(() -> randomAccount()).limit(batch).toList(),
                     dbClient::insertAccounts),
@@ -345,7 +349,9 @@ static TestCaseSpec<List<Product>> batchInsertProductsSpec(DbClient dbClient) {
 }
 
 static TestCaseSpec<Account> updateAccountsSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var accountIds = requireAccountIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(200_000),
             envQueriesRateOrDefault(20_000),
             new Query<>("update-account", () -> {
@@ -356,7 +362,9 @@ static TestCaseSpec<Account> updateAccountsSpec(DbClient dbClient) {
 }
 
 static TestCaseSpec<Product> updateProductsSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var productIds = requireProductIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(25_000),
             envQueriesRateOrDefault(2500),
             new Query<>("update-product", () -> {
@@ -375,7 +383,9 @@ static List<UUID> requireAccountIds(DbClient dbClient) {
 }
 
 static TestCaseSpec<UUID> findAccountsByIdSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var accountIds = requireAccountIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(400_000),
             envQueriesRateOrDefault(40_000),
             new Query<>("find-account-by-id", () -> randomChoice(accountIds), dbClient::findAccountById),
@@ -383,7 +393,9 @@ static TestCaseSpec<UUID> findAccountsByIdSpec(DbClient dbClient) {
 }
 
 static TestCaseSpec<UUID> findProductsByIdSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var productIds = requireProductIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(400_000),
             envQueriesRateOrDefault(40_000),
             new Query<>("find-product-by-id", () -> randomChoice(productIds), dbClient::findProductById),
@@ -393,7 +405,9 @@ static TestCaseSpec<UUID> findProductsByIdSpec(DbClient dbClient) {
 
 static TestCaseSpec<DbClient.PageRequest> findSortedByCreatedAtAccountsPagesSpec(DbClient dbClient) {
     var maxLimit = 100;
+    var start = System.currentTimeMillis();
     var minMaxCreatedAt = dbClient.findMinMaxAccountsCreatedAt();
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
     var minCreatedAtSeconds = minMaxCreatedAt.getFirst().getEpochSecond();
     var maxCreatedAtSeconds = minMaxCreatedAt.getLast().getEpochSecond();
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(30_000),
@@ -414,19 +428,49 @@ static List<UUID> requireProductIds(DbClient dbClient) {
     return productIds;
 }
 
+static TestCaseSpec<List<String>> findAccountsByOwnersSpec(DbClient dbClient) {
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(300_000),
+            envQueriesRateOrDefault(30_000),
+            new Query<>("find-accounts-by-owners",
+                    () -> Stream.generate(() -> oneOfUserIds())
+                            .limit(randomNumber(1, 5))
+                            .distinct()
+                            .toList(),
+                    owners -> dbClient.findAccountsByOwners(owners, 25)),
+            ACCOUNTS_COLLECTION);
+}
+
 static TestCaseSpec<List<String>> findProductsByTagsSpec(DbClient dbClient) {
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(10_000),
             envQueriesRateOrDefault(1000),
             new Query<>("find-products-by-tags",
                     () -> Stream.generate(() -> randomChoice(TAGS))
-                            .limit(randomNumber(1, 10))
+                            .limit(randomNumber(1, 5))
                             .distinct()
-                            .toList(), tags -> dbClient.findProductsByTags(tags, 100)),
+                            .toList(), tags -> dbClient.findProductsByTags(tags, 50)),
             PRODUCTS_COLLECTION);
 }
 
+static TestCaseSpec<List<UUID>> findAccountsStatsByIdsSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
+    var accountIds = requireAccountIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
+    var idsBatch = 100;
+    return new TestCaseSpec<>(envQueriesToExecuteOrDefault(75_000),
+            envQueriesRateOrDefault(7500),
+            new Query<>("find-accounts-stats-by-ids-%d".formatted(idsBatch),
+                    () -> Stream.generate(() -> randomChoice(accountIds))
+                            .distinct()
+                            .limit(idsBatch)
+                            .toList(),
+                    dbClient::findAccountsStats),
+            ACCOUNTS_COLLECTION);
+}
+
 static TestCaseSpec<List<UUID>> findProductsStatsByIdsSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var productIds = requireProductIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
     var idsBatch = 100;
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(10_000),
             envQueriesRateOrDefault(1_000),
@@ -440,7 +484,9 @@ static TestCaseSpec<List<UUID>> findProductsStatsByIdsSpec(DbClient dbClient) {
 }
 
 static TestCaseSpec<?> insertUpdateDeleteFindByIdAccountsSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var accountIds = requireAccountIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
     var deletedAccountIds = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 
     var findAccountByIdQuery = new Query<>("find-account-by-id",
@@ -466,24 +512,43 @@ static TestCaseSpec<?> insertUpdateDeleteFindByIdAccountsSpec(DbClient dbClient)
 }
 
 static TestCaseSpec<UUID> deleteAccountsSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var accountIds = requireAccountIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
+    var deletedIds = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(250_000),
             envQueriesRateOrDefault(25_000),
-            new Query<>("delete-account", () -> randomChoice(accountIds), id -> dbClient.deleteAccounts(List.of(id))),
+            new Query<>("delete-account", () -> randomChoiceExcluding(accountIds, deletedIds),
+                    id -> {
+                        dbClient.deleteAccounts(List.of(id));
+                        deletedIds.add(id);
+                    }),
             ACCOUNTS_COLLECTION);
 }
 
 static TestCaseSpec<UUID> deleteProductsSpec(DbClient dbClient) {
+    var start = System.currentTimeMillis();
     var productIds = requireProductIds(dbClient);
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
+    var deletedIds = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+
     return new TestCaseSpec<>(envQueriesToExecuteOrDefault(150_000),
             envQueriesRateOrDefault(15_000),
-            new Query<>("delete-product", () -> randomChoice(productIds), id -> dbClient.deleteProducts(List.of(id))),
+            new Query<>("delete-product", () -> randomChoiceExcluding(productIds, deletedIds),
+                    id -> {
+                        dbClient.deleteProducts(List.of(id));
+                        deletedIds.add(id);
+                    }),
             PRODUCTS_COLLECTION);
 }
 
 static TestCaseSpec<List<UUID>> batchDeleteAccountsSpec(DbClient dbClient) {
     var batchSize = 1000;
+    var start = System.currentTimeMillis();
     var accountIds = new AtomicReference<>(requireAccountIds(dbClient));
+    ADDITIONAL_QUERIES_DURATION_MILLIS = System.currentTimeMillis() - start;
+
     var deletedIds = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
 
     var mutex = new Semaphore(1);
@@ -496,7 +561,9 @@ static TestCaseSpec<List<UUID>> batchDeleteAccountsSpec(DbClient dbClient) {
                             mutex.acquire();
                             var refetchAccountIds = deletedIds.size() >= (accountIds.get().size() / 2);
                             if (refetchAccountIds) {
+                                var s = System.currentTimeMillis();
                                 accountIds.set(requireAccountIds(dbClient));
+                                ADDITIONAL_QUERIES_DURATION_MILLIS += (System.currentTimeMillis() - s);
                                 deletedIds.clear();
                             }
                             return Stream.generate(() -> randomChoiceExcluding(accountIds.get(), deletedIds))
@@ -554,11 +621,19 @@ static Account randomAccount() {
 static Account randomAccount(UUID id) {
     var name = randomName();
     var type = randomChoice(ACCOUNT_TYPES);
+    var owners = Stream.generate(() -> oneOfUserIds())
+            .distinct()
+            .limit(randomNumber(1, 5))
+            .toList();
     var createdAt = randomTimestamp();
     var updatedAt = randomTimestampAfter(createdAt);
     var version = randomVersion();
 
-    return new Account(id, name, type, createdAt, updatedAt, version);
+    return new Account(id, name, type, owners, createdAt, updatedAt, version);
+}
+
+static String oneOfUserIds() {
+    return "user-" + randomNumber(0, MAX_USER_ID);
 }
 
 static Product randomProduct() {
@@ -673,7 +748,11 @@ static void printStats(List<Long> sortedResults, Map<String, Integer> executedQu
     var min = sortedResults.getFirst();
     var max = sortedResults.getLast();
 
+    var queriesDuration = duration.minusMillis(ADDITIONAL_QUERIES_DURATION_MILLIS)
+            .truncatedTo(ChronoUnit.MILLIS);
+
     IO.println("Total test duration: " + duration);
+    IO.println("Queries duration: " + queriesDuration);
     IO.println();
     IO.println("Executed queries: " + sortedResults.size());
     if (executedQueriesByGroupId.size() > 1) {
@@ -681,7 +760,7 @@ static void printStats(List<Long> sortedResults, Map<String, Integer> executedQu
     }
     IO.println();
     IO.println("Wanted queries rate: %d/s".formatted(queriesRate));
-    IO.println("Actual queries rate: %d/s".formatted(actualQueriesRate(sortedResults.size(), duration)));
+    IO.println("Actual queries rate: %d/s".formatted(actualQueriesRate(sortedResults.size(), queriesDuration)));
     IO.println();
 
     var mean = sortedResults.stream().mapToLong(Long::longValue).average().getAsDouble();
@@ -762,7 +841,9 @@ enum TestCase {
     FIND_ACCOUNTS_BY_ID,
     FIND_PRODUCTS_BY_ID,
     FIND_SORTED_BY_CREATED_AT_ACCOUNTS_PAGES,
+    FIND_ACCOUNTS_BY_OWNERS,
     FIND_PRODUCTS_BY_TAGS,
+    FIND_ACCOUNTS_STATS_BY_IDS,
     FIND_PRODUCTS_STATS_BY_IDS,
     INSERT_UPDATE_DELETE_FIND_ACCOUNTS,
     DELETE_ACCOUNTS,
@@ -778,8 +859,13 @@ record TestCaseSpec<T>(int queriesToExecute, int queriesRate, List<Query<T>> que
 }
 
 // Both are public for MongoDB POJO codecs
-// TODO: add owners to check GIN perf
-public record Account(@BsonId UUID id, String name, String type, Instant createdAt, Instant updatedAt, long version) {
+public record Account(@BsonId UUID id,
+                      String name,
+                      String type,
+                      List<String> owners,
+                      Instant createdAt,
+                      Instant updatedAt,
+                      long version) {
 
 }
 
@@ -797,6 +883,14 @@ public record Product(@BsonId UUID id,
     public record Variation(String type, String value) {
 
     }
+}
+
+public record AccountsStats(String type,
+                            int accounts,
+                            Instant oldestAccountCreatedAt,
+                            Instant newestAccountCreatedAt,
+                            int minOwners,
+                            int maxOwners) {
 }
 
 public record ProductsStats(String tag,
@@ -822,6 +916,10 @@ sealed interface DbClient {
     List<UUID> findAccountIds(int limit);
 
     List<Account> findAccountsPageSortedByCreatedAt(PageRequest request);
+
+    List<Account> findAccountsByOwners(List<String> owners, int limit);
+
+    List<AccountsStats> findAccountsStats(List<UUID> ids);
 
     List<Instant> findMinMaxAccountsCreatedAt();
 
@@ -970,6 +1068,64 @@ record PostgresClient(DataSource dataSource) implements DbClient {
     }
 
     @Override
+    public List<Account> findAccountsByOwners(List<String> owners, int limit) {
+        return executeQueryMappingEachRow("SELECT * FROM %s WHERE data -> 'owners' ?| %s LIMIT %d"
+                        .formatted(ACCOUNTS_COLLECTION, toPqArray(owners), limit),
+                r -> {
+                    var json = r.getString(1);
+                    return OBJECT_MAPPER.readValue(json, Account.class);
+                });
+    }
+
+    private String toPqArray(List<String> items) {
+        return "array[%s]".formatted(items.stream().map("'%s'"::formatted).collect(Collectors.joining(",")));
+    }
+
+    @Override
+    public List<AccountsStats> findAccountsStats(List<UUID> ids) {
+        return executeQuery(conn -> {
+            var query = """
+                    SELECT
+                        data->>'type' AS type,
+                        COUNT(*) AS accounts,
+                        MIN(data->>'createdAt') AS oldestAccountCreatedAt,
+                        MAX(data->>'createdAt') AS newestAccountCreatedAt,
+                        MIN(JSONB_ARRAY_LENGTH(data->'owners')) AS minOwners,
+                        MAX(JSONB_ARRAY_LENGTH(data->'owners')) AS maxOwners
+                    FROM %s
+                    WHERE data->>'id' IN""".formatted(ACCOUNTS_COLLECTION)
+                    + ids.stream().map(i -> "?").collect(Collectors.joining(", ", "(", ")"))
+                    + "\nGROUP BY type";
+
+            var stmt = conn.prepareStatement(query);
+
+            for (int i = 0; i < ids.size(); i++) {
+                stmt.setString(i + 1, ids.get(i).toString());
+            }
+
+            var result = stmt.executeQuery();
+
+            var results = new ArrayList<AccountsStats>();
+            while (result.next()) {
+                results.add(mapAccountsStats(result));
+            }
+            return results;
+        });
+    }
+
+    private AccountsStats mapAccountsStats(ResultSet result) throws SQLException {
+        var type = result.getString("type");
+        var accounts = result.getInt("accounts");
+        var oldestAccountCreatedAt = Instant.parse(result.getString("oldestAccountCreatedAt"));
+        var newestAccountCreatedAt = Instant.parse(result.getString("newestAccountCreatedAt"));
+        var minOwners = result.getInt("minOwners");
+        var maxOwners = result.getInt("maxOwners");
+        return new AccountsStats(type, accounts,
+                oldestAccountCreatedAt, newestAccountCreatedAt,
+                minOwners, maxOwners);
+    }
+
+    @Override
     public List<UUID> findAccountIds(int limit) {
         return findDocumentIds(ACCOUNTS_COLLECTION, limit);
     }
@@ -1007,8 +1163,8 @@ record PostgresClient(DataSource dataSource) implements DbClient {
 
     @Override
     public List<Product> findProductsByTags(List<String> tags, int limit) {
-        return executeQueryMappingEachRow("SELECT * FROM %s WHERE data -> 'tags' @> '[%s]'::JSONB LIMIT %d"
-                        .formatted(PRODUCTS_COLLECTION, OBJECT_MAPPER.writeValueAsString(tags), limit),
+        return executeQueryMappingEachRow("SELECT * FROM %s WHERE data -> 'tags' ?| %s LIMIT %d"
+                        .formatted(PRODUCTS_COLLECTION, toPqArray(tags), limit),
                 r -> {
                     var json = r.getString(1);
                     return OBJECT_MAPPER.readValue(json, Product.class);
@@ -1161,6 +1317,40 @@ static final class MongoDbClient implements DbClient {
         return accountsTyped.find(filter)
                 .limit(request.limit)
                 .sort(request.desc ? Sorts.descending("createdAt") : Sorts.ascending("createdAt"))
+                .into(new ArrayList<>());
+    }
+
+    @Override
+    public List<Account> findAccountsByOwners(List<String> owners, int limit) {
+        return accountsTyped.find(Filters.in("owners", owners)).limit(limit).into(new ArrayList<>());
+    }
+
+    @Override
+    public List<AccountsStats> findAccountsStats(List<UUID> ids) {
+        var pipeline = List.of(
+                Aggregates.match(Filters.in("_id", ids)),
+                Aggregates.group("$type",
+                        Accumulators.sum("accounts", 1),
+                        Accumulators.min("oldestAccountCreatedAt", "$createdAt"),
+                        Accumulators.max("newestAccountCreatedAt", "$createdAt"),
+                        Accumulators.min("minOwners", new Document("$size", "$owners")),
+                        Accumulators.max("maxOwners", new Document("$size", "$owners"))
+                ),
+                Aggregates.project(Projections.fields(
+                        Projections.computed("type", "$_id"),
+                        Projections.include("accounts", "oldestAccountCreatedAt", "newestAccountCreatedAt", "minOwners", "maxOwners"),
+                        Projections.excludeId()
+                ))
+        );
+        return accounts.aggregate(pipeline)
+                .map(d -> new AccountsStats(
+                        d.getString("type"),
+                        d.getInteger("accounts"),
+                        d.get("oldestAccountCreatedAt", Date.class).toInstant(),
+                        d.get("newestAccountCreatedAt", Date.class).toInstant(),
+                        d.getInteger("minOwners"),
+                        d.getInteger("maxOwners")
+                ))
                 .into(new ArrayList<>());
     }
 

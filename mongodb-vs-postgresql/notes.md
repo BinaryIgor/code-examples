@@ -64,6 +64,58 @@ db.products.aggregate([
   }
 ]);
 
+db.accounts.aggregate([
+  { $match: { _id: { $in: [
+    UUID('0df7a43e-8042-49da-a916-5c5ad8f68f2a'),
+    UUID('f0fa4d44-c3a8-45af-9ca5-3f178dec165d'),
+    UUID('e6ac5ec2-6219-425d-bd8f-cacde1ebbd63'),
+    UUID('09a2dd06-99c4-411a-8f66-3ca82105e89b'),
+    UUID('c7cfe56b-be40-4933-92d0-6f52fe13c51b') 
+   ] } } },
+  { $group: 
+    { 
+      _id: "$type", 
+      accounts: { $sum: 1 },
+      oldestAccountCreatedAt: { $min: "$createdAt" },
+      latestAccountCreatedAt: { $max: "$createdAt" },
+      minOwners: { $min: { $size: "$owners" } },
+      maxOwners: { $max: { $size: "$owners" } }
+    }
+  },
+  { 
+    $project: { 
+      _id: 0, 
+      type: "$_id", 
+      accounts: 1,
+      oldestAccountCreatedAt: 1,
+      latestAccountCreatedAt: 1,
+      minOwners: 1,
+      maxOwners: 1
+    } 
+  }
+]);
+
+db.accounts.aggregate([
+  { $match: { _id: { $in: [
+    UUID('0df7a43e-8042-49da-a916-5c5ad8f68f2a'),
+    UUID('f0fa4d44-c3a8-45af-9ca5-3f178dec165d'),
+    UUID('e6ac5ec2-6219-425d-bd8f-cacde1ebbd63'),
+    UUID('09a2dd06-99c4-411a-8f66-3ca82105e89b'),
+    UUID('c7cfe56b-be40-4933-92d0-6f52fe13c51b') 
+   ] } } },
+  { $unwind: "$types" }
+]);
+
+db.accounts.aggregate([
+  { $match: { _id: { $in: [
+    UUID('0df7a43e-8042-49da-a916-5c5ad8f68f2a'),
+    UUID('f0fa4d44-c3a8-45af-9ca5-3f178dec165d'),
+    UUID('e6ac5ec2-6219-425d-bd8f-cacde1ebbd63'),
+    UUID('09a2dd06-99c4-411a-8f66-3ca82105e89b'),
+    UUID('c7cfe56b-be40-4933-92d0-6f52fe13c51b') 
+   ] } } }
+]);
+
 db.products.aggregate([
   { $match: { _id: { $in: ['bbac46a5-a166-4e40-ad62-778e4ff24b90', '0196f455-06d5-4067-ac01-4e1dbf99c866'] } } }
 ]);

@@ -3,43 +3,44 @@ Starting Json DBs Performance Tests, connecting to MONGODB with a pool of 256 co
 [main] INFO org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync", "version": "5.6.2"}, "os": {"type": "Linux", "name": "Linux", "architecture": "amd64", "version": "6.14.0-37-generic"}, "platform": "Java/Eclipse Adoptium/25.0.2+10-LTS", "env": {"container": {"runtime": "docker"}}} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=true}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=MongoCredential{mechanism=null, userName='json', source='admin', password=<hidden>, mechanismProperties=<hidden>}, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@2cdd0d4b, com.mongodb.Jep395RecordCodecProvider@7e9131d5, com.mongodb.KotlinCodecProvider@2e1d27ba, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=256, minSize=256, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=STANDARD, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
 
 Connected with MONGODB, about to run DELETE_PRODUCTS test case.
-[cluster-ClusterId{value='698e269134427810f8e7c294', description='null'}-localhost:27017] INFO org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=13707138, minRoundTripTimeNanos=0}
-[main] INFO org.mongodb.driver.cluster - Waiting for server to become available for operation find with ID 3. Remaining time: 29991 ms. Selector: ReadPreferenceServerSelector{readPreference=primary}, topology description: {type=UNKNOWN, servers=[{address=localhost:27017, type=UNKNOWN, state=CONNECTING}].
+[cluster-ClusterId{value='699983df165074fd239779c3', description='null'}-localhost:27017] INFO org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=21, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=24406938, minRoundTripTimeNanos=0}
+[main] INFO org.mongodb.driver.cluster - Waiting for server to become available for operation find with ID 3. Remaining time: 29985 ms. Selector: ReadPreferenceServerSelector{readPreference=primary}, topology description: {type=UNKNOWN, servers=[{address=localhost:27017, type=UNKNOWN, state=CONNECTING}].
 The following test case specification will be executed: TestCaseSpec[queriesToExecute=150000, queriesRate=15000, queries=[Query[id=delete-product]], collection=products]
 
-Collection count before test: 156123
+Collection count before test: 201626
 
-2026-02-12T19:14:25.866, 15000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:27.121, 30000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:28.190, 45000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:29.251, 60000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:30.286, 75000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:31.318, 90000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:32.352, 105000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:33.389, 120000/150000 queries were issued, waiting 1s before sending next query batch...
-2026-02-12T19:14:34.456, 135000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:28.599, 15000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:29.816, 30000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:30.853, 45000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:31.884, 60000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:32.905, 75000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:33.938, 90000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:34.954, 105000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:35.976, 120000/150000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T10:07:37.027, 135000/150000 queries were issued, waiting 1s before sending next query batch...
 
 ...
 
 Test case DELETE_PRODUCTS with MONGODB finished! It had queries: [Query[id=delete-product]]
 
-Collection count after test: 59560
+Collection count after test: 52090
 
 Some stats...
 
-Total test duration: PT10.693S
+Total test duration: PT10.518S
+Queries duration: PT9.944S
 
 Executed queries: 150000
 
 Wanted queries rate: 15000/s
-Actual queries rate: 14028/s
+Actual queries rate: 15084/s
 
-Min: 0.226 ms
-Max: 1110.073 ms
-Mean: 30.763 ms
+Min: 1.208 ms
+Max: 1078.079 ms
+Mean: 32.692 ms
 
-Percentile 50 (Median): 9.636 ms
-Percentile 75: 11.151 ms
-Percentile 90: 21.09 ms
-Percentile 99: 454.001 ms
-Percentile 99.9: 789.93 ms
+Percentile 50 (Median): 9.945 ms
+Percentile 75: 11.647 ms
+Percentile 90: 55.189 ms
+Percentile 99: 399.247 ms
+Percentile 99.9: 750.858 ms
