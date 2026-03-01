@@ -1,11 +1,11 @@
 db.createCollection("accounts");
 db.accounts.createIndex(
   { createdAt: 1 },
-  { name: "accounts_created_at_idx"}
+  { name: "accounts_created_at_idx" }
 );
 db.accounts.createIndex(
   { owners: 1 },
-  { name: "accounts_owners_idx"}
+  { name: "accounts_owners_idx" }
 );
 
 db.createCollection("products");
