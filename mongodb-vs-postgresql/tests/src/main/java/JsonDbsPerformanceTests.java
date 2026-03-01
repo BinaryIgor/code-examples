@@ -866,7 +866,6 @@ public record Account(@BsonId UUID id,
                       Instant createdAt,
                       Instant updatedAt,
                       long version) {
-
 }
 
 public record Product(@BsonId UUID id,
