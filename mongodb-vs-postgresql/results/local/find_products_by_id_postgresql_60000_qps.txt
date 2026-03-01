@@ -1,0 +1,43 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@56620197
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run FIND_PRODUCTS_BY_ID test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=400000, queriesRate=60000, queries=[Query[id=find-product-by-id]], collection=products]
+
+Collection count before test: 150000
+
+2026-02-21T09:02:38.975, 60000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:02:41.585, 120000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:02:43.172, 180000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:02:44.342, 240000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:02:45.449, 300000/400000 queries were issued, waiting 1s before sending next query batch...
+2026-02-21T09:02:46.618, 360000/400000 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case FIND_PRODUCTS_BY_ID with POSTGRESQL finished! It had queries: [Query[id=find-product-by-id]]
+
+Collection count after test: 150000
+
+Some stats...
+
+Total test duration: PT10.106S
+Queries duration: PT9.061S
+
+Executed queries: 400000
+
+Wanted queries rate: 60000/s
+Actual queries rate: 44145/s
+
+Min: 0.069 ms
+Max: 1521.541 ms
+Mean: 65.316 ms
+
+Percentile 50 (Median): 0.281 ms
+Percentile 75: 6.722 ms
+Percentile 90: 255.702 ms
+Percentile 99: 734.9 ms
+Percentile 99.9: 1028.803 ms

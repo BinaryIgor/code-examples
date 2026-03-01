@@ -384,4 +384,4 @@ export DB_HOST=<if different than localhost - for remote tests mostly>
 ## Results
 
 If you care just about the numbers, in the `/results` there are results of my executions, together with `_env_.md` information in each case.
-You can run them yourself and compare with your results :)
+You can run them yourself and compare the results :)

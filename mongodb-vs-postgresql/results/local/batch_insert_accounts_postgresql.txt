@@ -1,0 +1,46 @@
+Starting Json DBs Performance Tests, connecting to POSTGRESQL with a pool of 64 connections...
+
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Starting...
+[main] INFO com.zaxxer.hikari.pool.HikariPool - POSTGRESQL - Added connection org.postgresql.jdbc.PgConnection@55b7a4e0
+[main] INFO com.zaxxer.hikari.HikariDataSource - POSTGRESQL - Start completed.
+
+Connected with POSTGRESQL, about to run BATCH_INSERT_ACCOUNTS test case.
+The following test case specification will be executed: TestCaseSpec[queriesToExecute=1500, queriesRate=150, queries=[Query[id=batch-insert-accounts-1000]], collection=accounts]
+
+Collection count before test: 1900000
+
+2026-02-19T19:07:09.653, 150/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:12.375, 300/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:13.992, 450/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:15.765, 600/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:17.555, 750/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:19.221, 900/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:21.017, 1050/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:22.896, 1200/1500 queries were issued, waiting 1s before sending next query batch...
+2026-02-19T19:07:24.500, 1350/1500 queries were issued, waiting 1s before sending next query batch...
+
+...
+
+Test case BATCH_INSERT_ACCOUNTS with POSTGRESQL finished! It had queries: [Query[id=batch-insert-accounts-1000]]
+
+Collection count after test: 3400000
+
+Some stats...
+
+Total test duration: PT18.453S
+Queries duration: PT18.453S
+
+Executed queries: 1500
+
+Wanted queries rate: 150/s
+Actual queries rate: 81/s
+
+Min: 18.808 ms
+Max: 2191.205 ms
+Mean: 123.828 ms
+
+Percentile 50 (Median): 32.68 ms
+Percentile 75: 78.442 ms
+Percentile 90: 613.625 ms
+Percentile 99: 821.431 ms
+Percentile 99.9: 1182.59 ms
