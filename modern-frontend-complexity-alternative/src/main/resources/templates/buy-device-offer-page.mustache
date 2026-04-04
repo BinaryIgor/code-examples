@@ -1,0 +1,20 @@
+<h1 class="text-3xl font-bold" data-page-title="{{buy-device-offer-page.title}}">{{deviceName}}</h1>
+
+<div class="my-8"><span class="font-bold">{{offerPrice.value}} {{offerPrice.currency}}</span> {{buy-device-offer-page.merchant-offer}}</div>
+
+<div class="mt-8 mb-2">{{buy-device-offer-page.user-offer}}</div>
+<validateable-input class="block">
+    <input name="user-offer" placeholder="{{offerPrice.value}}" value="{{offerPrice.value}}" data-input>
+    <p class="text-red-700 italic hidden" data-input-error>{{buy-device-offer-page.user-offer-validation-error}}</p>
+</validateable-input>
+
+<button class="my-8 rounded border-2 py-2 px-4 cursor-pointer">{{buy-device-offer-page.send-button}}</button>
+
+<script>
+(function() {
+    const input = document.querySelector("validateable-input");
+    customElements.whenDefined("validateable-input").then(() => {
+        input.validator = Validator.validateMoneyValue; 
+    });
+}())
+</script>

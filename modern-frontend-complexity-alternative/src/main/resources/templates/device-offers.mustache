@@ -1,0 +1,9 @@
+{{#offers}}
+    <div>{{attributeValues}}</div>
+    <div>{{price.value}} {{price.currency}}</div>
+    <div class="italic max-w-[225px]">{{merchantId}}</div>
+    <div>{{expiresAt}}</div>
+    <button class="bg-slate-200 py-1 px-4 cursor-pointer rounded"
+            hx-get="/buy-device/{{deviceId}}/offers/{{id}}"
+            hx-push-url="true" hx-target="#app">{{buy-device-page.actions.buy}}</button>
+{{/offers}}

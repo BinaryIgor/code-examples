@@ -1,0 +1,17 @@
+{{#no-results}}
+    <p>{{devices-search-results.no-results}}</p>
+{{/no-results}}
+<div class="space-y-2 flex flex-col">
+{{#devices}}
+    <div class="cursor-pointer rounded border-2 p-0 flex">
+        <span class="px-4 py-2 flex-1">{{id}}: {{name}}</span>
+        <drop-down class="relative">
+            <div data-drop-down-anchor class="absolute right-2 text-3xl">...</div>
+            <div data-drop-down-options class="rounded border-2 whitespace-nowrap absolute mt-2 right-0 top-6 bg-white border rounded hidden z-99">
+                <div class="p-2" hx-get="/devices/{{id}}" hx-push-url="true" hx-target="#app">{{devices-search-results.details-option}}</div>
+                <div class="p-2" hx-get="/buy-device/{{id}}" hx-push-url="true" hx-target="#app">{{devices-search-results.buy-option}}</div>
+            </div>
+        </drop-down>
+    </div>
+{{/devices}}
+</div>

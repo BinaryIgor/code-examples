@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: modern-frontend-complexity-alternative
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 500ms
+      quiet-period: 250ms
+
+web:
+  cssPath: "/output.css"
+  htmxPath: "/lib/htmx.min.2.0.8.js"
+  component-paths:
+    - "/drop-down.js"
+    - "/error-modal.js"
+    - "/selectables-container.js"
+    - "/selected-container.js"
+    - "/sortables-container.js"
+    - "/validateable-input.js"
+
