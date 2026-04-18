@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+.search-indicator {
+    display: none;
+}
+
+.htmx-request .search-indicator,
+.htmx-request.search-indicator {
+    display: block;
+}

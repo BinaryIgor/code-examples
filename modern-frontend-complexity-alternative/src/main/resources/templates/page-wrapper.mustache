@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>{{title}}</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="{{cssPath}}"/>
+    <script src="{{htmxPath}}" defer></script>
+    {{#componentPaths}}
+        <script src="{{.}}" defer></script>
+    {{/componentPaths}}
+</head>
+
+<body>
+<error-modal>
+    <div class="top-0 bg-black/70 right-0 fixed w-full h-screen z-50 pt-32 hidden" data-container>
+        <div class="w-11/12 md:w-8/12 xl:w-2/5 px-8 pt-8 pb-12 m-auto relative rounded bg-white">
+            <span class="text-4xl absolute top-0 right-2 hover:text-zinc-400 cursor-pointer"
+                    data-close-button>&times;</span>
+                <div class="text-2xl font-medium text-red-700" data-title></div>
+                <div class="text-lg pt-4" data-content></div>
+            </div>
+        </div>
+</error-modal>
+<div>
+    <div id="app" class="p-4" hx-history="false" hx-history-elt>
+       {{>content-router}}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("htmx:afterRequest", e => {
+        if (e.detail.failed) {
+            const errorModal = document.querySelector("error-modal");
+            const error = e.detail.xhr.response;
+            const [title, message] = error.split("#");
+            errorModal.dispatchEvent(new CustomEvent("error-modal-show", { detail: { title, content: message }}));
+        }
+    });
+    document.addEventListener("htmx:afterSettle", e => {
+        const pageTitleElement = document.querySelector("[data-page-title]");
+        if (pageTitleElement) {
+            document.title = pageTitleElement.getAttribute("data-page-title");
+        }
+    });
+
+    // global functions
+    const _MONEY_REGEX_ = /^\d+(\.\d{1,2})?$/;
+    const Validator = {
+        validateMoneyValue(value) {
+            return value && _MONEY_REGEX_.test(value);
+        }   
+    };
+</script>
+</body>
+
+</html>

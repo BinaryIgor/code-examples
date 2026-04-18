@@ -1,0 +1,11 @@
+<h1 class="text-3xl font-bold mb-4" data-page-title="{{devices-page.title}}">{{devices-page.title}}</h1>
+
+<input class="px-4 py-2" name="search" placeholder="{{devices-page.search-input-placeholder}}." type="search"
+    hx-get="/search-devices" hx-trigger="input changed delay:500ms, keyup[key=='Enter']"
+    hx-target="#devices" hx-indicator=".search-indicator">
+<p class="search-indicator italic my-4">{{devices-page.search-indicator}}</p>
+<div id="devices" class="my-4">
+    {{>devices-search-results}}
+</div>
+
+<button class="my-8 rounded border-2 py-2 px-4 cursor-pointer" hx-post="/devices/trigger-error">{{devices-page.trigger-error-button}}</button>

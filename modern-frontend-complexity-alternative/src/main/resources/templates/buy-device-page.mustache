@@ -1,0 +1,129 @@
+<h1 class="text-3xl font-bold" data-page-title="{{buy-device-page.title}}">{{name}}</h1>
+
+<div>
+    <h2 class="text-2xl mt-8 mb-4 font-bold">{{buy-device-page.title}}</h2>
+    <div class="flex space-x-4">
+    {{#availableAttributes}}
+        <drop-down class="relative cursor-pointer">
+            <div data-drop-down-anchor class="text-xl cursor-pointer">{{name}}</div>
+            <div data-drop-down-options class="rounded border-2 whitespace-nowrap absolute mt-2 left-0 top-5 bg-white border rounded hidden z-99">
+                <selectables-container>
+                {{#values}}
+                    <div class="p-2" data-selectable data-selectable-key="{{key}}" data-selectable-value="{{.}}">{{.}}</div>
+                {{/values}}
+                </selectables-container>
+            </div>
+        </drop-down>
+    {{/availableAttributes}}
+    </div>
+    <selected-container id="selected-filters-container" class="flex space-x-4 my-2"
+        data-selected-template-id="selected-template">
+    </selected-container>
+    <template id="selected-template">
+        <div class="rounded bg-slate-200 p-2" data-selected>
+            <span data-selected-value="__value__">__value__</span>
+            <span class="cursor-pointer text-2xl" data-unselect-button>&times;</span>
+        </div>
+    </template>
+    {{^hasOffers}}
+        {{buy-device-page.no-offers}}
+    {{/hasOffers}}
+    {{#hasOffers}}
+        <sortables-container
+            hx-get="/devices/{{id}}/offers" hx-trigger="hx-get-offers from:document" hx-target="#offers-container"
+            id="device-offers-container">
+            <template id="sortable-column-asc-template">&#8593;</template>
+            <template id="sortable-column-desc-template">&#8595;</template>
+            <div class="grid grid-cols-[4fr_2fr_4fr_4fr_1fr] gap-2">
+                <div class="font-bold my-2 cursor-pointer">
+                    {{buy-device-page.attributes-column}}
+                </div>
+                <div class="font-bold my-2 cursor-pointer" data-sortable-column-key="price">
+                    {{buy-device-page.price-column}}<span data-sortable-column-indicator></span>
+                </div>
+                <div class="font-bold my-2 cursor-pointer" data-sortable-column-key="merchant">
+                    {{buy-device-page.merchant-column}}<span data-sortable-column-indicator></span>
+                </div>
+                <div class="font-bold my-2 cursor-pointer" data-sortable-column-key="expires_at">
+                    {{buy-device-page.expires-at-column}}<span data-sortable-column-indicator></span>
+                </div>
+            </div>
+            <div class="grid grid-cols-[4fr_2fr_4fr_4fr_1fr] gap-2" id="offers-container">
+            {{>device-offers}}
+            </div>
+        </sortables-container>
+    {{/hasOffers}}
+</div>
+
+<script>
+(function() {
+    const selectedFiltersContainer = document.querySelector("selected-container");
+    const selectablesContainers = document.querySelectorAll("selectables-container");
+    const deviceOffersContainer = document.getElementById("device-offers-container");
+    if (!deviceOffersContainer) {
+        return;
+    }
+
+    [...selectablesContainers].forEach(sc => {
+        sc.addEventListener("selectables-container-selection-changed", e => {
+            const { key, value, selected } = e.detail;
+            selectedFiltersContainer.dispatchEvent(new CustomEvent("selected-container-change-selection", 
+                { detail: { key, value, selected }}));
+            deviceOffersContainer.dispatchEvent(new CustomEvent("device-offers-container-filter-changed",
+                { detail: {key, value, selected }}));
+        });
+    });
+
+    selectedFiltersContainer.addEventListener("selected-container-selection-changed", e => {
+        const { key, value, selected } = e.detail;
+        selectablesContainers.forEach(sc => {
+            sc.dispatchEvent(new CustomEvent("selectables-container-change-selection", 
+                { detail: { key, value, selected }}));
+        });
+        deviceOffersContainer.dispatchEvent(new CustomEvent("device-offers-container-filter-changed", 
+            { detail: { key, value, selected }}));
+    });
+
+    let filter = [];
+    let sorting = null;
+
+    const getDeviceOffersParams = () => {
+        const params = {};
+        filter.forEach(f => {
+            const [k, v] = f.split("#");
+            const vals = params[k] ?? [];
+            vals.push(v);
+            params[k] = vals;
+        });
+         if (sorting) {
+            params["sortingColumn"] = sorting.key;
+            params["sortingDirection"] = sorting.asc ? "ascending" : "descending";
+        }
+
+        return params;
+    };
+
+    deviceOffersContainer.addEventListener("device-offers-container-filter-changed", e => {
+        const { key, value, selected } = e.detail;
+        const keyValue = `${key}#${value}`;
+        if (selected && !filter.includes(keyValue)) {
+            filter.push(keyValue);
+        } else if (!selected) {
+            filter = filter.filter(f => f != keyValue);
+        }
+        document.dispatchEvent(new CustomEvent("hx-get-offers"));
+    });
+    deviceOffersContainer.addEventListener("sortables-container-sorting-changed", e => {
+        const { key, asc } = e.detail;
+        sorting = { key, asc };
+        document.dispatchEvent(new CustomEvent("hx-get-offers"));
+    });
+    deviceOffersContainer.addEventListener("htmx:configRequest", e => {
+        for (const [key, value] of Object.entries(getDeviceOffersParams())) {
+            e.detail.parameters[key] = value;
+        }
+    });
+
+}())
+</script>
+

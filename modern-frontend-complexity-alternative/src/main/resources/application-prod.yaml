@@ -1,0 +1,10 @@
+spring:
+  devtools:
+    restart:
+      enabled: false
+
+web:
+  cssPath: ${CSS_PATH}
+  htmxPath: "/lib/htmx.min.2.0.8.js"
+  component-paths:
+    - ${COMPONENTS_PATH}
