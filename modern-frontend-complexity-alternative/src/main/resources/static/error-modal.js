@@ -1,4 +1,4 @@
-class ErorrModal extends HTMLElement {
+class ErrorModal extends HTMLElement {
 
     #container = undefined;
     #titleElement = undefined;
@@ -27,5 +27,5 @@ class ErorrModal extends HTMLElement {
 }
 
 if (customElements.get("error-modal") === undefined) {
-    customElements.define("error-modal", ErorrModal);
+    customElements.define("error-modal", ErrorModal);
 }
