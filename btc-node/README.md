@@ -2,12 +2,12 @@
 
 Download core (check out and choose version at https://bitcoin.org/bin/):
 ```
-curl --output "bitcoin-core.tar.gz" https://bitcoin.org/bin/bitcoin-core-27.0/bitcoin-27.0-x86_64-linux-gnu.tar.gz
+curl --output "bitcoin-29.3-x86_64-linux-gnu.tar.gz" https://bitcoincore.org/bin/bitcoin-core-29.3/bitcoin-29.3-x86_64-linux-gnu.tar.gz
 ```
 
 Unpack it:
 ```
-tar xzf bitcoin-core.tar.gz
+tar xzf bitcoin-29.3-x86_64-linux-gnu.tar.gz
 ```
 
 Remember to verify the download (https://bitcoincore.org/en/download/); as they say:
@@ -45,6 +45,8 @@ LidSwitchIgnoreInhibited=no
 
 reboot!
 ```
+
+Remember than clicking through "Power/Power Saving" settings is needed as well!
 
 ## Firewall
 
@@ -101,7 +103,8 @@ bitcoin-cli getpeerinfo
 bitcoin-cli getnettotals
 bitcoin-cli getnetworkinfo
 bitcoin-cli getmempoolinfo
-bitcoin-cli getrawtransaction txid true
+bitcoin-cli getrawtransaction <txid> true
+bitcoin-cli scantxoutset start '["addr(<address>)"]'
 ```
 
 ## Cron jobs
